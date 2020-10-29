@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30621.155
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Foundry.Core", "Foundry.Core\Foundry.Core.csproj", "{88AA312D-4ADA-47D4-A0B4-E3BA736591CD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D53D638B-DAAC-4BC3-8967-8BB2962B6DDB}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foundary.Serialization.Dbase", "Foundary.Serialization.Dbase\Foundary.Serialization.Dbase.csproj", "{634FFF6F-9A71-424D-B4C6-ECA2B7F62586}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{88AA312D-4ADA-47D4-A0B4-E3BA736591CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{88AA312D-4ADA-47D4-A0B4-E3BA736591CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{88AA312D-4ADA-47D4-A0B4-E3BA736591CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{88AA312D-4ADA-47D4-A0B4-E3BA736591CD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{634FFF6F-9A71-424D-B4C6-ECA2B7F62586}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{634FFF6F-9A71-424D-B4C6-ECA2B7F62586}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{634FFF6F-9A71-424D-B4C6-ECA2B7F62586}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{634FFF6F-9A71-424D-B4C6-ECA2B7F62586}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8B942AAE-F7FC-40F3-95E4-E7D08F904A14}
+	EndGlobalSection
+EndGlobal
