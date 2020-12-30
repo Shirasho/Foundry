@@ -107,7 +107,7 @@ namespace Foundry.Net
             return !(a == b);
         }
 
-        public override readonly bool Equals(object obj)
+        public override readonly bool Equals(object? obj)
         {
             return obj is MimeType other && Equals(other);
         }

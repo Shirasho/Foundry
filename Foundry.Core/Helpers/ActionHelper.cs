@@ -84,7 +84,9 @@ namespace Foundry
         {
             if (returnType == typeof(void) || returnType is null)
             {
-                return GetFuncOrActionType(paramTypes?.Length ?? 0, returnType).MakeGenericType(paramTypes);
+                return paramTypes is not null
+                    ? GetFuncOrActionType(paramTypes.Length, returnType).MakeGenericType(paramTypes)
+                    : GetFuncOrActionType(0, returnType);
             }
 
             return GetFuncOrActionType(paramTypes?.Length ?? 0, returnType).MakeGenericType((paramTypes ?? Array.Empty<Type>()).Concat(new[] { returnType }).ToArray());

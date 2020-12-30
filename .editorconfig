@@ -276,7 +276,7 @@ dotnet_diagnostic.S3218.severity = none
 dotnet_diagnostic.S4136.severity = suggestion
 
 # RCS1090: Call 'ConfigureAwait(false)'.
-dotnet_diagnostic.RCS1090.severity = error
+dotnet_diagnostic.RCS1090.severity = none
 
 # S1215: "GC.Collect" should not be called
 dotnet_diagnostic.S1215.severity = silent
@@ -378,7 +378,7 @@ dotnet_diagnostic.RCS1213.severity = error
 dotnet_diagnostic.RCS1135.severity = error
 
 # RCS1140: Add exception to documentation comment
-dotnet_diagnostic.RCS1140.severity = warning
+dotnet_diagnostic.RCS1140.severity = error
 
 # RCS1196: Call extension method as instance method.
 dotnet_diagnostic.RCS1196.severity = error

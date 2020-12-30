@@ -40,7 +40,7 @@ namespace Foundry.Collections
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Dispose()
         {
-            if (ArrayFromPool != null)
+            if (ArrayFromPool is not null)
             {
                 ArrayPool<T>.Shared.Return(ArrayFromPool);
                 ArrayFromPool = null;
@@ -75,15 +75,15 @@ namespace Foundry.Collections
 
         private void Grow()
         {
-            T[] array = ArrayPool<T>.Shared.Rent(Span.Length * 2);
+            var array = ArrayPool<T>.Shared.Rent(Span.Length * 2);
             if (!Span.TryCopyTo(array))
             {
                 throw new InvalidOperationException("Unable to copy span to grown ArrayPool array.");
             }
 
-            T[]? toReturn = ArrayFromPool;
+            var toReturn = ArrayFromPool;
             Span = ArrayFromPool = array;
-            if (toReturn != null)
+            if (toReturn is not null)
             {
                 ArrayPool<T>.Shared.Return(toReturn);
             }

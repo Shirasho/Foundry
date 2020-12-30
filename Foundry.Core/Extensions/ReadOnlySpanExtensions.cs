@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using Foundry.Collections;
@@ -129,9 +128,7 @@ namespace Foundry
                 {
                     if (span[i].Equals(separator[0]) && SeparatorLength <= span.Length - i)
                     {
-#pragma warning disable PC001 // API not supported on all platforms (false positive due to Alpha package)
                         if (SeparatorLength == 1 || span.Slice(i, SeparatorLength).SequenceEqual(separator))
-#pragma warning restore PC001 // API not supported on all platforms (false positive due to Alpha package)
                         {
                             separatorIndices.Append(i);
                             i += SeparatorLength - 1;

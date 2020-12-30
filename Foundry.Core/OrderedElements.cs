@@ -19,7 +19,7 @@ namespace Foundry
         /// <param name="item1">The first item.</param>
         /// <param name="item2">The second item.</param>
         /// <exception cref="Exception">A delegate callback throws an exception.</exception>
-        public static OrderedElements<T> Create<T>([AllowNull] T item1, [AllowNull] T item2)
+        public static OrderedElements<T> Create<T>(T? item1, T? item2)
             where T : IComparable<T> => Create(item1, item2, (IComparer<T>?)null);
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace Foundry
         /// <param name="item2">The second item.</param>
         /// <param name="comparer">The comparer to use for sorting.</param>
         /// <exception cref="Exception">A delegate callback throws an exception.</exception>
-        public static OrderedElements<T> Create<T>([AllowNull] T item1, [AllowNull] T item2, IComparer<T>? comparer)
+        public static OrderedElements<T> Create<T>(T? item1, T? item2, IComparer<T>? comparer)
             where T : IComparable<T>
         {
             var comp = comparer ?? Comparer<T>.Default;
@@ -70,7 +70,7 @@ namespace Foundry
         /// <param name="item2">The second item.</param>
         /// <param name="comparer">The comparer to use for sorting.</param>
         /// <exception cref="Exception">A delegate callback throws an exception.</exception>
-        public static OrderedElements<T> Create<T>([AllowNull] T item1, [AllowNull] T item2, Func<T, T, int>? comparer)
+        public static OrderedElements<T> Create<T>(T? item1, T? item2, Func<T, T, int>? comparer)
             where T : IComparable<T> => new OrderedElements<T>(item1, item2, comparer);
 
         /// <summary>
@@ -119,7 +119,7 @@ namespace Foundry
         /// <param name="item1">The first item.</param>
         /// <param name="item2">The second item.</param>
         /// <exception cref="Exception">A delegate callback throws an exception.</exception>
-        public OrderedElements([AllowNull] T item1, [AllowNull] T item2)
+        public OrderedElements(T? item1, T? item2)
             : this(item1, item2, (IComparer<T>?)null)
         {
         }
@@ -131,8 +131,8 @@ namespace Foundry
         /// <param name="item2">The second item.</param>
         /// <param name="comparer">The comparer to use for sorting.</param>
         /// <exception cref="Exception">A delegate callback throws an exception.</exception>
-        public OrderedElements([AllowNull] T item1, [AllowNull] T item2, IComparer<T>? comparer)
-            : this(item1, item2, comparer != null ? comparer.Compare : (Func<T, T, int>?)null)
+        public OrderedElements(T? item1, T? item2, IComparer<T>? comparer)
+            : this(item1, item2, comparer is not null ? comparer.Compare : (Func<T, T, int>?)null)
         {
         }
 
@@ -143,7 +143,7 @@ namespace Foundry
         /// <param name="item2">The second item.</param>
         /// <param name="comparer">The comparer func to use for sorting.</param>
         /// <exception cref="Exception">A delegate callback throws an exception.</exception>
-        public OrderedElements([AllowNull] T item1, [AllowNull] T item2, Func<T, T, int>? comparer)
+        public OrderedElements(T? item1, T? item2, Func<T, T, int>? comparer)
         {
             comparer ??= Comparer<T>.Default.Compare;
             Lesser = comparer(item1!, item2!) < 0 ? item1 : item2;
@@ -207,7 +207,7 @@ namespace Foundry
         /// <param name="comparer">The comparer to use for sorting.</param>
         /// <exception cref="Exception">A delegate callback throws an exception.</exception>
         public StructOrderedElements(T? item1, T? item2, IComparer<T?>? comparer)
-            : this(item1, item2, comparer != null ? comparer.Compare : (Func<T?, T?, int>?)null)
+            : this(item1, item2, comparer is not null ? comparer.Compare : (Func<T?, T?, int>?)null)
         {
         }
 

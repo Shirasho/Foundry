@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Toolkit.Diagnostics;
@@ -37,6 +38,17 @@ namespace Foundry
 
             var tcs = new TaskCompletionSource<int>(TaskCreationOptions.RunContinuationsAsynchronously);
             using (cancellationToken.Register(() =>
+            {
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    tcs.TrySetCanceled(cancellationToken);
+                    if (killOnCancellation)
+                    {
+                        process.Kill();
+                    }
+                }
+                else
+                {
                     // Wrap in a task to avoid deadlocks on OSX and Unix.
                     Task.Run(() =>
                     {
@@ -45,11 +57,13 @@ namespace Foundry
                         {
                             process.Kill();
                         }
-                    }, CancellationToken.None)))
+                    }, CancellationToken.None);
+                }
+            }))
             {
                 process.EnableRaisingEvents = true;
 
-                void OnProcessOnExited(object sender, EventArgs args)
+                void OnProcessOnExited(object? sender, EventArgs args)
                 {
                     tcs.TrySetResult(process.ExitCode);
                     process.Exited -= OnProcessOnExited;
@@ -99,7 +113,7 @@ namespace Foundry
             var tcs = new TaskCompletionSource<int>(TaskCreationOptions.RunContinuationsAsynchronously);
             process.EnableRaisingEvents = true;
 
-            void OnProcessOnExited(object sender, EventArgs args)
+            void OnProcessOnExited(object? sender, EventArgs args)
             {
                 tcs.TrySetResult(process.ExitCode);
                 process.Exited -= OnProcessOnExited;
@@ -108,15 +122,28 @@ namespace Foundry
             process.Exited += OnProcessOnExited;
 
             cts.Token.Register(() =>
-                // Wrap in a task to avoid deadlocks on OSX and Unix.
-                Task.Run(() =>
             {
-                tcs.TrySetCanceled();
-                if (killOnCancellation)
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
                 {
-                    process.Kill();
+                    tcs.TrySetCanceled(cancellationToken);
+                    if (killOnCancellation)
+                    {
+                        process.Kill();
+                    }
                 }
-            }, CancellationToken.None));
+                else
+                {
+                    // Wrap in a task to avoid deadlocks on OSX and Unix.
+                    Task.Run(() =>
+                    {
+                        tcs.TrySetCanceled(cancellationToken);
+                        if (killOnCancellation)
+                        {
+                            process.Kill();
+                        }
+                    }, CancellationToken.None);
+                }
+            });
             if (process.HasExited)
             {
                 process.Exited -= OnProcessOnExited;

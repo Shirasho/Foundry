@@ -1,0 +1,71 @@
+﻿@page "/orleans"
+@inject IClusterClient ClusterClient
+@inject IJSRuntime JSRuntime
+
+<h1>Hello, world!</h1>
+
+Welcome to your new app.
+
+<SurveyPrompt Title="How is Blazor working for you?" />
+
+@if (!ApplicationSending && ApplicationSentSuccessfully)
+{
+    <p>Application submitted successfully!</p>
+}
+
+@if (!ApplicationSending && !ApplicationSentSuccessfully)
+{
+    <button class="btn btn-primary" @onclick="CreateGuildApplication" disabled=@ApplicationSending>Submit Application</button>
+}
+
+@code {
+
+    private bool ApplicationSentSuccessfully;
+    private bool ApplicationSending;
+    private string? ApplicationResult;
+
+    private bool ClusterClientConnected;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        try
+        {
+            await ClusterClient.Connect();
+            ClusterClientConnected = true;
+        }
+        catch
+        {
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+
+        if (!ClusterClientConnected)
+        {
+            await JSRuntime.InvokeAsync<string>("console.error", "Unable to connect to Silo cluster.");
+        }
+    }
+
+    private async Task CreateGuildApplication(MouseEventArgs e)
+    {
+        ApplicationResult = null;
+        ApplicationSending = true;
+        var guildGrain = ClusterClient.GetGrain<IGuild>(Guid.Empty);
+        try
+        {
+            ApplicationResult = await guildGrain.CreateMemberApplication("Hello world!");
+            ApplicationSentSuccessfully = true;
+        }
+        catch (Exception ex)
+        {
+            ApplicationResult = ex.Message;
+            ApplicationSentSuccessfully = false;
+        }
+
+        ApplicationSending = false;
+    }
+}

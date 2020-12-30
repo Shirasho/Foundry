@@ -14,9 +14,9 @@ namespace Foundry.Collections
         /// </summary>
         /// <param name="a">The first collection.</param>
         /// <param name="b">The second collection.</param>
-        public static bool Equals<T>(IEnumerable<T>? a, IEnumerable<T>? b)
+        public static bool Equals<T>(IEnumerable<T?>? a, IEnumerable<T?>? b)
         {
-            return UnsortedEqualityComparer<T>.Default.Equals(a, b);
+            return UnsortedEqualityComparer<T?>.Default.Equals(a, b);
         }
 
         /// <summary>
@@ -25,9 +25,9 @@ namespace Foundry.Collections
         /// <param name="a">The first collection.</param>
         /// <param name="b">The second collection.</param>
         /// <param name="equalityComparer">The equality comparer to use.</param>
-        public static bool Equals<T>(IEnumerable<T>? a, IEnumerable<T>? b, IEqualityComparer<T>? equalityComparer)
+        public static bool Equals<T>(IEnumerable<T?>? a, IEnumerable<T?>? b, IEqualityComparer<T?>? equalityComparer)
         {
-            return new UnsortedEqualityComparer<T>(equalityComparer).Equals(a, b);
+            return new UnsortedEqualityComparer<T?>(equalityComparer).Equals(a, b);
         }
     }
 
@@ -41,13 +41,13 @@ namespace Foundry.Collections
         /// An <see cref="IEqualityComparer{T}"/> that utilizes <see cref="EqualityComparer{T}.Default"/>
         /// for unsorted equality comparisons.
         /// </summary>
-        public static UnsortedEqualityComparer<T> Default { get; } = new UnsortedEqualityComparer<T>(EqualityComparer<T>.Default);
+        public static UnsortedEqualityComparer<T?> Default { get; } = new UnsortedEqualityComparer<T?>(EqualityComparer<T?>.Default);
 
-        private readonly IEqualityComparer<T> Comparer;
+        private readonly IEqualityComparer<T?> Comparer;
 
-        public UnsortedEqualityComparer(IEqualityComparer<T>? comparer = null)
+        public UnsortedEqualityComparer(IEqualityComparer<T?>? comparer = null)
         {
-            Comparer = comparer ?? EqualityComparer<T>.Default;
+            Comparer = comparer ?? EqualityComparer<T?>.Default;
         }
 
         /// <summary>
@@ -58,7 +58,7 @@ namespace Foundry.Collections
         /// <returns>
         /// <see langword="true" /> if the specified objects are equal; otherwise, <see langword="false" />.
         /// </returns>
-        public bool Equals(IEnumerable<T>? x, IEnumerable<T>? y)
+        public bool Equals(IEnumerable<T?>? x, IEnumerable<T?>? y)
         {
             if (x is null)
             {
@@ -75,7 +75,7 @@ namespace Foundry.Collections
                 return true;
             }
 
-            if (x is ICollection<T> firstCollection && y is ICollection<T> secondCollection)
+            if (x is ICollection<T?> firstCollection && y is ICollection<T?> secondCollection)
             {
                 if (firstCollection.Count != secondCollection.Count)
                 {
@@ -91,7 +91,7 @@ namespace Foundry.Collections
             return !HaveMismatchedElement(x, y);
         }
 
-        private bool HaveMismatchedElement(IEnumerable<T> first, IEnumerable<T> second)
+        private bool HaveMismatchedElement(IEnumerable<T?> first, IEnumerable<T?> second)
         {
             var firstElementCounts = GetElementCounts(first, out int firstNullCount);
             var secondElementCounts = GetElementCounts(second, out int secondNullCount);
@@ -170,7 +170,9 @@ namespace Foundry.Collections
             return false;
         }
 
-        private Dictionary<T, int> GetElementCounts(IEnumerable<T> enumerable, out int nullCount)
+        // Suppression of CS8714 - null keys are excluded from the dictionary.
+#pragma warning disable CS8714 // The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match 'notnull' constraint.
+        private Dictionary<T, int> GetElementCounts(IEnumerable<T?> enumerable, out int nullCount)
         {
             var dictionary = new Dictionary<T, int>(Comparer);
             nullCount = 0;
@@ -191,8 +193,9 @@ namespace Foundry.Collections
 
             return dictionary;
         }
+#pragma warning restore CS8714 // The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match 'notnull' constraint.
 
-        public int GetHashCode(IEnumerable<T>? obj)
+        public int GetHashCode(IEnumerable<T?>? obj)
         {
             if (obj is null)
             {

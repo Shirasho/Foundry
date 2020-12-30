@@ -12,12 +12,12 @@ namespace Foundry.Linq
         /// <typeparam name="T">The type of the element.</typeparam>
         /// <param name="collection">The collection.</param>
         /// <param name="predicate"></param>
-        public static IEnumerable<T> WhereNot<T>(this IEnumerable<T> collection, Func<T, bool> predicate)
+        public static IEnumerable<T?> WhereNot<T>(this IEnumerable<T?> collection, Func<T?, bool> predicate)
         {
             Guard.IsNotNull(collection, nameof(collection));
             Guard.IsNotNull(predicate, nameof(predicate));
 
-            return _(); IEnumerable<T> _()
+            return _(); IEnumerable<T?> _()
             {
                 foreach (var element in collection)
                 {

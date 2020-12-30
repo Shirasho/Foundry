@@ -1,0 +1,25 @@
+﻿@page "/guild-forge"
+
+<div class="container-fluid">
+    <h2>GuildForge</h2>
+    <span>TODO</span>
+    <ul>
+        <li>Do not abstract guild grain. Each supported game should have its own grain. At at later date we can support generic guilds.</li>
+        <li>
+            <span>Create grains for the following games</span>
+            <ul>
+                <li>World of Warcraft</li>
+                <li>Elite Dangerous</li>
+            </ul>
+        </li>
+        <li>
+            <span>Create razor page with path /GuildForge/[GameName]/{GuildId}/[Page?]</span>
+            <ul>
+                <li>Games probably can't share razor components due to different needs for each game.</li>
+                <li>Guild owners who pay for Premium can specify a guild name instead of {GuildId}.</li>
+                <li>Ensure pages are decorated with @@attribute [Authorize]. Sub-components with certain claims
+                    can be added with &lt;AuthorizeView&gt;.</li>
+            </ul>
+        </li>
+    </ul>
+</div>

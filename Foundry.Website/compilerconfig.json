@@ -1,0 +1,10 @@
+﻿[
+    {
+        "outputFile": "wwwroot/css/foundry.css",
+        "inputFile": "Styles/foundry.scss"
+    },
+    {
+        "outputFile": "Pages/Samples/_OrleansExample.razor.css",
+        "inputFile": "Pages/Samples/_OrleansExample.razor.scss"
+    }
+]

@@ -4,11 +4,21 @@ using Foundry.Components;
 
 namespace Foundry
 {
+    /// <summary>
+    /// Information about a <typeparamref name="TEnum"/> member.
+    /// </summary>
+    /// <typeparam name="TEnum"></typeparam>
     public abstract class EnumMember<TEnum> : FieldDescriptor
         where TEnum : struct, Enum
     {
+        /// <summary>
+        /// The name of the <typeparamref name="TEnum"/> member.
+        /// </summary>
         public string Name { get; }
 
+        /// <summary>
+        /// The value of the <typeparamref name="TEnum"/> member.
+        /// </summary>
         public TEnum Value
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -19,7 +29,7 @@ namespace Foundry
 
         /// <inheritdoc />
         internal EnumMember(string name, object value)
-            : base(typeof(TEnum).GetField(name), typeof(TEnum))
+            : base(typeof(TEnum).GetField(name)!, typeof(TEnum))
         {
             Name = name;
             ValueField = value;

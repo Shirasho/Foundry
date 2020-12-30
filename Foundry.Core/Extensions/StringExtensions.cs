@@ -116,23 +116,6 @@ namespace Foundry
     public static class StringExtensions
     {
         /// <summary>
-        /// Returns whether <paramref name="element"/> contains <paramref name="substring"/>
-        /// using the <paramref name="comparisonType"/> rules.
-        /// </summary>
-        /// <param name="element">The <see cref="string"/> element.</param>
-        /// <param name="substring">The substring to search for.</param>
-        /// <param name="comparisonType">The search comparison rules.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="substring"/> is <see langword="null"/></exception>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool Contains(this string element, string substring, StringComparison comparisonType)
-        {
-            Guard.IsNotNull(element, nameof(element));
-            Guard.IsNotNullOrEmpty(substring, nameof(substring));
-
-            return element.IndexOf(substring, comparisonType) >= 0;
-        }
-
-        /// <summary>
         /// Returns whether <paramref name="collection"/> contains <paramref name="value"/>
         /// using the <paramref name="comparisonType"/> rules.
         /// </summary>
@@ -358,7 +341,7 @@ namespace Foundry
                 return element;
             }
 
-            return count > element!.Length ? string.Empty : element.Substring(count);
+            return count > element!.Length ? string.Empty : element[count..];
         }
 
         /// <summary>

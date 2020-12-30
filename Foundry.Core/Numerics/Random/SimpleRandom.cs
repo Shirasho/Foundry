@@ -143,14 +143,7 @@ namespace Foundry.Numerics.Random
         {
             lock (Random)
             {
-#if NETSTANDARD2_0
-                for (int i = 0; i < buffer.Length; ++i)
-                {
-                    buffer[i] = (byte)NextInt32();
-                }
-#else
                 Random.NextBytes(buffer);
-#endif
             }
         }
     }

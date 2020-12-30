@@ -16,8 +16,8 @@ namespace Foundry
 
             return _(); IEnumerable<string> _()
             {
-                string line;
-                while ((line = streamReader.ReadLine()) != null)
+                string? line;
+                while ((line = streamReader.ReadLine()) is not null)
                 {
                     yield return line;
                 }
@@ -34,8 +34,8 @@ namespace Foundry
 
             return _(); async IAsyncEnumerable<string> _()
             {
-                string line;
-                while ((line = await streamReader.ReadLineAsync().ConfigureAwait(false)) != null)
+                string? line;
+                while ((line = await streamReader.ReadLineAsync().ConfigureAwait(false)) is not null)
                 {
                     yield return line;
                 }

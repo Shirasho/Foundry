@@ -10,7 +10,19 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foundary.Serialization.Dbase", "Foundary.Serialization.Dbase\Foundary.Serialization.Dbase.csproj", "{634FFF6F-9A71-424D-B4C6-ECA2B7F62586}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Foundary.Serialization.Dbase", "Foundary.Serialization.Dbase\Foundary.Serialization.Dbase.csproj", "{634FFF6F-9A71-424D-B4C6-ECA2B7F62586}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Foundry.Media", "Foundry.Media\Foundry.Media.csproj", "{94ABD0A5-1739-41DB-93E7-E8BBA7517876}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Foundry.Engine", "Foundry.Engine\Foundry.Engine.csproj", "{5B8E0246-6DA3-44DE-959B-E71F1ABA772B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Foundry.Web.GrainInterfaces", "Foundry.Web.GrainInterfaces\Foundry.Web.GrainInterfaces.csproj", "{1629E748-91E5-4D6D-A353-3E38A3F0A928}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Foundry.Web.Grains", "Foundry.Web.Grains\Foundry.Web.Grains.csproj", "{AEA5CE55-8AB4-4E2B-B221-1B517A7504AE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Foundry.Web.Silo", "Foundry.Web.Silo\Foundry.Web.Silo.csproj", "{005B8841-2C30-43C6-892A-F72FBB45E4AB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Foundry.Website", "Foundry.Website\Foundry.Website.csproj", "{F78CC52F-A795-4AEF-9C82-5530863758D2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,6 +38,30 @@ Global
 		{634FFF6F-9A71-424D-B4C6-ECA2B7F62586}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{634FFF6F-9A71-424D-B4C6-ECA2B7F62586}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{634FFF6F-9A71-424D-B4C6-ECA2B7F62586}.Release|Any CPU.Build.0 = Release|Any CPU
+		{94ABD0A5-1739-41DB-93E7-E8BBA7517876}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94ABD0A5-1739-41DB-93E7-E8BBA7517876}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94ABD0A5-1739-41DB-93E7-E8BBA7517876}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94ABD0A5-1739-41DB-93E7-E8BBA7517876}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5B8E0246-6DA3-44DE-959B-E71F1ABA772B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5B8E0246-6DA3-44DE-959B-E71F1ABA772B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5B8E0246-6DA3-44DE-959B-E71F1ABA772B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5B8E0246-6DA3-44DE-959B-E71F1ABA772B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1629E748-91E5-4D6D-A353-3E38A3F0A928}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1629E748-91E5-4D6D-A353-3E38A3F0A928}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1629E748-91E5-4D6D-A353-3E38A3F0A928}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1629E748-91E5-4D6D-A353-3E38A3F0A928}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AEA5CE55-8AB4-4E2B-B221-1B517A7504AE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AEA5CE55-8AB4-4E2B-B221-1B517A7504AE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AEA5CE55-8AB4-4E2B-B221-1B517A7504AE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AEA5CE55-8AB4-4E2B-B221-1B517A7504AE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{005B8841-2C30-43C6-892A-F72FBB45E4AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{005B8841-2C30-43C6-892A-F72FBB45E4AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{005B8841-2C30-43C6-892A-F72FBB45E4AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{005B8841-2C30-43C6-892A-F72FBB45E4AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F78CC52F-A795-4AEF-9C82-5530863758D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F78CC52F-A795-4AEF-9C82-5530863758D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F78CC52F-A795-4AEF-9C82-5530863758D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F78CC52F-A795-4AEF-9C82-5530863758D2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -16,7 +16,7 @@ namespace Foundry.Numerics.Random
     /// </remarks>
     public sealed class CryptoRandom : IRandomNumberProvider
     {
-        private static RNGCryptoServiceProvider Random { get; } = new RNGCryptoServiceProvider();
+        private static readonly RNGCryptoServiceProvider Random = new RNGCryptoServiceProvider();
 
         /// <inheritdoc />
         /// <exception cref="CryptographicException">The cryptographic service provider (CSP) cannot be acquired. </exception>
@@ -201,14 +201,7 @@ namespace Foundry.Numerics.Random
         {
             lock (Random)
             {
-#if NETSTANDARD2_0
-                for (int i = 0; i < buffer.Length; ++i)
-                {
-                    buffer[i] = (byte)NextInt32();
-                }
-#else
                 Random.GetBytes(buffer);
-#endif
             }
         }
     }

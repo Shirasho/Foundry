@@ -12,7 +12,7 @@ namespace Foundry.Reflection
 {
     public static class ReflectionExtensions
     {
-        private static Func<FieldInfo, bool> IsConstantDelegate = new Func<FieldInfo, bool>(IsConstant);
+        private static readonly Func<FieldInfo, bool> IsConstantDelegate = new Func<FieldInfo, bool>(IsConstant);
 
         /// <remarks>
         /// This is protected instead of an extension to <see cref="Type"/> since we need to ensure that the fieldInfos
@@ -25,20 +25,19 @@ namespace Foundry.Reflection
                 ? fieldInfos
                 : fieldInfos.Where(p => p.DeclaringType?.AssemblyQualifiedName?.Equals(type.AssemblyQualifiedName) ?? true);
 
-            if (ofType != null)
+            if (ofType is not null)
             {
                 filtered = filtered.Where(t => t.FieldType.IsTypeOf(ofType));
             }
 
             return memberVisibility switch
             {
-                //TODO: static lambda in C#9
-                EMemberVisibilityFlags.Protected => filtered.Where(p => p.IsFamily),
-                EMemberVisibilityFlags.Private => filtered.Where(p => p.IsPrivate && !p.IsFamily),
-                EMemberVisibilityFlags.Public | EMemberVisibilityFlags.Protected => filtered.Where(p => !p.IsPrivate),
-                EMemberVisibilityFlags.Public | EMemberVisibilityFlags.Private => filtered.Where(p => p.IsPublic || p.IsPrivate),
-                EMemberVisibilityFlags.Private | EMemberVisibilityFlags.Protected => filtered.Where(p => p.IsFamily || p.IsPrivate),
-                EMemberVisibilityFlags.Public => filtered.Where(p => p.IsPublic),
+                EMemberVisibilityFlags.Protected => filtered.Where(static p => p.IsFamily),
+                EMemberVisibilityFlags.Private => filtered.Where(static p => p.IsPrivate && !p.IsFamily),
+                EMemberVisibilityFlags.Public | EMemberVisibilityFlags.Protected => filtered.Where(static p => !p.IsPrivate),
+                EMemberVisibilityFlags.Public | EMemberVisibilityFlags.Private => filtered.Where(static p => p.IsPublic || p.IsPrivate),
+                EMemberVisibilityFlags.Private | EMemberVisibilityFlags.Protected => filtered.Where(static p => p.IsFamily || p.IsPrivate),
+                EMemberVisibilityFlags.Public => filtered.Where(static p => p.IsPublic),
 
                 EMemberVisibilityFlags.All => filtered,
                 _ => filtered
@@ -56,20 +55,19 @@ namespace Foundry.Reflection
                 ? fieldInfos
                 : fieldInfos.Where(p => p.DeclaringType?.AssemblyQualifiedName?.Equals(type.AssemblyQualifiedName) ?? true);
 
-            if (ofType != null)
+            if (ofType is not null)
             {
                 filtered = filtered.Where(t => t.PropertyType.IsTypeOf(ofType));
             }
 
             return memberVisibility switch
             {
-                //TODO: static lambda in C#9
-                EMemberVisibilityFlags.Protected => filtered.Where(p => p.GetGetMethod()?.IsFamily ?? false),
-                EMemberVisibilityFlags.Private => filtered.Where(p => p.GetGetMethod().IsPrivate && !p.GetGetMethod().IsFamily),
-                EMemberVisibilityFlags.Public | EMemberVisibilityFlags.Protected => filtered.Where(p => !p.GetGetMethod().IsPrivate),
-                EMemberVisibilityFlags.Public | EMemberVisibilityFlags.Private => filtered.Where(p => p.GetGetMethod().IsPublic || p.GetGetMethod().IsPrivate),
-                EMemberVisibilityFlags.Private | EMemberVisibilityFlags.Protected => filtered.Where(p => p.GetGetMethod().IsFamily || p.GetGetMethod().IsPrivate),
-                EMemberVisibilityFlags.Public => filtered.Where(p => p.GetGetMethod().IsPublic),
+                EMemberVisibilityFlags.Protected => filtered.Where(static p => p.GetGetMethod()?.IsFamily ?? false),
+                EMemberVisibilityFlags.Private => filtered.Where(static p => p.GetGetMethod()?.IsPrivate == true && p.GetGetMethod()?.IsFamily == false),
+                EMemberVisibilityFlags.Public | EMemberVisibilityFlags.Protected => filtered.Where(static p => p.GetGetMethod()?.IsPrivate == false),
+                EMemberVisibilityFlags.Public | EMemberVisibilityFlags.Private => filtered.Where(static p => p.GetGetMethod()?.IsPublic == true || p.GetGetMethod()?.IsPrivate == true),
+                EMemberVisibilityFlags.Private | EMemberVisibilityFlags.Protected => filtered.Where(static p => p.GetGetMethod()?.IsFamily == true || p.GetGetMethod()?.IsPrivate == true),
+                EMemberVisibilityFlags.Public => filtered.Where(static p => p.GetGetMethod()?.IsPublic == true),
                 EMemberVisibilityFlags.All => filtered,
                 _ => filtered
             };
@@ -218,7 +216,7 @@ namespace Foundry.Reflection
             if (!declaredOnly)
             {
                 var parent = type;
-                while ((parent = parent.BaseType) != null && parent != typeof(object))
+                while ((parent = parent?.BaseType) is not null && parent != typeof(object))
                 {
                     fields.AddRange(parent.GetFields(visibility | BindingFlags.Static).Where(IsConstantDelegate));
                 }
@@ -300,7 +298,7 @@ namespace Foundry.Reflection
         /// </summary>
         /// <param name="type">The type to get the constructor for.</param>
         /// <exception cref="ArgumentNullException"><paramref name="type"/> is <see langword="null"/></exception>
-        public static ConstructorInfo GetDefaultConstructor(this Type type)
+        public static ConstructorInfo? GetDefaultConstructor(this Type type)
         {
             Guard.IsNotNull(type, nameof(type));
 
@@ -398,7 +396,7 @@ namespace Foundry.Reflection
             bool searchEntireHierarchy = depth < 0;
             var genericArguments = Array.Empty<Type>();
             var currentType = type;
-            while (currentType != null && genericArguments.Length == 0 && (searchEntireHierarchy || depth >= 0))
+            while (currentType is not null && genericArguments.Length == 0 && (searchEntireHierarchy || depth >= 0))
             {
                 // We can't go higher than this.
                 if (currentType == typeof(object))
@@ -452,7 +450,7 @@ namespace Foundry.Reflection
             bool searchEntireHierarchy = depth < 0;
             var genericArguments = Array.Empty<Type>();
             var currentType = type;
-            while (currentType != null && genericArguments.Length == 0 && (searchEntireHierarchy || depth >= 0))
+            while (currentType is not null && genericArguments.Length == 0 && (searchEntireHierarchy || depth >= 0))
             {
                 // We can't go higher than this.
                 if (currentType == typeof(object))
@@ -494,7 +492,7 @@ namespace Foundry.Reflection
             }
 
             var currentType = type;
-            while (currentType != null)
+            while (currentType is not null)
             {
                 // We can't go higher than this.
                 if (currentType == typeof(object))
@@ -529,7 +527,9 @@ namespace Foundry.Reflection
             }
             catch (ReflectionTypeLoadException e)
             {
-                return e.Types.Where(type => type != null);
+#pragma warning disable CS8619 // Nullability of reference types in value doesn't match target type.
+                return e.Types.Where(type => type is not null);
+#pragma warning restore CS8619 // Nullability of reference types in value doesn't match target type.
             }
         }
 
@@ -564,7 +564,7 @@ namespace Foundry.Reflection
             {
                 MemberTypes.Field => ((FieldInfo)memberInfo).FieldType,
                 MemberTypes.Property => ((PropertyInfo)memberInfo).PropertyType,
-                MemberTypes.Event => ((EventInfo)memberInfo).EventHandlerType,
+                MemberTypes.Event => ((EventInfo)memberInfo).EventHandlerType!,
                 _ => throw new ArgumentException("MemberInfo must be if type FieldInfo, PropertyInfo or EventInfo", nameof(memberInfo))
             };
         }
@@ -609,8 +609,8 @@ namespace Foundry.Reflection
                     return null;
                 }
 
-                property = parent.GetProperty(property.Name);
-                return property?.GetGetMethod(nonPublic);
+                var p = parent.GetProperty(property.Name);
+                return p?.GetGetMethod(nonPublic);
             }
 
             return null;
@@ -642,8 +642,8 @@ namespace Foundry.Reflection
                     return null;
                 }
 
-                property = parent.GetProperty(property.Name);
-                return property?.GetSetMethod(nonPublic);
+                var p = parent.GetProperty(property.Name);
+                return p?.GetSetMethod(nonPublic);
             }
 
             return null;
@@ -717,7 +717,7 @@ namespace Foundry.Reflection
             if (!declaredOnly)
             {
                 var parent = type;
-                while ((parent = parent.BaseType) != null && parent != typeof(object))
+                while ((parent = parent?.BaseType) is not null && parent != typeof(object))
                 {
                     memberInfos.AddRange(parent.GetFields(visibility | BindingFlags.Static));
                 }
@@ -806,7 +806,7 @@ namespace Foundry.Reflection
         /// <exception cref="TargetParameterCountException">The number of parameters in index does not match the number of parameters the indexed property takes. </exception>
         /// <exception cref="InvalidOperationException"><see cref="MemberInfo.MemberType"/> is not implemented for this <see cref="MemberInfo"/> subclass.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="memberInfo"/> is <see langword="null"/></exception>
-        public static object GetValue(this MemberInfo memberInfo)
+        public static object? GetValue(this MemberInfo memberInfo)
         {
             return GetValue(memberInfo, null, null);
         }
@@ -825,7 +825,7 @@ namespace Foundry.Reflection
         /// <exception cref="TargetParameterCountException">The number of parameters in index does not match the number of parameters the indexed property takes. </exception>
         /// <exception cref="InvalidOperationException"><see cref="MemberInfo.MemberType"/> is not implemented for this <see cref="MemberInfo"/> subclass.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="memberInfo"/> is <see langword="null"/></exception>
-        public static object GetValue(this MemberInfo memberInfo, object? forObject)
+        public static object? GetValue(this MemberInfo memberInfo, object? forObject)
         {
             return GetValue(memberInfo, forObject, null);
         }
@@ -845,7 +845,7 @@ namespace Foundry.Reflection
         /// <exception cref="TargetParameterCountException">The number of parameters in <paramref name="index" /> does not match the number of parameters the indexed property takes. </exception>
         /// <exception cref="InvalidOperationException"><see cref="MemberInfo.MemberType"/> is not implemented for this <see cref="MemberInfo"/> subclass.</exception>
         /// <exception cref="ArgumentNullException"><paramref name="memberInfo"/> is <see langword="null"/></exception>
-        public static object GetValue(this MemberInfo memberInfo, object? forObject, object[]? index)
+        public static object? GetValue(this MemberInfo memberInfo, object? forObject, object[]? index)
         {
             Guard.IsNotNull(memberInfo, nameof(memberInfo));
 
@@ -879,9 +879,9 @@ namespace Foundry.Reflection
         /// <exception cref="FieldAccessException">In the .NET for Windows Store apps or the Portable Class Library, catch the base class exception, <see cref="T:System.MemberAccessException" />, instead.The caller does not have permission to access this field. </exception>
         /// <exception cref="ArgumentException">The method is neither declared nor inherited by the class of forObject. </exception>
         /// <exception cref="ArgumentNullException">memberInfo is <see langword="null"/></exception>
-        public static T GetValue<T>(this MemberInfo memberInfo)
+        public static T? GetValue<T>(this MemberInfo memberInfo)
         {
-            return (T)GetValue(memberInfo, null);
+            return (T?)GetValue(memberInfo, null);
         }
 
         /// <summary>
@@ -900,9 +900,17 @@ namespace Foundry.Reflection
         /// <exception cref="FieldAccessException">In the .NET for Windows Store apps or the Portable Class Library, catch the base class exception, <see cref="T:System.MemberAccessException" />, instead.The caller does not have permission to access this field. </exception>
         /// <exception cref="ArgumentException">The method is neither declared nor inherited by the class of forObject. </exception>
         /// <exception cref="ArgumentNullException">memberInfo is <see langword="null"/></exception>
-        public static T GetValue<T>(this MemberInfo memberInfo, object? forObject, object[]? index)
+        public static T? GetValue<T>(this MemberInfo memberInfo, object? forObject, object[]? index)
         {
-            return (T)GetValue(memberInfo, forObject, index);
+            object? result = GetValue(memberInfo, forObject, index);
+            if (result is null)
+            {
+                return default;
+            }
+
+            // Use this method instead of 'as' in order to ensure
+            // we get valid type checking for T.
+            return (T)result;
         }
 
         /// <summary>
@@ -920,9 +928,9 @@ namespace Foundry.Reflection
         /// <exception cref="FieldAccessException">In the .NET for Windows Store apps or the Portable Class Library, catch the base class exception, <see cref="T:System.MemberAccessException" />, instead.The caller does not have permission to access this field. </exception>
         /// <exception cref="ArgumentException">The method is neither declared nor inherited by the class of forObject. </exception>
         /// <exception cref="ArgumentNullException">memberInfo is <see langword="null"/></exception>
-        public static T GetValue<T>(this MemberInfo memberInfo, object? forObject)
+        public static T? GetValue<T>(this MemberInfo memberInfo, object? forObject)
         {
-            return (T)GetValue(memberInfo, forObject);
+            return (T?)GetValue(memberInfo, forObject);
         }
 
         /// <summary>
@@ -1376,7 +1384,7 @@ namespace Foundry.Reflection
         {
             Guard.IsNotNull(type, nameof(type));
 
-            return type.IsValueType || type.GetConstructor(Type.EmptyTypes) != null;
+            return type.IsValueType || type.GetConstructor(Type.EmptyTypes) is not null;
         }
 
         /// <summary>
@@ -1495,7 +1503,7 @@ namespace Foundry.Reflection
                     return false;
                 }
 
-                object underlyingValue = typeof(Nullable<>).MakeGenericType(Nullable.GetUnderlyingType(methodType)).GetProperty(nameof(Nullable<int>.Value)).GetGetMethod().Invoke(obj, null);
+                object? underlyingValue = typeof(Nullable<>).MakeGenericType(Nullable.GetUnderlyingType(methodType)!).GetProperty(nameof(Nullable<int>.Value))!.GetGetMethod()!.Invoke(obj, null);
                 return IsDefaultValue(underlyingValue, nullableIsDefault);
             }
 
@@ -1508,7 +1516,7 @@ namespace Foundry.Reflection
             {
                 // Value types all have a default constructor. Making the objects
                 // may not be cheap, but there is nothing we can do about that.
-                object o = Activator.CreateInstance(argumentType);
+                object? o = Activator.CreateInstance(argumentType);
                 return obj.Equals(o);
             }
 
@@ -1647,7 +1655,7 @@ namespace Foundry.Reflection
             }
 
             var baseType = type.BaseType;
-            return baseType != null && IsTypeOf(baseType, typeOf);
+            return baseType is not null && IsTypeOf(baseType, typeOf);
         }
 
         /// <summary>

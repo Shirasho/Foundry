@@ -118,8 +118,7 @@ namespace Foundry
         /// <summary>
         /// Obtains the maximum element among the provided elements.
         /// </summary>
-        [return: MaybeNull]
-        public static T Max<T>([AllowNull] this T first, [AllowNull] T other)
+        public static T? Max<T>(this T? first, T? other)
             where T : IComparable
         {
             if (other is null)
@@ -140,8 +139,7 @@ namespace Foundry
         /// <summary>
         /// Obtains the maximum element among the provided elements.
         /// </summary>
-        [return: MaybeNull]
-        public static T Max<T>([AllowNull] this T first, params T[] others)
+        public static T? Max<T>(this T? first, params T?[]? others)
             where T : IComparable
         {
             if (others is null)
@@ -152,7 +150,7 @@ namespace Foundry
             var max = first;
             foreach (var element in others)
             {
-                if (max is null && element != null)
+                if (max is null && element is not null)
                 {
                     max = element;
                     continue;
@@ -175,8 +173,7 @@ namespace Foundry
         /// <summary>
         /// Obtains the minimum element among the provided elements.
         /// </summary>
-        [return: MaybeNull]
-        public static T Min<T>([AllowNull] this T first, [AllowNull] T other)
+        public static T? Min<T>(this T? first, T? other)
             where T : IComparable
         {
             if (other is null)
@@ -197,8 +194,7 @@ namespace Foundry
         /// <summary>
         /// Obtains the minimum element among the provided elements.
         /// </summary>
-        [return: MaybeNull]
-        public static T Min<T>([AllowNull] this T first, params T[] others)
+        public static T? Min<T>(this T? first, params T?[]? others)
             where T : IComparable
         {
             if (others is null)
@@ -209,7 +205,7 @@ namespace Foundry
             var min = first;
             foreach (var element in others)
             {
-                if (min is null && element != null)
+                if (min is null && element is not null)
                 {
                     min = element;
                     continue;

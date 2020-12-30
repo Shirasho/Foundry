@@ -258,7 +258,7 @@ namespace Foundry
             height = Height;
         }
 
-        public override readonly bool Equals(object obj)
+        public override readonly bool Equals(object? obj)
             => obj is Rectangle64 other && Equals(other);
 
         public readonly bool Equals(Rectangle64 other)

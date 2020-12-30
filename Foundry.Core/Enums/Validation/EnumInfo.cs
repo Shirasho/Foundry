@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using Microsoft.Toolkit.Diagnostics;
 
 namespace Foundry
 {
@@ -162,6 +163,8 @@ namespace Foundry
         /// </summary>
         /// <param name="value">The value to parse.</param>
         /// <param name="ignoreCase">Whether to ignore casing when parsing the value.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="value"/> is <see langword="null"./></exception>
+        /// <exception cref="FormatException"><paramref name="value"/> is not a member of type <typeparamref name="TEnum"/>.</exception>
         TEnum Parse(string value, bool ignoreCase = false);
 
         /// <summary>
@@ -169,6 +172,8 @@ namespace Foundry
         /// </summary>
         /// <param name="value">The value to parse.</param>
         /// <param name="ignoreCase">Whether to ignore casing when parsing the value.</param>
+        /// <exception cref="FormatException"><paramref name="value"/> is not a member of type <typeparamref name="TEnum"/>.</exception>
+        /// <exception cref="AmbiguousMatchException">Multiple values on the type <typeparamref name="TEnum"/> match <paramref name="value"/>.</exception>
         TEnum Parse(ReadOnlySpan<char> value, bool ignoreCase = false);
 
         /// <summary>
@@ -177,6 +182,8 @@ namespace Foundry
         /// <param name="value">The value to parse.</param>
         /// <param name="ignoreCase">Whether to ignore casing when parsing the value.</param>
         /// <param name="delimiter">The delimiter that acts as a separator for the individual flag components.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="value"/> is <see langword="null"./></exception>
+        /// <exception cref="FormatException"><paramref name="value"/> is not a member of type <typeparamref name="TEnum"/>.</exception>
         TEnum ParseFlags(string value, bool ignoreCase = false, string? delimiter = null);
 
         /// <summary>
@@ -185,6 +192,8 @@ namespace Foundry
         /// <param name="value">The value to parse.</param>
         /// <param name="ignoreCase">Whether to ignore casing when parsing the value.</param>
         /// <param name="delimiter">The delimiter that acts as a separator for the individual flag components.</param>
+        /// <exception cref="FormatException"><paramref name="value"/> is not a member of type <typeparamref name="TEnum"/>.</exception>
+        /// <exception cref="AmbiguousMatchException">Multiple values on the type <typeparamref name="TEnum"/> match <paramref name="value"/>.</exception>
         TEnum ParseFlags(ReadOnlySpan<char> value, bool ignoreCase = false, string? delimiter = null);
 
         /// <summary>
@@ -193,6 +202,8 @@ namespace Foundry
         /// <param name="value">The value to parse.</param>
         /// <param name="delimiter">The delimiter that acts as a separator for the individual flag components.</param>
         /// <param name="ignoreCase">Whether to ignore casing when parsing the value.</param>
+        /// <exception cref="FormatException"><paramref name="value"/> is not a member of type <typeparamref name="TEnum"/>.</exception>
+        /// <exception cref="AmbiguousMatchException">Multiple values on the type <typeparamref name="TEnum"/> match <paramref name="value"/>.</exception>
         TEnum ParseFlags(ReadOnlySpan<char> value, ReadOnlySpan<char> delimiter, bool ignoreCase = false);
 
         /// <summary>
@@ -200,7 +211,8 @@ namespace Foundry
         /// </summary>
         /// <param name="value">The value to parse.</param>
         /// <param name="result">The result if parsing was successful.</param>
-        bool TryParse(string? value, out TEnum result);
+        /// <exception cref="AmbiguousMatchException"><paramref name="value"/> matches more than one possible <typeparamref name="TEnum"/> value.</exception>
+        bool TryParse([NotNullWhen(true)] string? value, out TEnum result);
 
         /// <summary>
         /// Attempts to parse <paramref name="value"/> into an enum of type <typeparamref name="TEnum"/>.
@@ -208,13 +220,15 @@ namespace Foundry
         /// <param name="value">The value to parse.</param>
         /// <param name="ignoreCase">Whether to ignore casing when parsing the value.</param>
         /// <param name="result">The result if parsing was successful.</param>
-        bool TryParse(string? value, bool ignoreCase, out TEnum result);
+        /// <exception cref="AmbiguousMatchException"><paramref name="value"/> matches more than one possible <typeparamref name="TEnum"/> value.</exception>
+        bool TryParse([NotNullWhen(true)] string? value, bool ignoreCase, out TEnum result);
 
         /// <summary>
         /// Attempts to parse <paramref name="value"/> into an enum of type <typeparamref name="TEnum"/>.
         /// </summary>
         /// <param name="value">The value to parse.</param>
         /// <param name="result">The result if parsing was successful.</param>
+        /// <exception cref="AmbiguousMatchException"><paramref name="value"/> matches more than one possible <typeparamref name="TEnum"/> value.</exception>
         bool TryParse(ReadOnlySpan<char> value, out TEnum result);
 
         /// <summary>
@@ -223,6 +237,7 @@ namespace Foundry
         /// <param name="value">The value to parse.</param>
         /// <param name="ignoreCase">Whether to ignore casing when parsing the value.</param>
         /// <param name="result">The result if parsing was successful.</param>
+        /// <exception cref="AmbiguousMatchException"><paramref name="value"/> matches more than one possible <typeparamref name="TEnum"/> value.</exception>
         bool TryParse(ReadOnlySpan<char> value, bool ignoreCase, out TEnum result);
 
         /// <summary>
@@ -230,7 +245,8 @@ namespace Foundry
         /// </summary>
         /// <param name="value">The value to parse.</param>
         /// <param name="result">The result if parsing was successful.</param>
-        bool TryParseFlags(string? value, out TEnum result);
+        /// <exception cref="AmbiguousMatchException"><paramref name="value"/> matches more than one possible <typeparamref name="TEnum"/> value.</exception>
+        bool TryParseFlags([NotNullWhen(true)] string? value, out TEnum result);
 
         /// <summary>
         /// Attempts to parse <paramref name="value"/> into an enum of type <typeparamref name="TEnum"/>.
@@ -238,7 +254,8 @@ namespace Foundry
         /// <param name="value">The value to parse.</param>
         /// <param name="ignoreCase">Whether to ignore casing when parsing the value.</param>
         /// <param name="result">The result if parsing was successful.</param>
-        bool TryParseFlags(string? value, bool ignoreCase, out TEnum result);
+        /// <exception cref="AmbiguousMatchException"><paramref name="value"/> matches more than one possible <typeparamref name="TEnum"/> value.</exception>
+        bool TryParseFlags([NotNullWhen(true)] string? value, bool ignoreCase, out TEnum result);
 
         /// <summary>
         /// Attempts to parse <paramref name="value"/> into an enum of type <typeparamref name="TEnum"/>.
@@ -246,7 +263,8 @@ namespace Foundry
         /// <param name="value">The value to parse.</param>
         /// <param name="delimiter">The delimiter that acts as a separator for the individual flag components.</param>
         /// <param name="result">The result if parsing was successful.</param>
-        bool TryParseFlags(string? value, string? delimiter, out TEnum result);
+        /// <exception cref="AmbiguousMatchException"><paramref name="value"/> matches more than one possible <typeparamref name="TEnum"/> value.</exception>
+        bool TryParseFlags([NotNullWhen(true)] string? value, string? delimiter, out TEnum result);
 
         /// <summary>
         /// Attempts to parse <paramref name="value"/> into an enum of type <typeparamref name="TEnum"/>.
@@ -255,13 +273,15 @@ namespace Foundry
         /// <param name="ignoreCase">Whether to ignore casing when parsing the value.</param>
         /// <param name="delimiter">The delimiter that acts as a separator for the individual flag components.</param>
         /// <param name="result">The result if parsing was successful.</param>
-        bool TryParseFlags(string? value, bool ignoreCase, string? delimiter, out TEnum result);
+        /// <exception cref="AmbiguousMatchException"><paramref name="value"/> matches more than one possible <typeparamref name="TEnum"/> value.</exception>
+        bool TryParseFlags([NotNullWhen(true)] string? value, bool ignoreCase, string? delimiter, out TEnum result);
 
         /// <summary>
         /// Attempts to parse <paramref name="value"/> into an enum of type <typeparamref name="TEnum"/>.
         /// </summary>
         /// <param name="value">The value to parse.</param>
         /// <param name="result">The result if parsing was successful.</param>
+        /// <exception cref="AmbiguousMatchException"><paramref name="value"/> matches more than one possible <typeparamref name="TEnum"/> value.</exception>
         bool TryParseFlags(ReadOnlySpan<char> value, out TEnum result);
 
         /// <summary>
@@ -270,6 +290,7 @@ namespace Foundry
         /// <param name="value">The value to parse.</param>
         /// <param name="ignoreCase">Whether to ignore casing when parsing the value.</param>
         /// <param name="result">The result if parsing was successful.</param>
+        /// <exception cref="AmbiguousMatchException"><paramref name="value"/> matches more than one possible <typeparamref name="TEnum"/> value.</exception>
         bool TryParseFlags(ReadOnlySpan<char> value, bool ignoreCase, out TEnum result);
 
         /// <summary>
@@ -278,6 +299,7 @@ namespace Foundry
         /// <param name="value">The value to parse.</param>
         /// <param name="delimiter">The delimiter that acts as a separator for the individual flag components.</param>
         /// <param name="result">The result if parsing was successful.</param>
+        /// <exception cref="AmbiguousMatchException"><paramref name="value"/> matches more than one possible <typeparamref name="TEnum"/> value.</exception>
         bool TryParseFlags(ReadOnlySpan<char> value, string? delimiter, out TEnum result);
 
         /// <summary>
@@ -286,6 +308,7 @@ namespace Foundry
         /// <param name="value">The value to parse.</param>
         /// <param name="delimiter">The delimiter that acts as a separator for the individual flag components.</param>
         /// <param name="result">The result if parsing was successful.</param>
+        /// <exception cref="AmbiguousMatchException"><paramref name="value"/> matches more than one possible <typeparamref name="TEnum"/> value.</exception>
         bool TryParseFlags(ReadOnlySpan<char> value, ReadOnlySpan<char> delimiter, out TEnum result);
 
         /// <summary>
@@ -295,6 +318,7 @@ namespace Foundry
         /// <param name="ignoreCase">Whether to ignore casing when parsing the value.</param>
         /// <param name="delimiter">The delimiter that acts as a separator for the individual flag components.</param>
         /// <param name="result">The result if parsing was successful.</param>
+        /// <exception cref="AmbiguousMatchException"><paramref name="value"/> matches more than one possible <typeparamref name="TEnum"/> value.</exception>
         bool TryParseFlags(ReadOnlySpan<char> value, bool ignoreCase, string? delimiter, out TEnum result);
 
         /// <summary>
@@ -304,6 +328,7 @@ namespace Foundry
         /// <param name="ignoreCase">Whether to ignore casing when parsing the value.</param>
         /// <param name="delimiter">The delimiter that acts as a separator for the individual flag components.</param>
         /// <param name="result">The result if parsing was successful.</param>
+        /// <exception cref="AmbiguousMatchException"><paramref name="value"/> matches more than one possible <typeparamref name="TEnum"/> value.</exception>
         bool TryParseFlags(ReadOnlySpan<char> value, bool ignoreCase, ReadOnlySpan<char> delimiter, out TEnum result);
 
         /// <summary>
@@ -313,6 +338,7 @@ namespace Foundry
         /// </summary>
         /// <param name="value">The value being validated.</param>
         /// <param name="paramName">The name of the parameter that stores <paramref name="value"/>.</param>
+        /// <exception cref="ArgumentException"><paramref name="paramName"/> is <see langword="null"/>, empty, or whitespace.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="value"/> is not a valid value or flag combination of type <typeparamref name="TEnum"/>.</exception>
         TEnum Validate(TEnum value, string paramName);
     }
@@ -382,9 +408,9 @@ namespace Foundry
             foreach (var field in fields)
             {
                 string name = field.Name;
-                var value = isBoolean ? fieldDictionary![name] : (TNumeric)field.GetValue(null);
+                var value = isBoolean ? fieldDictionary![name] : (TNumeric)field.GetValue(null)!;
                 var member = new EnumMember<TEnum, TNumeric, TNumericProvider>(name, value);
-                if (Cache.TryGetValue(value, out var _))
+                if (Cache.ContainsKey(value))
                 {
                     (duplicateValues ??= new List<EnumMember<TEnum, TNumeric, TNumericProvider>>()).Add(member);
                 }
@@ -426,7 +452,7 @@ namespace Foundry
             {
                 // Makes sure is in increasing value order, due to no removals
                 var values = Cache.ToArray();
-                Array.Sort(values, (first, second) => first.Key.CompareTo(second.Key));
+                Array.Sort(values, static (first, second) => first.Key.CompareTo(second.Key));
                 Cache = new Dictionary<TNumeric, EnumMember<TEnum, TNumeric, TNumericProvider>>(Cache.Count);
 
                 foreach (var value in values)
@@ -434,17 +460,17 @@ namespace Foundry
                     Cache.Add(value.Key, value.Value);
                 }
 
-                Max = values[values.Length - 1].Key;
+                Max = values[^1].Key;
                 Min = values[0].Key;
             }
 
             IsContiguous = Provider.Subtract(Min, Provider.Create(Cache.Count - 1)).Equals(Min);
 
-            if (duplicateValues != null)
+            if (duplicateValues is not null)
             {
                 duplicateValues.TrimExcess();
                 // Makes sure is in increasing order
-                duplicateValues.Sort((first, second) => first.Value.CompareTo(second.Value));
+                duplicateValues.Sort(static (first, second) => first.Value.CompareTo(second.Value));
                 DuplicateMembers = duplicateValues;
                 DuplicateMembers.Capacity = DuplicateMembers.Count;
             }
@@ -459,7 +485,7 @@ namespace Foundry
         /// </summary>
         /// <param name="value">The value to convert.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static TEnum ToEnum(TNumeric value)
+        internal static TEnum ToEnum(TNumeric value)
         {
             return Unsafe.As<TNumeric, TEnum>(ref value);
         }
@@ -469,7 +495,7 @@ namespace Foundry
         /// </summary>
         /// <param name="value">The value to convert.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static TNumeric ToNumeric(TEnum value)
+        internal static TNumeric ToNumeric(TEnum value)
         {
             return Unsafe.As<TEnum, TNumeric>(ref value);
         }
@@ -479,7 +505,7 @@ namespace Foundry
         /// </summary>
         /// <param name="value">The value to convert.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static TNumeric ToNumeric(object value)
+        internal static TNumeric ToNumeric(object value)
         {
             return (TNumeric)value;
         }
@@ -494,7 +520,7 @@ namespace Foundry
             {
                 EEnumMemberSelection.Distinct => Cache.Count,
                 EEnumMemberSelection.All => Cache.Count + (DuplicateMembers?.Count ?? 0),
-                var _ => Cache.Count + (DuplicateMembers?.Count ?? 0)
+                _ => Cache.Count + (DuplicateMembers?.Count ?? 0)
             };
         }
 
@@ -527,7 +553,14 @@ namespace Foundry
         /// <param name="value">The enum object to get the <see cref="EnumMember{TEnum}" /> of.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public EnumMember<TEnum> GetMember(TEnum value)
-            => Cache.TryGetValue(ToNumeric(value), out var member) ? member : throw new ArgumentOutOfRangeException($"{value} is not a valid member of type {EnumType}");
+        {
+            if (!Cache.TryGetValue(ToNumeric(value), out var member))
+            {
+                ThrowHelper.ThrowInvalidEnumValue(value, EnumType);
+            }
+
+            return member;
+        }
 
         /// <summary>
         /// Attempts to get the <see cref="EnumMember{TEnum}" /> of the enum value represented by
@@ -537,9 +570,11 @@ namespace Foundry
         /// <param name="ignoreCase">Whether to ignore casing when attempting to parse the value in <paramref name="value" />.</param>
         public EnumMember<TEnum> GetMember(string value, bool ignoreCase = false)
         {
+            Guard.IsNotNull(value, nameof(value));
+
             value = value.Trim();
 
-            TryParse(value, ignoreCase, out var result);
+            var result = Parse(value, ignoreCase);
             return new EnumMember<TEnum, TNumeric, TNumericProvider>(value, result);
         }
 
@@ -554,13 +589,8 @@ namespace Foundry
             value = value.Trim();
 
             TryParse(value, ignoreCase, out var result);
-#if NETSTANDARD2_0
-#pragma warning disable PC001 // API not supported on all platforms
-            return new EnumMember<TEnum, TNumeric, TNumericProvider>(new string(value.ToArray()), result);
-#pragma warning restore PC001 // API not supported on all platforms
-#else
+
             return new EnumMember<TEnum, TNumeric, TNumericProvider>(new string(value), result);
-#endif
         }
 
         /// <summary>
@@ -712,7 +742,7 @@ namespace Foundry
         /// <param name="value">The value to check.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool IsDefined(object? value)
-            => value != null && (IsContiguous ? !(Provider.LessThan(ToNumeric(value), Min) || Provider.LessThan(Max, ToNumeric(value))) : Cache.ContainsKey(ToNumeric(value)));
+            => value is not null && (IsContiguous ? !(Provider.LessThan(ToNumeric(value), Min) || Provider.LessThan(Max, ToNumeric(value))) : Cache.ContainsKey(ToNumeric(value)));
 
         /// <summary>
         /// Returns whether <paramref name="value" /> is a valid flag combination for this enum.
@@ -727,8 +757,12 @@ namespace Foundry
         /// </summary>
         /// <param name="value">The value to parse.</param>
         /// <param name="ignoreCase">Whether to ignore casing when parsing the value.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="value"/> is <see langword="null"./></exception>
+        /// <exception cref="FormatException"><paramref name="value"/> is not a member of type <typeparamref name="TEnum"/>.</exception>
         public TEnum Parse(string value, bool ignoreCase = false)
         {
+            Guard.IsNotNull(value, nameof(value));
+
             if (IsFlagEnum)
             {
                 return ParseFlags(value, ignoreCase);
@@ -736,12 +770,12 @@ namespace Foundry
 
             value = value.Trim();
 
-            if (TryParse(value, ignoreCase, out var result))
+            if (!TryParse(value, ignoreCase, out var result))
             {
-                return result;
+                ThrowHelper.ThrowInvalidEnumValue(value, EnumType);
             }
 
-            throw new FormatException($"The value {value} is not a member of type {EnumType} or is outside the underlying type's range.");
+            return result;
         }
 
         /// <summary>
@@ -750,8 +784,12 @@ namespace Foundry
         /// <param name="value">The value to parse.</param>
         /// <param name="ignoreCase">Whether to ignore casing when parsing the value.</param>
         /// <param name="delimiter">The delimiter that acts as a separator for the individual flag components.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="value"/> is <see langword="null"./></exception>
+        /// <exception cref="FormatException"><paramref name="value"/> is not a member of type <typeparamref name="TEnum"/>.</exception>
         public TEnum ParseFlags(string value, bool ignoreCase = false, string? delimiter = null)
         {
+            Guard.IsNotNull(value, nameof(value));
+
             string realDelimiter = delimiter?.Trim()!;
             if (string.IsNullOrEmpty(realDelimiter))
             {
@@ -779,9 +817,12 @@ namespace Foundry
                 }
                 string currentValue = value[startIndex..delimiterIndex];
 
-                result = TryParse(currentValue, ignoreCase, out var valueAsTInt)
-                    ? Provider.Or(result, ToNumeric(valueAsTInt))
-                    : throw new FormatException($"The value {currentValue} is not a member of type {EnumType} or is outside the underlying type's range.");
+                if (!TryParse(currentValue, ignoreCase, out var valueAsTInt))
+                {
+                    ThrowHelper.ThrowInvalidEnumValue(currentValue, EnumType);
+                }
+
+                result = Provider.Or(result, ToNumeric(valueAsTInt));
 
                 startIndex = newStartIndex;
             }
@@ -793,8 +834,9 @@ namespace Foundry
         /// </summary>
         /// <param name="value">The value to parse.</param>
         /// <param name="result">The result if parsing was successful.</param>
+        /// <exception cref="AmbiguousMatchException"><paramref name="value"/> matches more than one possible <typeparamref name="TEnum"/> value.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool TryParse(string? value, out TEnum result)
+        public bool TryParse([NotNullWhen(true)] string? value, out TEnum result)
             => TryParse(value, false, out result);
 
         /// <summary>
@@ -803,13 +845,14 @@ namespace Foundry
         /// <param name="value">The value to parse.</param>
         /// <param name="ignoreCase">Whether to ignore casing when parsing the value.</param>
         /// <param name="result">The result if parsing was successful.</param>
-        public bool TryParse(string? value, bool ignoreCase, out TEnum result)
+        /// <exception cref="AmbiguousMatchException"><paramref name="value"/> matches more than one possible <typeparamref name="TEnum"/> value.</exception>
+        public bool TryParse([NotNullWhen(true)] string? value, bool ignoreCase, out TEnum result)
         {
             var members = new List<EnumMember<TEnum>>(1);
             foreach (var member in GetMembers())
             {
                 if (member.Name.Equals(value, ignoreCase ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal) ||
-                    ToNumeric(member.Value).ToString().Equals(value, StringComparison.Ordinal) ||
+                    ToNumeric(member.Value).ToString()!.Equals(value, StringComparison.Ordinal) ||
                     member.Value.ToString().Equals(value, StringComparison.Ordinal))
                 {
                     members.Add(member);
@@ -836,8 +879,9 @@ namespace Foundry
         /// </summary>
         /// <param name="value">The value to parse.</param>
         /// <param name="result">The result if parsing was successful.</param>
+        /// <exception cref="AmbiguousMatchException"><paramref name="value"/> matches more than one possible <typeparamref name="TEnum"/> value.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool TryParseFlags(string? value, out TEnum result)
+        public bool TryParseFlags([NotNullWhen(true)] string? value, out TEnum result)
             => TryParseFlags(value, false, out result);
 
         /// <summary>
@@ -846,8 +890,9 @@ namespace Foundry
         /// <param name="value">The value to parse.</param>
         /// <param name="ignoreCase">Whether to ignore casing when parsing the value.</param>
         /// <param name="result">The result if parsing was successful.</param>
+        /// <exception cref="AmbiguousMatchException"><paramref name="value"/> matches more than one possible <typeparamref name="TEnum"/> value.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool TryParseFlags(string? value, bool ignoreCase, out TEnum result)
+        public bool TryParseFlags([NotNullWhen(true)] string? value, bool ignoreCase, out TEnum result)
             => TryParseFlags(value, ignoreCase, ",", out result);
 
         /// <summary>
@@ -856,8 +901,9 @@ namespace Foundry
         /// <param name="value">The value to parse.</param>
         /// <param name="delimiter">The delimiter that acts as a separator for the individual flag components.</param>
         /// <param name="result">The result if parsing was successful.</param>
+        /// <exception cref="AmbiguousMatchException"><paramref name="value"/> matches more than one possible <typeparamref name="TEnum"/> value.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool TryParseFlags(string? value, string? delimiter, out TEnum result)
+        public bool TryParseFlags([NotNullWhen(true)] string? value, string? delimiter, out TEnum result)
             => TryParseFlags(value, false, delimiter, out result);
 
         /// <summary>
@@ -867,7 +913,8 @@ namespace Foundry
         /// <param name="ignoreCase">Whether to ignore casing when parsing the value.</param>
         /// <param name="delimiter">The delimiter that acts as a separator for the individual flag components.</param>
         /// <param name="result">The result if parsing was successful.</param>
-        public bool TryParseFlags(string? value, bool ignoreCase, string? delimiter, out TEnum result)
+        /// <exception cref="AmbiguousMatchException"><paramref name="value"/> matches more than one possible <typeparamref name="TEnum"/> value.</exception>
+        public bool TryParseFlags([NotNullWhen(true)] string? value, bool ignoreCase, string? delimiter, out TEnum result)
         {
             if (string.IsNullOrWhiteSpace(value))
             {
@@ -924,9 +971,12 @@ namespace Foundry
         /// </summary>
         /// <param name="value">The value being validated.</param>
         /// <param name="paramName">The name of the parameter that stores <paramref name="value" />.</param>
+        /// <exception cref="ArgumentException"><paramref name="paramName"/> is <see langword="null"/>, empty, or whitespace.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="value" /> is not a valid value or flag combination of type <typeparamref name="TEnum" />.</exception>
         public TEnum Validate(TEnum value, string paramName)
         {
+            Guard.IsNotNullOrWhitespace(paramName, nameof(paramName));
+
             return !IsFlagEnum
                 ? IsDefined(value) ? value : throw new ArgumentOutOfRangeException(paramName, EnumErrors<TEnum>.InvalidEnumValue(value))
                 : IsValidFlagCombination(value) ? value : throw new ArgumentOutOfRangeException(paramName, EnumErrors<TEnum>.InvalidFlagEnumValue(value));
@@ -937,7 +987,8 @@ namespace Foundry
         /// </summary>
         /// <param name="value">The value to parse.</param>
         /// <param name="ignoreCase">Whether to ignore casing when parsing the value.</param>
-        [SuppressMessage("Usage", "PC001:API not supported on all platforms", Justification = "False positive.")]
+        /// <exception cref="FormatException"><paramref name="value"/> is not a member of type <typeparamref name="TEnum"/>.</exception>
+        /// <exception cref="AmbiguousMatchException">Multiple values on the type <typeparamref name="TEnum"/> match <paramref name="value"/>.</exception>
         public TEnum Parse(ReadOnlySpan<char> value, bool ignoreCase = false)
         {
             if (IsFlagEnum)
@@ -947,17 +998,9 @@ namespace Foundry
 
             var v = value.Trim();
 
-            if (TryParse(v, ignoreCase, out var result))
-            {
-                return result;
-            }
-
-#if NETSTANDARD2_0
-            string valueError = new string(value.ToArray());
-#else
-            string valueError = new string(value);
-#endif
-            throw new FormatException($"The value {valueError} is not a member of type {EnumType} or is outside the underlying type's range.");
+            return TryParse(v, ignoreCase, out var result)
+                ? result
+                : throw new FormatException($"The value {new string(value)} is not a member of type {EnumType} or is outside the underlying type's range.");
         }
 
         /// <summary>
@@ -966,9 +1009,11 @@ namespace Foundry
         /// <param name="value">The value to parse.</param>
         /// <param name="ignoreCase">Whether to ignore casing when parsing the value.</param>
         /// <param name="delimiter">The delimiter that acts as a separator for the individual flag components.</param>
+        /// <exception cref="FormatException"><paramref name="value"/> is not a member of type <typeparamref name="TEnum"/>.</exception>
+        /// <exception cref="AmbiguousMatchException">Multiple values on the type <typeparamref name="TEnum"/> match <paramref name="value"/>.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public TEnum ParseFlags(ReadOnlySpan<char> value, bool ignoreCase = false, string? delimiter = null)
-            => ParseFlags(value, delimiter != null ? delimiter.AsSpan() : ReadOnlySpan<char>.Empty);
+            => ParseFlags(value, delimiter is not null ? delimiter.AsSpan() : ReadOnlySpan<char>.Empty);
 
         /// <summary>
         /// Attempts to parse <paramref name="value" /> into an enum of type <typeparamref name="TEnum" />.
@@ -976,16 +1021,13 @@ namespace Foundry
         /// <param name="value">The value to parse.</param>
         /// <param name="delimiter">The delimiter that acts as a separator for the individual flag components.</param>
         /// <param name="ignoreCase">Whether to ignore casing when parsing the value.</param>
-        [SuppressMessage("Usage", "PC001:API not supported on all platforms", Justification = "False positive.")]
+        /// <exception cref="FormatException"><paramref name="value"/> is not a member of type <typeparamref name="TEnum"/>.</exception>
+        /// <exception cref="AmbiguousMatchException">Multiple values on the type <typeparamref name="TEnum"/> match <paramref name="value"/>.</exception>
         public TEnum ParseFlags(ReadOnlySpan<char> value, ReadOnlySpan<char> delimiter, bool ignoreCase = false)
         {
             if (delimiter.IsEmpty)
             {
-#if NETSTANDARD2_0
-                delimiter = ",".AsSpan();
-#else
                 delimiter = ",";
-#endif
             }
 
             var result = Provider.Zero;
@@ -997,7 +1039,7 @@ namespace Foundry
                 {
                     ++startIndex;
                 }
-                int delimiterIndex = value.Slice(startIndex).IndexOf(delimiter, StringComparison.Ordinal);
+                int delimiterIndex = value[startIndex..].IndexOf(delimiter, StringComparison.Ordinal);
                 if (delimiterIndex < 0)
                 {
                     delimiterIndex = valueLength;
@@ -1007,24 +1049,11 @@ namespace Foundry
                 {
                     --delimiterIndex;
                 }
-#if NETSTANDARD2_0
-                var currentValue = value.Slice(startIndex, delimiterIndex - startIndex);
-#else
+
                 var currentValue = value[startIndex..delimiterIndex];
-#endif
-                if (TryParse(currentValue, ignoreCase, out var valueAsTInt))
-                {
-                    result = Provider.Or(result, ToNumeric(valueAsTInt));
-                }
-                else
-                {
-#if NETSTANDARD2_0
-                    string valueError = new string(value.ToArray());
-#else
-                    string valueError = new string(value);
-#endif
-                    throw new FormatException($"The value {valueError} is not a member of type {EnumType} or is outside the underlying type's range.");
-                }
+                result = TryParse(currentValue, ignoreCase, out var valueAsTInt)
+                    ? Provider.Or(result, ToNumeric(valueAsTInt))
+                    : throw new FormatException($"The value {new string(value)} is not a member of type {EnumType} or is outside the underlying type's range.");
                 startIndex = newStartIndex;
             }
             return ToEnum(result);
@@ -1035,6 +1064,7 @@ namespace Foundry
         /// </summary>
         /// <param name="value">The value to parse.</param>
         /// <param name="result">The result if parsing was successful.</param>
+        /// <exception cref="AmbiguousMatchException">Multiple values on the type <typeparamref name="TEnum"/> match <paramref name="value"/>.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool TryParse(ReadOnlySpan<char> value, out TEnum result)
             => TryParse(value, false, out result);
@@ -1045,7 +1075,7 @@ namespace Foundry
         /// <param name="value">The value to parse.</param>
         /// <param name="ignoreCase">Whether to ignore casing when parsing the value.</param>
         /// <param name="result">The result if parsing was successful.</param>
-        [SuppressMessage("Usage", "PC001:API not supported on all platforms", Justification = "False positive.")]
+        /// <exception cref="AmbiguousMatchException">Multiple values on the type <typeparamref name="TEnum"/> match <paramref name="value"/>.</exception>
         public bool TryParse(ReadOnlySpan<char> value, bool ignoreCase, out TEnum result)
         {
             var members = new List<EnumMember<TEnum>>();
@@ -1064,11 +1094,7 @@ namespace Foundry
             }
             if (members.Count > 1)
             {
-#if NETSTANDARD2_0
-                string valueError = new string(value.ToArray());
-#else
                 string valueError = new string(value);
-#endif
                 throw new AmbiguousMatchException($"Multiple values on the type {EnumType} match the value {valueError} (ignoreCase = {ignoreCase}).");
             }
 
@@ -1087,6 +1113,7 @@ namespace Foundry
         /// </summary>
         /// <param name="value">The value to parse.</param>
         /// <param name="result">The result if parsing was successful.</param>
+        /// <exception cref="AmbiguousMatchException">Multiple values on the type <typeparamref name="TEnum"/> match <paramref name="value"/>.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool TryParseFlags(ReadOnlySpan<char> value, out TEnum result)
             => TryParseFlags(value, false, out result);
@@ -1097,6 +1124,7 @@ namespace Foundry
         /// <param name="value">The value to parse.</param>
         /// <param name="ignoreCase">Whether to ignore casing when parsing the value.</param>
         /// <param name="result">The result if parsing was successful.</param>
+        /// <exception cref="AmbiguousMatchException">Multiple values on the type <typeparamref name="TEnum"/> match <paramref name="value"/>.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool TryParseFlags(ReadOnlySpan<char> value, bool ignoreCase, out TEnum result)
             => TryParseFlags(value, ignoreCase, DefaultDelimiterMemory.Span, out result);
@@ -1107,6 +1135,7 @@ namespace Foundry
         /// <param name="value">The value to parse.</param>
         /// <param name="delimiter">The delimiter that acts as a separator for the individual flag components.</param>
         /// <param name="result">The result if parsing was successful.</param>
+        /// <exception cref="AmbiguousMatchException">Multiple values on the type <typeparamref name="TEnum"/> match <paramref name="value"/>.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool TryParseFlags(ReadOnlySpan<char> value, string? delimiter, out TEnum result)
             => TryParseFlags(value, delimiter.AsSpan(), out result);
@@ -1117,6 +1146,7 @@ namespace Foundry
         /// <param name="value">The value to parse.</param>
         /// <param name="delimiter">The delimiter that acts as a separator for the individual flag components.</param>
         /// <param name="result">The result if parsing was successful.</param>
+        /// <exception cref="AmbiguousMatchException">Multiple values on the type <typeparamref name="TEnum"/> match <paramref name="value"/>.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool TryParseFlags(ReadOnlySpan<char> value, ReadOnlySpan<char> delimiter, out TEnum result)
             => TryParseFlags(value, false, delimiter, out result);
@@ -1128,6 +1158,7 @@ namespace Foundry
         /// <param name="ignoreCase">Whether to ignore casing when parsing the value.</param>
         /// <param name="delimiter">The delimiter that acts as a separator for the individual flag components.</param>
         /// <param name="result">The result if parsing was successful.</param>
+        /// <exception cref="AmbiguousMatchException">Multiple values on the type <typeparamref name="TEnum"/> match <paramref name="value"/>.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool TryParseFlags(ReadOnlySpan<char> value, bool ignoreCase, string? delimiter, out TEnum result)
             => TryParseFlags(value, ignoreCase, delimiter is null ? ReadOnlySpan<char>.Empty : delimiter.AsSpan(), out result);
@@ -1139,16 +1170,12 @@ namespace Foundry
         /// <param name="ignoreCase">Whether to ignore casing when parsing the value.</param>
         /// <param name="delimiter">The delimiter that acts as a separator for the individual flag components.</param>
         /// <param name="result">The result if parsing was successful.</param>
-        [SuppressMessage("Usage", "PC001:API not supported on all platforms", Justification = "False positive.")]
+        /// <exception cref="AmbiguousMatchException">Multiple values on the type <typeparamref name="TEnum"/> match <paramref name="value"/>.</exception>
         public bool TryParseFlags(ReadOnlySpan<char> value, bool ignoreCase, ReadOnlySpan<char> delimiter, out TEnum result)
         {
             if (delimiter.IsEmpty)
             {
-#if NETSTANDARD2_0
-                delimiter = ",".AsSpan();
-#else
                 delimiter = ",";
-#endif
             }
 
             var r = Provider.Zero;
@@ -1160,7 +1187,7 @@ namespace Foundry
                 {
                     ++startIndex;
                 }
-                int delimiterIndex = value.Slice(startIndex).IndexOf(delimiter, StringComparison.Ordinal);
+                int delimiterIndex = value[startIndex..].IndexOf(delimiter, StringComparison.Ordinal);
                 if (delimiterIndex < 0)
                 {
                     delimiterIndex = valueLength;
@@ -1170,11 +1197,7 @@ namespace Foundry
                 {
                     --delimiterIndex;
                 }
-#if NETSTANDARD2_0
-                var currentValue = value.Slice(startIndex, delimiterIndex - startIndex);
-#else
                 var currentValue = value[startIndex..delimiterIndex];
-#endif
                 if (TryParse(currentValue, ignoreCase, out var valueAsTInt))
                 {
                     r = Provider.Or(r, ToNumeric(valueAsTInt));

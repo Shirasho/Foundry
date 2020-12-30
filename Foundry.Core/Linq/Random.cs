@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using Microsoft.Toolkit.Diagnostics;
 
@@ -18,12 +17,11 @@ namespace Foundry.Linq
         /// <exception cref="ArgumentNullException"><paramref name="collection"/> is <see langword="null"/></exception>
         /// <exception cref="InvalidOperationException">The collection is empty.</exception>
         /// <exception cref="Exception">A delegate callback throws an exception.</exception>
-        [return: MaybeNull]
-        public static T Random<T>(this IEnumerable<T> collection)
+        public static T? Random<T>(this IEnumerable<T?> collection)
         {
             Guard.IsNotNull(collection, nameof(collection));
 
-            if (collection is IList<T> list)
+            if (collection is IList<T?> list)
             {
                 if (list.Count == 0)
                 {

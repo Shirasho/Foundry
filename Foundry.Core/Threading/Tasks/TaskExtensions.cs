@@ -96,7 +96,7 @@ namespace Foundry.Threading.Tasks
 
             await task.ConfigureAwait(false);
 
-            if (task.IsFaulted && task.Exception != null)
+            if (task.IsFaulted && task.Exception is not null)
             {
                 taskCompletionSource.TrySetException(task.Exception ?? new Exception("A task has faulted."));
             }
@@ -123,7 +123,7 @@ namespace Foundry.Threading.Tasks
 
             var result = await task.ConfigureAwait(false);
 
-            if (task.IsFaulted && task.Exception != null)
+            if (task.IsFaulted && task.Exception is not null)
             {
                 taskCompletionSource.TrySetException(task.Exception ?? new Exception("A task has faulted."));
             }
@@ -159,7 +159,6 @@ namespace Foundry.Threading.Tasks
         /// This works around the issue that async void has in that uncaught exceptions can
         /// crash the app domain since errors are caught and sent to the error handler.
         /// </remarks>
-        [SuppressMessage("Major Bug", "S3168:\"async\" methods should not return \"void\"", Justification = "Errors are handled.")]
         public static async void ToAsyncVoid(this Task task, Action<Exception> errorHandler)
         {
             Guard.IsNotNull(task, nameof(task));
@@ -284,15 +283,15 @@ namespace Foundry.Threading.Tasks
             var tcs = new TaskCompletionSource<int>(TaskCreationOptions.RunContinuationsAsynchronously);
             var registration = cancellationToken.Register(s =>
             {
-                var source = (TaskCompletionSource<int>)s;
+                var source = (TaskCompletionSource<int>)s!;
                 source.TrySetCanceled();
             }, tcs);
 
             task.ContinueWith((t, s) =>
             {
-                var tcsAndRegistration = (Tuple<TaskCompletionSource<int>, CancellationTokenRegistration>)s;
+                var tcsAndRegistration = (Tuple<TaskCompletionSource<int>, CancellationTokenRegistration>)s!;
 
-                if (t.IsFaulted && t.Exception != null)
+                if (t.IsFaulted && t.Exception is not null)
                 {
                     tcsAndRegistration.Item1.TrySetException(t.Exception.GetBaseException());
                 }
@@ -326,15 +325,15 @@ namespace Foundry.Threading.Tasks
             var tcs = new TaskCompletionSource<TResult>();
             var registration = cancellationToken.Register(s =>
             {
-                var source = (TaskCompletionSource<TResult>)s;
+                var source = (TaskCompletionSource<TResult>)s!;
                 source.TrySetCanceled();
             }, tcs);
 
             task.ContinueWith((t, s) =>
             {
-                var tcsAndRegistration = (Tuple<TaskCompletionSource<TResult>, CancellationTokenRegistration>)s;
+                var tcsAndRegistration = (Tuple<TaskCompletionSource<TResult>, CancellationTokenRegistration>)s!;
 
-                if (t.IsFaulted && t.Exception != null)
+                if (t.IsFaulted && t.Exception is not null)
                 {
                     tcsAndRegistration.Item1.TrySetException(t.Exception.GetBaseException());
                 }

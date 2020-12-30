@@ -418,13 +418,15 @@ namespace Foundry
                 { "N", "{0:PN:Days:Day}" }
             };
 
-            public string Format(string format, object arg, IFormatProvider formatProvider) => string.Format(new PluralFormatter(), TimeFormats[format], arg);
+            public string Format(string? format, object? arg, IFormatProvider? formatProvider)
+                => string.Format(new PluralFormatter(), TimeFormats[format!], arg);
 
-            public object? GetFormat(Type formatType) => formatType == typeof(ICustomFormatter) ? this : null;
+            public object? GetFormat(Type? formatType)
+                => formatType == typeof(ICustomFormatter) ? this : null;
 
             private sealed class PluralFormatter : ICustomFormatter, IFormatProvider
             {
-                public string Format(string format, object arg, IFormatProvider formatProvider)
+                public string Format(string? format, object? arg, IFormatProvider? formatProvider)
                 {
                     if (format == null)
                     {
@@ -452,7 +454,8 @@ namespace Foundry
                     throw new FormatException();
                 }
 
-                public object? GetFormat(Type formatType) => formatType == typeof(ICustomFormatter) ? this : null;
+                public object? GetFormat(Type? formatType)
+                    => formatType == typeof(ICustomFormatter) ? this : null;
             }
         }
     }

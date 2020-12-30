@@ -36,13 +36,13 @@ namespace Foundry
                     body = memberBody.Member.Name;
                     break;
                 case ConstantExpression constantBody:
-                    body = constantBody.Value.ToString();
+                    body = constantBody.Value!.ToString()!;
                     break;
                 case UnaryExpression unaryBody:
                     return GetBody(unaryBody.Operand);
                 case MethodCallExpression methodBody:
-                    string c = methodBody.Method.IsStatic && methodBody.Method.DeclaringType != null ? $"{methodBody.Method.DeclaringType.Name}." : string.Empty;
-                    body = $"{c}{methodBody.Method.Name}({methodBody.Arguments.Aggregate(string.Empty, (prev, next) => $"{prev}, {GetBody(next)}").Substring(methodBody.Arguments.Count > 0 ? 2 : 0)})";
+                    string c = methodBody.Method.IsStatic && methodBody.Method.DeclaringType is not null ? $"{methodBody.Method.DeclaringType.Name}." : string.Empty;
+                    body = $"{c}{methodBody.Method.Name}({methodBody.Arguments.Aggregate(string.Empty, (prev, next) => $"{prev}, {GetBody(next)}")[(methodBody.Arguments.Count > 0 ? 2 : 0)..]})";
                     break;
                 case BinaryExpression simpleBinaryExpression:
                     string op = Expression.MakeBinary(simpleBinaryExpression.NodeType, Expression.Constant(0), Expression.Constant(0)).ToString().Replace("0", "").Replace("(", "").Replace(")", "");

@@ -41,9 +41,9 @@ namespace Foundry.Core.IO
         /// </summary>
         /// <param name="folder">The system folder.</param>
         /// <param name="paths">Additional path segments.</param>
-        public static DirectoryInfo CreateDirectory(Environment.SpecialFolder folder, params string?[]? paths)
+        public static DirectoryInfo CreateDirectory(Environment.SpecialFolder folder, params string[]? paths)
         {
-            var p = paths?.ToList() ?? new List<string?>();
+            var p = paths?.ToList() ?? new List<string>();
             p.Insert(0, Environment.GetFolderPath(folder));
 
             return new DirectoryInfo(Path.Combine(p.ToArray()));
@@ -55,9 +55,9 @@ namespace Foundry.Core.IO
         /// <param name="folder">The system folder.</param>
         /// <param name="paths">Additional path segments.</param>
         /// <exception cref="UnauthorizedAccessException">Access to the filename is denied.</exception>
-        public static FileInfo CreateFile(Environment.SpecialFolder folder, params string?[]? paths)
+        public static FileInfo CreateFile(Environment.SpecialFolder folder, params string[]? paths)
         {
-            var p = paths?.ToList() ?? new List<string?>();
+            var p = paths?.ToList() ?? new List<string>();
             p.Insert(0, Environment.GetFolderPath(folder));
 
             return new FileInfo(Path.Combine(p.ToArray()));

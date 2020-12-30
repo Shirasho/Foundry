@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 
 namespace Foundry
@@ -214,6 +215,8 @@ namespace Foundry
         /// </summary>
         /// <param name="value">The value to parse.</param>
         /// <param name="ignoreCase">Whether to ignore casing when parsing the value.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="value"/> is <see langword="null"./></exception>
+        /// <exception cref="FormatException"><paramref name="value"/> is not a member of type <typeparamref name="TEnum"/>.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static TEnum Parse<TEnum>(string value, bool ignoreCase = false)
             where TEnum : struct, Enum => Enums<TEnum>.Info.Parse(value, ignoreCase);
@@ -223,6 +226,8 @@ namespace Foundry
         /// </summary>
         /// <param name="value">The value to parse.</param>
         /// <param name="ignoreCase">Whether to ignore casing when parsing the value.</param>
+        /// <exception cref="FormatException"><paramref name="value"/> is not a member of type <typeparamref name="TEnum"/>.</exception>
+        /// <exception cref="AmbiguousMatchException">Multiple values on the type <typeparamref name="TEnum"/> match <paramref name="value"/>.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static TEnum Parse<TEnum>(ReadOnlySpan<char> value, bool ignoreCase = false)
             where TEnum : struct, Enum => Enums<TEnum>.Info.Parse(value, ignoreCase);
@@ -233,6 +238,8 @@ namespace Foundry
         /// <param name="value">The value to parse.</param>
         /// <param name="ignoreCase">Whether to ignore casing when parsing the value.</param>
         /// <param name="delimiter">The delimiter that acts as a separator for the individual flag components.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="value"/> is <see langword="null"./></exception>
+        /// <exception cref="FormatException"><paramref name="value"/> is not a member of type <typeparamref name="TEnum"/>.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static TEnum ParseFlags<TEnum>(string value, bool ignoreCase = false, string? delimiter = null)
             where TEnum : struct, Enum => Enums<TEnum>.Info.ParseFlags(value, ignoreCase, delimiter);
@@ -243,6 +250,7 @@ namespace Foundry
         /// <param name="value">The value to parse.</param>
         /// <param name="ignoreCase">Whether to ignore casing when parsing the value.</param>
         /// <param name="delimiter">The delimiter that acts as a separator for the individual flag components.</param>
+        /// <exception cref="FormatException"><paramref name="value"/> is not a member of type <typeparamref name="TEnum"/>.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static TEnum ParseFlags<TEnum>(ReadOnlySpan<char> value, bool ignoreCase = false, string? delimiter = null)
             where TEnum : struct, Enum => Enums<TEnum>.Info.ParseFlags(value, ignoreCase, delimiter);
@@ -253,6 +261,7 @@ namespace Foundry
         /// <param name="value">The value to parse.</param>
         /// <param name="delimiter">The delimiter that acts as a separator for the individual flag components.</param>
         /// <param name="ignoreCase">Whether to ignore casing when parsing the value.</param>
+        /// <exception cref="FormatException"><paramref name="value"/> is not a member of type <typeparamref name="TEnum"/>.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static TEnum ParseFlags<TEnum>(ReadOnlySpan<char> value, ReadOnlySpan<char> delimiter, bool ignoreCase = false)
             where TEnum : struct, Enum => Enums<TEnum>.Info.ParseFlags(value, delimiter, ignoreCase);
@@ -262,8 +271,9 @@ namespace Foundry
         /// </summary>
         /// <param name="value">The value to parse.</param>
         /// <param name="result">The result if parsing was successful.</param>
+        /// <exception cref="AmbiguousMatchException"><paramref name="value"/> matches more than one possible <typeparamref name="TEnum"/> value.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool TryParse<TEnum>(string? value, out TEnum result)
+        public static bool TryParse<TEnum>([NotNullWhen(true)] string? value, out TEnum result)
             where TEnum : struct, Enum => Enums<TEnum>.Info.TryParse(value, out result);
 
         /// <summary>
@@ -272,8 +282,9 @@ namespace Foundry
         /// <param name="value">The value to parse.</param>
         /// <param name="ignoreCase">Whether to ignore casing when parsing the value.</param>
         /// <param name="result">The result if parsing was successful.</param>
+        /// <exception cref="AmbiguousMatchException"><paramref name="value"/> matches more than one possible <typeparamref name="TEnum"/> value.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool TryParse<TEnum>(string? value, bool ignoreCase, out TEnum result)
+        public static bool TryParse<TEnum>([NotNullWhen(true)] string? value, bool ignoreCase, out TEnum result)
             where TEnum : struct, Enum => Enums<TEnum>.Info.TryParse(value, ignoreCase, out result);
 
         /// <summary>
@@ -281,6 +292,7 @@ namespace Foundry
         /// </summary>
         /// <param name="value">The value to parse.</param>
         /// <param name="result">The result if parsing was successful.</param>
+        /// <exception cref="AmbiguousMatchException"><paramref name="value"/> matches more than one possible <typeparamref name="TEnum"/> value.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool TryParse<TEnum>(ReadOnlySpan<char> value, out TEnum result)
             where TEnum : struct, Enum => Enums<TEnum>.Info.TryParse(value, out result);
@@ -291,6 +303,7 @@ namespace Foundry
         /// <param name="value">The value to parse.</param>
         /// <param name="ignoreCase">Whether to ignore casing when parsing the value.</param>
         /// <param name="result">The result if parsing was successful.</param>
+        /// <exception cref="AmbiguousMatchException"><paramref name="value"/> matches more than one possible <typeparamref name="TEnum"/> value.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool TryParse<TEnum>(ReadOnlySpan<char> value, bool ignoreCase, out TEnum result)
             where TEnum : struct, Enum => Enums<TEnum>.Info.TryParse(value, ignoreCase, out result);
@@ -300,8 +313,9 @@ namespace Foundry
         /// </summary>
         /// <param name="value">The value to parse.</param>
         /// <param name="result">The result if parsing was successful.</param>
+        /// <exception cref="AmbiguousMatchException"><paramref name="value"/> matches more than one possible <typeparamref name="TEnum"/> value.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool TryParseFlags<TEnum>(string? value, out TEnum result)
+        public static bool TryParseFlags<TEnum>([NotNullWhen(true)] string? value, out TEnum result)
             where TEnum : struct, Enum => Enums<TEnum>.Info.TryParseFlags(value, out result);
 
         /// <summary>
@@ -310,8 +324,9 @@ namespace Foundry
         /// <param name="value">The value to parse.</param>
         /// <param name="ignoreCase">Whether to ignore casing when parsing the value.</param>
         /// <param name="result">The result if parsing was successful.</param>
+        /// <exception cref="AmbiguousMatchException"><paramref name="value"/> matches more than one possible <typeparamref name="TEnum"/> value.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool TryParseFlags<TEnum>(string? value, bool ignoreCase, out TEnum result)
+        public static bool TryParseFlags<TEnum>([NotNullWhen(true)] string? value, bool ignoreCase, out TEnum result)
             where TEnum : struct, Enum => Enums<TEnum>.Info.TryParseFlags(value, ignoreCase, out result);
 
         /// <summary>
@@ -320,8 +335,9 @@ namespace Foundry
         /// <param name="value">The value to parse.</param>
         /// <param name="delimiter">The delimiter that acts as a separator for the individual flag components.</param>
         /// <param name="result">The result if parsing was successful.</param>
+        /// <exception cref="AmbiguousMatchException"><paramref name="value"/> matches more than one possible <typeparamref name="TEnum"/> value.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool TryParseFlags<TEnum>(string? value, string delimiter, out TEnum result)
+        public static bool TryParseFlags<TEnum>([NotNullWhen(true)] string? value, string delimiter, out TEnum result)
             where TEnum : struct, Enum => Enums<TEnum>.Info.TryParseFlags(value, delimiter, out result);
 
         /// <summary>
@@ -331,8 +347,9 @@ namespace Foundry
         /// <param name="ignoreCase">Whether to ignore casing when parsing the value.</param>
         /// <param name="delimiter">The delimiter that acts as a separator for the individual flag components.</param>
         /// <param name="result">The result if parsing was successful.</param>
+        /// <exception cref="AmbiguousMatchException"><paramref name="value"/> matches more than one possible <typeparamref name="TEnum"/> value.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool TryParseFlags<TEnum>(string? value, bool ignoreCase, string delimiter, out TEnum result)
+        public static bool TryParseFlags<TEnum>([NotNullWhen(true)] string? value, bool ignoreCase, string delimiter, out TEnum result)
             where TEnum : struct, Enum => Enums<TEnum>.Info.TryParseFlags(value, ignoreCase, delimiter, out result);
 
         /// <summary>
@@ -340,6 +357,7 @@ namespace Foundry
         /// </summary>
         /// <param name="value">The value to parse.</param>
         /// <param name="result">The result if parsing was successful.</param>
+        /// <exception cref="AmbiguousMatchException"><paramref name="value"/> matches more than one possible <typeparamref name="TEnum"/> value.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool TryParseFlags<TEnum>(ReadOnlySpan<char> value, out TEnum result)
             where TEnum : struct, Enum => Enums<TEnum>.Info.TryParseFlags(value, out result);
@@ -350,6 +368,7 @@ namespace Foundry
         /// <param name="value">The value to parse.</param>
         /// <param name="ignoreCase">Whether to ignore casing when parsing the value.</param>
         /// <param name="result">The result if parsing was successful.</param>
+        /// <exception cref="AmbiguousMatchException"><paramref name="value"/> matches more than one possible <typeparamref name="TEnum"/> value.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool TryParseFlags<TEnum>(ReadOnlySpan<char> value, bool ignoreCase, out TEnum result)
             where TEnum : struct, Enum => Enums<TEnum>.Info.TryParseFlags(value, ignoreCase, out result);
@@ -360,6 +379,7 @@ namespace Foundry
         /// <param name="value">The value to parse.</param>
         /// <param name="delimiter">The delimiter that acts as a separator for the individual flag components.</param>
         /// <param name="result">The result if parsing was successful.</param>
+        /// <exception cref="AmbiguousMatchException"><paramref name="value"/> matches more than one possible <typeparamref name="TEnum"/> value.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool TryParseFlags<TEnum>(ReadOnlySpan<char> value, string delimiter, out TEnum result)
             where TEnum : struct, Enum => Enums<TEnum>.Info.TryParseFlags(value, delimiter, out result);
@@ -370,6 +390,7 @@ namespace Foundry
         /// <param name="value">The value to parse.</param>
         /// <param name="delimiter">The delimiter that acts as a separator for the individual flag components.</param>
         /// <param name="result">The result if parsing was successful.</param>
+        /// <exception cref="AmbiguousMatchException"><paramref name="value"/> matches more than one possible <typeparamref name="TEnum"/> value.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool TryParseFlags<TEnum>(ReadOnlySpan<char> value, ReadOnlySpan<char> delimiter, out TEnum result)
             where TEnum : struct, Enum => Enums<TEnum>.Info.TryParseFlags(value, delimiter, out result);
@@ -381,6 +402,7 @@ namespace Foundry
         /// <param name="ignoreCase">Whether to ignore casing when parsing the value.</param>
         /// <param name="delimiter">The delimiter that acts as a separator for the individual flag components.</param>
         /// <param name="result">The result if parsing was successful.</param>
+        /// <exception cref="AmbiguousMatchException"><paramref name="value"/> matches more than one possible <typeparamref name="TEnum"/> value.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool TryParseFlags<TEnum>(ReadOnlySpan<char> value, bool ignoreCase, string delimiter, out TEnum result)
             where TEnum : struct, Enum => Enums<TEnum>.Info.TryParseFlags(value, ignoreCase, delimiter, out result);
@@ -392,6 +414,7 @@ namespace Foundry
         /// <param name="ignoreCase">Whether to ignore casing when parsing the value.</param>
         /// <param name="delimiter">The delimiter that acts as a separator for the individual flag components.</param>
         /// <param name="result">The result if parsing was successful.</param>
+        /// <exception cref="AmbiguousMatchException"><paramref name="value"/> matches more than one possible <typeparamref name="TEnum"/> value.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool TryParseFlags<TEnum>(ReadOnlySpan<char> value, bool ignoreCase, ReadOnlySpan<char> delimiter, out TEnum result)
             where TEnum : struct, Enum => Enums<TEnum>.Info.TryParseFlags(value, ignoreCase, delimiter, out result);
@@ -403,6 +426,7 @@ namespace Foundry
         /// </summary>
         /// <param name="value">The value being validated.</param>
         /// <param name="paramName">The name of the parameter that stores <paramref name="value"/>.</param>
+        /// <exception cref="ArgumentException"><paramref name="paramName"/> is <see langword="null"/>, empty, or whitespace.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="value"/> is not a valid value or flag combination of type <typeparamref name="TEnum"/>.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static TEnum Validate<TEnum>(this TEnum value, string paramName)
@@ -415,10 +439,12 @@ namespace Foundry
         /// </summary>
         /// <param name="value">The value being validated.</param>
         /// <param name="paramName">The name of the parameter that stores <paramref name="value"/>.</param>
+        /// <exception cref="ArgumentException"><paramref name="paramName"/> is <see langword="null"/>, empty, or whitespace.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="value"/> is not a valid value or flag combination of type <typeparamref name="TEnum"/>.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [return: NotNullIfNotNull("value")]
         public static TEnum? Validate<TEnum>(this TEnum? value, string paramName)
-            where TEnum : struct, Enum => value.HasValue ? Enums<TEnum>.Info.Validate(value.Value, paramName) : (TEnum?)null;
+            where TEnum : struct, Enum => value.HasValue ? Enums<TEnum>.Info.Validate(value.Value, paramName) : null;
 
         internal static IEnumInfo<TEnum> CreateEnumInfo<TEnum>()
             where TEnum : struct, Enum

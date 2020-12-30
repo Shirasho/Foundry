@@ -12,6 +12,7 @@ namespace Foundry.Collections.Concurrent
     /// <typeparam name="TKey">The key type of the cache.</typeparam>
     /// <typeparam name="TValue">The value type of the cache.</typeparam>
     public sealed class ThreadSafeCache<TKey, TValue>
+        where TKey : notnull
     {
         private readonly ConcurrentDictionary<TKey, TValue> Cache;
         private readonly Func<TKey, TValue> ValueFactory;

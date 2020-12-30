@@ -67,7 +67,6 @@ namespace Foundry.IO
         /// Fills the internal buffer.
         /// </summary>
         /// <returns><see langword="true"/> if new bytes are available, <see langword="false"/> otherwise.</returns>
-        [SuppressMessage("Usage", "PC001:API not supported on all platforms", Justification = "False positive.")]
         private bool FillBuffer()
         {
             int numUnreadBytes = BufferSize - CurrentBufferOffset;
@@ -225,6 +224,9 @@ namespace Foundry.IO
             return ReadMemory<double>();
         }
 
+        /// <summary>
+        /// Reads a <see cref="decimal"/> from the buffer.
+        /// </summary>
         /// <remarks>
         /// This method reads in a well formed C# decimal. This method is not meant
         /// to read a <see cref="float"/> or <see cref="double"/> and cast it to a
@@ -255,14 +257,17 @@ namespace Foundry.IO
         /// Reads bytes from the underlying buffer to fill <paramref name="buffer"/>.
         /// </summary>
         /// <param name="buffer">The buffer to fill.</param>
+        /// <remarks>
+        /// This needs to be static. https://github.com/dotnet/roslyn/issues/23433
+        /// </remarks>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void ReadBytes(Span<byte> buffer)
+        public static void ReadBytes(BufferedBinaryReader reader, Span<byte> buffer)
         {
-            int count = CheckAndFillBuffer(buffer.Length);
+            int count = reader.CheckAndFillBuffer(buffer.Length);
 
-            CopyBuffer(CurrentBufferOffset, buffer);
+            reader.CopyBuffer(reader.CurrentBufferOffset, buffer);
 
-            CurrentBufferOffset += count;
+            reader.CurrentBufferOffset += count;
         }
 
         /// <summary>
@@ -317,7 +322,6 @@ namespace Foundry.IO
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [SuppressMessage("Usage", "PC001:API not supported on all platforms", Justification = "False positive.")]
         private T ReadMemory<T>()
             where T : struct
         {
@@ -356,29 +360,27 @@ namespace Foundry.IO
         }
 
         [DoesNotReturn]
-        private void ThrowNotEnoughBytesAvailableException<T>()
+        private static void ThrowNotEnoughBytesAvailableException<T>()
         {
             throw new IOException($"Not enough bytes available to read type {typeof(T).Name}.");
         }
 
         [DoesNotReturn]
-        private void ThrowNotEnoughBytesAvailableException()
+        private static void ThrowNotEnoughBytesAvailableException()
         {
-            throw new IOException($"Not enough bytes available.");
+            throw new IOException("Not enough bytes available.");
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [SuppressMessage("Usage", "PC001:API not supported on all platforms", Justification = "False positive.")]
         private void CopyBuffer(int srcOffset, int dstOffset, int count)
         {
-            var source = Buffer.Slice(srcOffset);
+            var source = Buffer[srcOffset..];
             var dest = Buffer.Slice(dstOffset, count);
 
             source.CopyTo(dest);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [SuppressMessage("Usage", "PC001:API not supported on all platforms", Justification = "False positive.")]
         private void CopyBuffer(int srcOffset, Span<byte> dest)
         {
             var source = Buffer.Slice(srcOffset, dest.Length);
@@ -386,10 +388,9 @@ namespace Foundry.IO
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [SuppressMessage("Usage", "PC001:API not supported on all platforms", Justification = "False positive.")]
         private void CopyBuffer(int srcOffset, Span<byte> dest, int dstOffset, int count)
         {
-            var source = Buffer.Slice(srcOffset);
+            var source = Buffer[srcOffset..];
             source.CopyTo(dest.Slice(dstOffset, count));
         }
     }

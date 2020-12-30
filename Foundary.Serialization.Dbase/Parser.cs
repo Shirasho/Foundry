@@ -7,27 +7,19 @@ using System.Threading;
 using Microsoft.Toolkit.Diagnostics;
 using Foundry.Serialization.Dbase.Level5;
 using Foundry.IO;
+using Foundary.Serialization.Dbase;
 
 namespace Foundry.Serialization.Dbase
 {
     /// <summary>
     /// A dBASE parser.
     /// </summary>
-    /// <remarks>
-    /// Source from EI 4.0, modifications with help from https://gist.github.com/sleimanzublidi/27acd30b5d4b452d5ec6.
-    /// </remarks>
     public sealed class Parser
     {
         /// <summary>
-        /// The encoding to use for reading the underlying DBF file.
-        /// Defaults to <see cref="Encoding.ASCII"/>.
+        /// The parser options.
         /// </summary>
-        public Encoding Encoding { get; }
-
-        /// <summary>
-        /// The culture to use when parsing numbers and dates.
-        /// </summary>
-        public CultureInfo Culture { get; }
+        public ParserOptions ParserOptions { get; }
 
         /// <inheritdoc />
         public Parser()
@@ -51,8 +43,22 @@ namespace Foundry.Serialization.Dbase
         /// <inheritdoc />
         public Parser(Encoding? encoding, CultureInfo? culture)
         {
-            Encoding = encoding ?? Encoding.ASCII;
-            Culture = culture ?? CultureInfo.CurrentCulture;
+            var options = new ParserOptions();
+            if (encoding is not null)
+            {
+                options.Encoding = encoding;
+            }
+            if (culture is not null)
+            {
+                options.Culture = culture;
+            }
+
+            ParserOptions = options;
+        }
+
+        public Parser(ParserOptions? options)
+        {
+            ParserOptions = options ?? new ParserOptions();
         }
 
         /// <summary>
@@ -157,7 +163,7 @@ namespace Foundry.Serialization.Dbase
 
                 var parser = level switch
                 {
-                    EDatabaseLevel.Five => new LevelFiveParser(Encoding, Culture),
+                    EDatabaseLevel.Five => new LevelFiveParser(ParserOptions),
                     //http://www.dbase.com/KnowledgeBase/int/db7_file_fmt.htm
                     //EDatabaseLevel.Seven => new LevelSevenParser(Encoding, Culture),
                     _ => throw new NotSupportedException($"The dBASE level {Convert.ToString(versionInfo & 0b111, 2)} [{versionInfo & 0b111}] is not supported.")

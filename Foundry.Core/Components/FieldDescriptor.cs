@@ -53,12 +53,12 @@ namespace Foundry.Components
                         var implemented = Attribute.GetCustomAttributes(Field, false);
                         var all = Attribute.GetCustomAttributes(Field, true);
 
-                        var aCache = new List<AttributeDescriptorCache>(implemented.Select(a => new AttributeDescriptorCache
+                        var aCache = new List<AttributeDescriptorCache>(implemented.Select(static a => new AttributeDescriptorCache
                         {
                             Attribute = a,
                             IsInherited = false
                         }));
-                        aCache.AddRange(all.Except(implemented).Select(a => new AttributeDescriptorCache
+                        aCache.AddRange(all.Except(implemented).Select(static a => new AttributeDescriptorCache
                         {
                             Attribute = a,
                             IsInherited = true
@@ -238,7 +238,7 @@ namespace Foundry.Components
     public class FieldDescriptorEqualityComparer : IEqualityComparer<FieldDescriptor>
     {
         /// <inheritdoc />
-        public bool Equals(FieldDescriptor x, FieldDescriptor y)
+        public bool Equals(FieldDescriptor? x, FieldDescriptor? y)
         {
             return x == y;
         }

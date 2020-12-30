@@ -97,9 +97,7 @@ namespace Foundry
             }
             else if (collection is IList list)
             {
-#pragma warning disable DE0006 // API is deprecated
                 ArrayList.Adapter(list).Sort(new ComparerBridge<T>(comparer));
-#pragma warning restore DE0006 // API is deprecated
             }
             else
             {

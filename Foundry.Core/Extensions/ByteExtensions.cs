@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -29,7 +30,9 @@ namespace Foundry
             if (bytes.Length >= 2 && bytes[0] == 0xFE && bytes[1] == 0xFF) { return Encoding.BigEndianUnicode; }
             if (bytes.Length >= 2 && bytes[0] == 0xFF && bytes[1] == 0xFE) { return Encoding.Unicode; }
             if (bytes.Length >= 3 && bytes[0] == 0xEF && bytes[1] == 0xBB && bytes[2] == 0xBF) { return Encoding.UTF8; }
+#pragma warning disable SYSLIB0001 // Type or member is obsolete
             if (bytes.Length >= 3 && bytes[0] == 0x2b && bytes[1] == 0x2f && bytes[2] == 0x76) { return Encoding.UTF7; }
+#pragma warning restore SYSLIB0001 // Type or member is obsolete
 
             // No BOM - sample the bytes.
             if (precision <= 0 || precision > bytes.Length)
@@ -94,20 +97,25 @@ namespace Foundry
 
                     if (bytes[n] == '"' || bytes[n] == '\'')
                     {
-                        n++;
+                        ++n;
                     }
 
                     int oldN = n;
                     while (n < precision && (bytes[n] == '_' || bytes[n] == '-' || (bytes[n] >= '0' && bytes[n] <= '9') || (bytes[n] >= 'a' && bytes[n] <= 'z') || (bytes[n] >= 'A' && bytes[n] <= 'Z')))
-                    { n++; }
-                    Span<byte> nb = stackalloc byte[n - oldN];
-                    bytes[oldN..n].CopyTo(nb);
+                    {
+                        ++n;
+                    }
+
                     try
                     {
-                        string internalEnc = Encoding.ASCII.GetString(nb);
+                        string internalEnc = Encoding.ASCII.GetString(bytes[oldN..n]);
                         return Encoding.GetEncoding(internalEnc);
                     }
-                    catch { break; }    // If C# doesn't recognize the name of the encoding, break.
+                    catch
+                    {
+                        // If C# doesn't recognize the name of the encoding, break.
+                        break;
+                    }
                 }
             }
 

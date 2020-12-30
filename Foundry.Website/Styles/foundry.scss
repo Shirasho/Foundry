@@ -1,0 +1,26 @@
+﻿// Fonts
+@import url('/css/open-iconic/font/css/open-iconic-bootstrap.min.css');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+// Color overrides
+$theme-colors: ( 
+    "primary": #ff847c
+);
+
+// Bootstrap
+@import "Bootstrap/bootstrap.scss";
+
+// Bootstrap Fixes
+@import "Fixes/_bootstrap-dropdown.scss";
+
+// Document Styles
+@import "_document.scss";
+
+// Blazor native components.
+@import "_blazor.scss";
+
+// Components
+@import "Components/_btn-expand.scss";
+
+// General Styles
+@import "Forms/_errors-validation.scss";

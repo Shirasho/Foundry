@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
+using Foundary.Serialization.Dbase;
 using Foundry.IO;
 using Foundry.Reflection;
 
@@ -13,14 +12,15 @@ namespace Foundry.Serialization.Dbase.Level5
 {
     internal sealed class LevelFiveParser : IDatabaseParser
     {
-        public Encoding Encoding { get; }
+        /// <summary>
+        /// The parser options.
+        /// </summary>
+        public ParserOptions ParserOptions { get; }
 
-        public CultureInfo Culture { get; }
 
-        public LevelFiveParser(Encoding encoding, CultureInfo culture)
+        public LevelFiveParser(ParserOptions parserOptions)
         {
-            Encoding = encoding;
-            Culture = culture;
+            ParserOptions = parserOptions;
         }
 
         public void Parse(ref BufferedBinaryReader reader, DataTable table, in CancellationToken cancellationToken)
@@ -32,7 +32,7 @@ namespace Foundry.Serialization.Dbase.Level5
             CreateDataTableRows(table, ref reader, ref header, fieldDescriptors, cancellationToken);
         }
 
-        private static IReadOnlyCollection<DatabaseFieldDescriptor> ReadFieldDescriptors(ref BufferedBinaryReader br, in CancellationToken cancellationToken = default)
+        private IReadOnlyCollection<DatabaseFieldDescriptor> ReadFieldDescriptors(ref BufferedBinaryReader br, in CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -43,7 +43,7 @@ namespace Foundry.Serialization.Dbase.Level5
             // returns -1 if it can no longer read anything.
             while (peekedChar != 13 && peekedChar != -1)
             {
-                fields.Add(new DatabaseFieldDescriptor(ref br));
+                fields.Add(new DatabaseFieldDescriptor(ref br, ParserOptions));
 
                 cancellationToken.ThrowIfCancellationRequested();
                 peekedChar = br.Peek();
@@ -60,9 +60,9 @@ namespace Foundry.Serialization.Dbase.Level5
                 cancellationToken.ThrowIfCancellationRequested();
 
                 var columnType = field.GetValueType();
-                string fieldName = Encoding.GetString(field.FieldName);
+                string fieldName = ParserOptions.Encoding.GetString(field.FieldName);
 
-                if (columnType != null)
+                if (columnType is not null)
                 {
                     if (columnType.IsNullable())
                     {
@@ -102,8 +102,8 @@ namespace Foundry.Serialization.Dbase.Level5
                 {
                     cancellationToken.ThrowIfCancellationRequested();
 
-                    string fieldName = Encoding.GetString(field.FieldName).Trim();
-                    row[fieldName] = field.GetValue(ref br, Encoding, Culture);
+                    string fieldName = ParserOptions.Encoding.GetString(field.FieldName).Trim();
+                    row[fieldName] = field.GetValue(ref br);
                 }
 
                 dataTable.Rows.Add(row);

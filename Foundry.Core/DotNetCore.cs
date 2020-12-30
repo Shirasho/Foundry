@@ -36,7 +36,7 @@ namespace Foundry
                 return mainModule.FileName;
             }
 
-            string dotnetRoot = Environment.GetEnvironmentVariable("DOTNET_ROOT");
+            string? dotnetRoot = Environment.GetEnvironmentVariable("DOTNET_ROOT");
             if (!string.IsNullOrEmpty(dotnetRoot))
             {
                 return Path.Combine(dotnetRoot, filename);

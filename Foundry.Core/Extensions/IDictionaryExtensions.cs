@@ -20,7 +20,8 @@ namespace Foundry
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
         /// <exception cref="ArgumentNullException"><paramref name="dictionary"/> is <see langword="null"/></exception>
-        public static void AddOrUpdate<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, [DisallowNull] TKey key, [AllowNull] TValue value)
+        public static void AddOrUpdate<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, TValue? value)
+            where TKey : notnull
         {
             Guard.IsNotNull(dictionary, nameof(dictionary));
             if (key is null)
@@ -47,7 +48,8 @@ namespace Foundry
         /// <param name="dictionary">The dictionary to wrap.</param>
         /// <exception cref="ArgumentNullException"><paramref name="dictionary"/> is <see langword="null"/></exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static IReadOnlyDictionary<TKey, TValue> AsReadOnly<TKey, TValue>([NotNull] this IDictionary<TKey, TValue> dictionary)
+        public static IReadOnlyDictionary<TKey, TValue> AsReadOnly<TKey, TValue>(this IDictionary<TKey, TValue> dictionary)
+            where TKey : notnull
         {
             return new ReadOnlyDictionary<TKey, TValue>(dictionary);
         }
@@ -61,6 +63,7 @@ namespace Foundry
         /// <exception cref="ArgumentNullException"><paramref name="elements"/> is <see langword="null"/></exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IReadOnlyDictionary<TKey, TValue> AsReadOnly<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> elements)
+            where TKey : notnull
         {
             return new ReadOnlyDictionary<TKey, TValue>(new Dictionary<TKey, TValue>(elements));
         }
@@ -73,8 +76,8 @@ namespace Foundry
         /// <typeparam name="TValue">The value type.</typeparam>
         /// <param name="dictionary">The dictionary.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        [return: MaybeNull]
-        public static TValue FirstOrDefaultValue<TKey, TValue>(this IDictionary<TKey, TValue>? dictionary)
+        public static TValue? FirstOrDefaultValue<TKey, TValue>(this IDictionary<TKey, TValue>? dictionary)
+            where TKey : notnull
         {
             return dictionary?.Count > 0
                 ? dictionary.First().Value
@@ -90,6 +93,7 @@ namespace Foundry
         /// <exception cref="ArgumentNullException"><paramref name="elements"/> is <see langword="null"/>.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IDictionary<TKey, TValue> ToDictionary<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> elements)
+            where TKey : notnull
         {
             return new Dictionary<TKey, TValue>(elements);
         }
@@ -115,7 +119,8 @@ namespace Foundry
         /// </remarks>
         /// <exception cref="ArgumentNullException"><paramref name="dictionary"/> or <paramref name="key"/> is <see langword="null"/>.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool TryGetValue<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, [DisallowNull] TKey key, [MaybeNull] out TValue value, IEqualityComparer<TKey>? keyComparer)
+        public static bool TryGetValue<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, [DisallowNull] TKey key, out TValue? value, IEqualityComparer<TKey>? keyComparer)
+            where TKey : notnull
         {
             Guard.IsNotNull(dictionary, nameof(dictionary));
 
@@ -129,7 +134,8 @@ namespace Foundry
             return TryGetValueCore(dictionary, key, out value, keyComparer);
         }
 
-        private static bool TryGetValueCore<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, [DisallowNull] TKey key, [MaybeNull] out TValue value, IEqualityComparer<TKey>? keyComparer)
+        private static bool TryGetValueCore<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, out TValue? value, IEqualityComparer<TKey>? keyComparer)
+            where TKey : notnull
         {
             keyComparer ??= EqualityComparer<TKey>.Default;
 
@@ -165,7 +171,8 @@ namespace Foundry
         /// for an O(1) operation. If that call fails, this method becomes O(n).
         /// </remarks>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool TryGetValueSafe<TKey, TValue>(this IDictionary<TKey, TValue>? dictionary, [DisallowNull] TKey key, [MaybeNull] out TValue value)
+        public static bool TryGetValueSafe<TKey, TValue>(this IDictionary<TKey, TValue>? dictionary, TKey key, out TValue? value)
+            where TKey : notnull
         {
             if (dictionary is null)
             {

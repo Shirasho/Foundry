@@ -79,9 +79,8 @@ namespace Foundry.Components
                     }
                     else
                     {
-                        //TODO: Static lambda C#9
-                        var implemented = Type.GetCustomAttributes(false).Cast<Attribute>().Select(a => new AttributeDescriptorCache(a, false)).ToList();
-                        var inherited = Type.GetCustomAttributes(true).Cast<Attribute>().Select(a => new AttributeDescriptorCache(a, true)).ToList();
+                        var implemented = Type.GetCustomAttributes(false).Cast<Attribute>().Select(static a => new AttributeDescriptorCache(a, false)).ToList();
+                        var inherited = Type.GetCustomAttributes(true).Cast<Attribute>().Select(static a => new AttributeDescriptorCache(a, true)).ToList();
 
                         implemented.AddRangeUnique(inherited);
 
@@ -231,12 +230,12 @@ namespace Foundry.Components
             return obj is TypeDescriptor other && Equals(other);
         }
 
-        public static bool operator ==(TypeDescriptor left, TypeDescriptor right)
+        public static bool operator ==(TypeDescriptor? left, TypeDescriptor? right)
         {
             return Equals(left, right);
         }
 
-        public static bool operator !=(TypeDescriptor left, TypeDescriptor right)
+        public static bool operator !=(TypeDescriptor? left, TypeDescriptor? right)
         {
             return !Equals(left, right);
         }
@@ -305,12 +304,12 @@ namespace Foundry.Components
                 return HashCode.Combine(Attribute, IsInherited);
             }
 
-            public static bool operator ==(AttributeDescriptorCache left, AttributeDescriptorCache right)
+            public static bool operator ==(AttributeDescriptorCache? left, AttributeDescriptorCache? right)
             {
                 return Equals(left, right);
             }
 
-            public static bool operator !=(AttributeDescriptorCache left, AttributeDescriptorCache right)
+            public static bool operator !=(AttributeDescriptorCache? left, AttributeDescriptorCache? right)
             {
                 return !Equals(left, right);
             }
@@ -323,7 +322,7 @@ namespace Foundry.Components
     public class TypeDescriptorEqualityComparer : IEqualityComparer<TypeDescriptor>
     {
         /// <inheritdoc />
-        public bool Equals(TypeDescriptor x, TypeDescriptor y)
+        public bool Equals(TypeDescriptor? x, TypeDescriptor? y)
         {
             return x == y;
         }

@@ -212,7 +212,7 @@ namespace Foundry
         /// </remarks>
         /// <exception cref="ArgumentNullException"><paramref name="collection"/> is <see langword="null"/></exception>
         /// <exception cref="NotSupportedException">The <see cref="T:System.Collections.Generic.IList`1"></see> is read-only.</exception>
-        public static int AddSorted<T>(this IList<T> collection, [AllowNull] T item, IComparer<T>? comparer = null)
+        public static int AddSorted<T>(this IList<T> collection, T? item, IComparer<T>? comparer = null)
         {
             Guard.IsNotNull(collection, nameof(collection));
 
@@ -238,7 +238,7 @@ namespace Foundry
         /// <returns><see langword="true" /> if the element was added, <see langword="false" /> otherwise.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="collection"/> is <see langword="null"/></exception>
         /// <exception cref="NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</exception>
-        public static bool AddUnique<T>(this ICollection<T> collection, [AllowNull] T value, IEqualityComparer<T>? equalityComparer = null)
+        public static bool AddUnique<T>(this ICollection<T> collection, T? value, IEqualityComparer<T>? equalityComparer = null)
         {
             Guard.IsNotNull(collection, nameof(collection));
 

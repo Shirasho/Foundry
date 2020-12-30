@@ -8,6 +8,7 @@ namespace Foundry
         /// Returns the equivalent <see cref="StringComparer"/> for a <see cref="StringComparison"/> value.
         /// </summary>
         /// <param name="stringComparison">The value to get the <see cref="StringComparer"/> for.</param>
+        /// <exception cref="ArgumentException"><paramref name="stringComparison"/> is not valid.</exception>
         public static StringComparer ToStringComparer(this StringComparison stringComparison)
         {
             return stringComparison switch
@@ -26,6 +27,7 @@ namespace Foundry
         /// Returns the equivalent <see cref="StringComparison"/> for a <see cref="StringComparer"/> value.
         /// </summary>
         /// <param name="stringComparer">The value to get the <see cref="StringComparison"/> for.</param>
+        /// <exception cref="NotSupportedException"><paramref name="stringComparer"/> does not have an equivalent <see cref="StringComparison"/>.</exception>
         public static StringComparison ToStringComparison(this StringComparer stringComparer)
         {
             if (ReferenceEquals(stringComparer, StringComparer.CurrentCulture))

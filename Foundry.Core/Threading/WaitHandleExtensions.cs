@@ -263,11 +263,11 @@ namespace Foundry.Threading
                 var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
                 registeredHandle = ThreadPool.RegisterWaitForSingleObject(
                     handle,
-                    (state, timedOut) => ((TaskCompletionSource<bool>)state).TrySetResult(!timedOut),
+                    (state, timedOut) => ((TaskCompletionSource<bool>)state!).TrySetResult(!timedOut),
                     tcs,
                     timeout,
                     true);
-                tokenRegistration = cancellationToken.Register(state => ((TaskCompletionSource<bool>)state).TrySetCanceled(), tcs);
+                tokenRegistration = cancellationToken.Register(state => ((TaskCompletionSource<bool>)state!).TrySetCanceled(), tcs);
 
                 return await tcs.Task.ConfigureAwait(false);
             }

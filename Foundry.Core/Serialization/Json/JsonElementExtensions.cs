@@ -42,7 +42,7 @@ namespace Foundry.Serialization.Json
         /// <typeparam name="T">The type to convert to.</typeparam>
         /// <param name="element">The element to convert.</param>
         /// <param name="options">The serialization options.</param>
-        public static T ToObject<T>(this in JsonElement element, JsonSerializerOptions? options = null)
+        public static T? ToObject<T>(this in JsonElement element, JsonSerializerOptions? options = null)
         {
             var bufferWriter = new ArrayBufferWriter<byte>();
             using (var writer = new Utf8JsonWriter(bufferWriter))
@@ -58,7 +58,7 @@ namespace Foundry.Serialization.Json
         /// </summary>
         /// <typeparam name="T">The type to convert to.</typeparam>
         /// <param name="element">The element to convert.</param>
-        public static ValueTask<T> ToObjectAsync<T>(this in JsonElement element, CancellationToken cancellationToken = default)
+        public static ValueTask<T?> ToObjectAsync<T>(this in JsonElement element, CancellationToken cancellationToken = default)
             => ToObjectAsync<T>(element, null, cancellationToken);
 
 
@@ -68,7 +68,7 @@ namespace Foundry.Serialization.Json
         /// <typeparam name="T">The type to convert to.</typeparam>
         /// <param name="element">The element to convert.</param>
         /// <param name="options">The serialization options.</param>
-        public static ValueTask<T> ToObjectAsync<T>(this in JsonElement element, JsonSerializerOptions? options, CancellationToken cancellationToken = default)
+        public static ValueTask<T?> ToObjectAsync<T>(this in JsonElement element, JsonSerializerOptions? options, CancellationToken cancellationToken = default)
         {
             var bufferWriter = new ArrayBufferWriter<byte>();
             using (var writer = new Utf8JsonWriter(bufferWriter))

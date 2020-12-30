@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Foundry
 {
@@ -42,15 +41,15 @@ namespace Foundry
         }
 
         /// <inheritdoc />
-        public int Compare([AllowNull] T x, [AllowNull] T y)
+        public int Compare(T? x, T? y)
         {
             return Comparer.Compare(x!, y!);
         }
 
         /// <inheritdoc />
-        public int Compare(object x, object y)
+        public int Compare(object? x, object? y)
         {
-            return Comparer.Compare((T)x , (T)y);
+            return Comparer.Compare(x is not null ? (T)x : default, y is not null ? (T)y : default);
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Text;
+using Foundary.Serialization.Dbase;
 using Foundry.IO;
 
 namespace Foundry.Serialization.Dbase.Level5
@@ -68,8 +69,16 @@ namespace Foundry.Serialization.Dbase.Level5
         /// <remarks>Byte 37</remarks>
         public readonly ETableFlags TableFlags;
 
-        public DatabaseFieldDescriptor(ref BufferedBinaryReader reader)
+        private readonly Encoding Encoding;
+        private readonly CultureInfo NumericCulture;
+        private readonly CultureInfo DateCulture;
+
+        public DatabaseFieldDescriptor(ref BufferedBinaryReader reader, ParserOptions parserOptions)
         {
+            Encoding = parserOptions.Encoding ?? Encoding.ASCII;
+            NumericCulture = parserOptions.InvariantNumbers ? CultureInfo.InvariantCulture : parserOptions.Culture ?? CultureInfo.InvariantCulture;
+            DateCulture = parserOptions.InvariantDates ? CultureInfo.InvariantCulture : parserOptions.Culture ?? CultureInfo.InvariantCulture;
+
             FieldName = reader.ReadBytes(11);
             FieldType = (EFieldType)reader.ReadByte();
             Reserved01 = reader.ReadBytes(4);
@@ -84,8 +93,17 @@ namespace Foundry.Serialization.Dbase.Level5
             TableFlags = (ETableFlags)reader.ReadByte();
         }
 
-        //TODO: Boxing is bad, mmkay?.
-        internal object GetValue(ref BufferedBinaryReader br, Encoding encoding, CultureInfo culture)
+        /// <summary>
+        /// Obtains the value of this field from the specified <see cref="BufferedBinaryReader"/>.
+        /// </summary>
+        /// <param name="br">The <see cref="BufferedBinaryReader"/> to read from.</param>
+        /// <returns>The object that was read.</returns>
+        /// <remarks>
+        /// While it may technically be possible to remove this boxing by doing the switch statement
+        /// outside of the class (where this method is being used), the result goes directly into
+        /// a DataRow which boxes anyway.
+        /// </remarks>
+        internal object GetValue(ref BufferedBinaryReader br)
         {
             //IMPLEMENT: Support for DBT files. https://en.wikipedia.org/wiki/.dbf#Level_5_DOS_headers
             try
@@ -93,16 +111,20 @@ namespace Foundry.Serialization.Dbase.Level5
                 switch (FieldType)
                 {
                     case EFieldType.Memo:
-                    case EFieldType.Character: return encoding.GetString(br.ReadBytes(FieldLength)).Trim('\0');
+                    case EFieldType.Character:
+                        //TODO: Can we do this without allocation of another string that trims the 0-bytes? Is it safe to remove trailing 0 bytes?
+                        return Encoding.GetString(br.ReadBytes(FieldLength)).Trim('\0');
                     case EFieldType.Binary:
-                    case EFieldType.General: return DBNull.Value;
+                    case EFieldType.General:
+                        // We do not support DBT tables.
+                        return DBNull.Value;
                     case EFieldType.Float:
                     case EFieldType.Numeric:
                         // We cannot simply assume it takes up 4 or 8 bytes for a float or double respectively.
-                        return double.Parse(encoding.GetString(br.ReadBytes(FieldLength)), culture);
+                        return double.Parse(Encoding.GetString(br.ReadBytes(FieldLength)), NumericCulture);
                     case EFieldType.Logical:
                     {
-                        string value = encoding.GetString(br.ReadBytes(FieldLength));
+                        string value = Encoding.GetString(br.ReadBytes(FieldLength));
 
                         return value == "Y" || value == "y"
                             ? true
@@ -110,7 +132,7 @@ namespace Foundry.Serialization.Dbase.Level5
                                 ? (object)DBNull.Value
                                 : false;
                     }
-                    case EFieldType.Date: return DateTime.TryParseExact(encoding.GetString(br.ReadBytes(FieldLength)), "yyyyMMdd", culture, DateTimeStyles.None, out var result) ? result : (object)DBNull.Value;
+                    case EFieldType.Date: return DateTime.TryParseExact(Encoding.GetString(br.ReadBytes(FieldLength)), "yyyyMMdd", DateCulture, DateTimeStyles.None, out var result) ? result : (object)DBNull.Value;
                     case EFieldType.DateTime: return DateTime.FromOADate(br.ReadInt64() - 2415018.5);
                     default: return DBNull.Value;
                 }

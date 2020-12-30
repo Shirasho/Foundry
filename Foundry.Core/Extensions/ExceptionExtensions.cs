@@ -39,7 +39,7 @@ namespace Foundry
                 yield return e;
 
                 var ex = e.InnerException;
-                while (ex != null)
+                while (ex is not null)
                 {
                     if (extractAggregateExceptions && ex is AggregateException ae)
                     {
@@ -124,7 +124,7 @@ namespace Foundry
                 inner = ae.InnerException ?? (ae.InnerExceptions.Count > 0 ? ae.InnerExceptions[0] : ae);
             }
 
-            while (inner.InnerException != null && searchDepth < depth)
+            while (inner.InnerException is not null && searchDepth < depth)
             {
                 inner = inner.InnerException;
                 if (inner is AggregateException ae2)
@@ -196,12 +196,10 @@ namespace Foundry
             // Does the actual throwing.
             ExceptionDispatchInfo.Capture(exceptions[index]).Throw();
 
-#pragma warning disable CS8763
             // Damned if I do return ([DoesNotReturn]), damned if I don't (Not all code paths return a value).
             // The former is a compiler hint that can be suppressed. The latter is a compiler error that can't be.
             // Suppress the compiler hint.
             return exceptions[index];
-#pragma warning restore CS8763
         }
 
         /// <summary>

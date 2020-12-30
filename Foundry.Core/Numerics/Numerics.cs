@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -528,36 +527,6 @@ namespace Foundry
             ulong a = value / multiple * multiple;
             ulong b = value + multiple;
             return (value - a > b - value) ? b : a;
-        }
-
-        /// <summary>
-        /// Removes numbers from the front of <paramref name="value"/> until
-        /// it is <paramref name="places"/> long. If <paramref name="places"/>
-        /// is larger than the number of digits contained in <paramref name="value"/>,
-        /// <paramref name="value"/> is returned.
-        /// </summary>
-        /// <param name="value">The value to truncate.</param>
-        /// <param name="places">The maximum number of digits of the resulting number.</param>
-        public static int TruncateLeft(this int value, int places)
-        {
-            //TODO: Optimize
-            string v = value.ToString(CultureInfo.InvariantCulture);
-            return int.Parse(v.Length > places ? v.Substring(v.Length - places, places) : v);
-        }
-
-        /// <summary>
-        /// Removes numbers from the end of <paramref name="value"/> until
-        /// it is <paramref name="places"/> long. If <paramref name="places"/>
-        /// is larger than the number of digits contained in <paramref name="value"/>,
-        /// <paramref name="value"/> is returned.
-        /// </summary>
-        /// <param name="value">The value to truncate.</param>
-        /// <param name="places">The maximum number of digits of the resulting number.</param>
-        public static int TruncateRight(this int value, int places)
-        {
-            //TODO: Optimize
-            string v = value.ToString(CultureInfo.InvariantCulture);
-            return int.Parse(v.Length > places ? v.Substring(0, places) : v);
         }
     }
 }

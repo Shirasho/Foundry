@@ -14,7 +14,7 @@ namespace Foundry.Linq
         /// <param name="selector">Transforms the source into a result object.</param>
         /// <returns>A list containing each batch.</returns>
         /// <exception cref="ArgumentOutOfRangeException">Count is less than or equal to 0.</exception>
-        public static IEnumerable<TResult> Batch<TSource, TResult>(this IEnumerable<TSource> collection, int count, Func<IEnumerable<TSource>, TResult> selector)
+        public static IEnumerable<TResult?> Batch<TSource, TResult>(this IEnumerable<TSource?> collection, int count, Func<IEnumerable<TSource?>, TResult?> selector)
             => Batch(collection, count, selector, true);
 
         /// <summary>
@@ -27,22 +27,22 @@ namespace Foundry.Linq
         /// <returns>A list containing each batch.</returns>
         /// <exception cref="ArgumentOutOfRangeException">Count is less than or equal to 0.</exception>
         /// <exception cref="T:System.Exception">A delegate callback throws an exception.</exception>
-        public static IEnumerable<TResult> Batch<TSource, TResult>(this IEnumerable<TSource> collection, int count, Func<IEnumerable<TSource>, TResult> selector, bool returnRemainder)
+        public static IEnumerable<TResult?> Batch<TSource, TResult>(this IEnumerable<TSource?> collection, int count, Func<IEnumerable<TSource?>, TResult?> selector, bool returnRemainder)
         {
             Guard.IsNotNull(collection, nameof(collection));
             Guard.IsNotNull(selector, nameof(selector));
             Guard.IsGreaterThan(count, 0, nameof(count));
 
-            return _(); IEnumerable<TResult> _()
+            return _(); IEnumerable<TResult?> _()
             {
-                TSource[]? bucket = null;
+                TSource?[]? bucket = null;
                 int bucketCount = 0;
 
                 foreach (var item in collection)
                 {
                     if (bucket is null)
                     {
-                        bucket = new TSource[count];
+                        bucket = new TSource?[count];
                     }
 
                     bucket[bucketCount++] = item;
@@ -60,7 +60,7 @@ namespace Foundry.Linq
                 }
 
                 // Return the last bucket with all remaining elements
-                if (returnRemainder && bucket != null && count > 0)
+                if (returnRemainder && bucket is not null && count > 0)
                 {
                     Array.Resize(ref bucket, bucketCount);
                     yield return selector(bucket);
@@ -76,7 +76,7 @@ namespace Foundry.Linq
         /// <param name="count">The maximum size of each batch.</param>
         /// <returns>A list containing each batch.</returns>
         /// <exception cref="ArgumentOutOfRangeException">Count is less than or equal to 0.</exception>
-        public static IEnumerable<IEnumerable<T>> Batch<T>(this IEnumerable<T> collection, int count)
+        public static IEnumerable<IEnumerable<T?>> Batch<T>(this IEnumerable<T?> collection, int count)
             => Batch(collection, count, true);
 
         /// <summary>
@@ -88,7 +88,9 @@ namespace Foundry.Linq
         /// <param name="returnRemainder">Whether to return the remainder of the elements that don't fully fill a batch.</param>
         /// <returns>A list containing each batch.</returns>
         /// <exception cref="ArgumentOutOfRangeException">Count is less than or equal to 0.</exception>
-        public static IEnumerable<IEnumerable<T>> Batch<T>(this IEnumerable<T> collection, int count, bool returnRemainder)
-            => Batch(collection, count, FuncProvider<IEnumerable<T>>.ReturnSelf, returnRemainder);
+        public static IEnumerable<IEnumerable<T?>> Batch<T>(this IEnumerable<T?> collection, int count, bool returnRemainder)
+#pragma warning disable CS8619 // Nullability of reference types in value doesn't match target type.
+            => Batch(collection, count, FuncProvider<IEnumerable<T?>>.ReturnSelf, returnRemainder);
+#pragma warning restore CS8619 // Nullability of reference types in value doesn't match target type.
     }
 }

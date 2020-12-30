@@ -41,7 +41,7 @@ namespace Foundry.Threading
         /// set with the provided value.
         /// </summary>
         /// <param name="initialValue">The initial value.</param>
-        public ConditionVariable([AllowNull] T initialValue)
+        public ConditionVariable(T? initialValue)
         {
             Set(initialValue);
         }
@@ -65,6 +65,7 @@ namespace Foundry.Threading
         /// Waits for the variable to be set and returns the result.
         /// </summary>
         /// <param name="millisecondsTimeout">The number of milliseconds to wait before timing out.</param>
+        /// <exception cref="TimeoutException">The operation timed out.</exception>
         [return: MaybeNull]
         public T Wait(int millisecondsTimeout)
         {
@@ -97,10 +98,9 @@ namespace Foundry.Threading
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <exception cref="TimeoutException">The operation timed out.</exception>
-        public async Task<T> WaitAsync(CancellationToken cancellationToken = default)
+        public async Task<T?> WaitAsync(CancellationToken cancellationToken = default)
         {
             await ResetEvent.WaitOneAsync(Timeout.Infinite, cancellationToken).ConfigureAwait(false);
-            //TODO: Update return type to Task<T?> in C#9
             return Value!;
         }
 
@@ -110,12 +110,11 @@ namespace Foundry.Threading
         /// <param name="millisecondsTimeout">The number of milliseconds to wait before timing out.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <exception cref="TimeoutException">The operation timed out.</exception>
-        public async Task<T> WaitAsync(int millisecondsTimeout, CancellationToken cancellationToken = default)
+        public async Task<T?> WaitAsync(int millisecondsTimeout, CancellationToken cancellationToken = default)
         {
             if (await ResetEvent.WaitOneAsync(millisecondsTimeout, cancellationToken).ConfigureAwait(false))
             {
-                //TODO: Update return type to Task<T?> in C#9
-                return Value!;
+                return Value;
             }
 
             throw new TimeoutException("Unable to wait for variable. The operation timed out.");
@@ -127,12 +126,11 @@ namespace Foundry.Threading
         /// <param name="timeout">The duration to wait before timing out.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <exception cref="TimeoutException">The operation timed out.</exception>
-        public async Task<T> WaitAsync(TimeSpan timeout, CancellationToken cancellationToken = default)
+        public async Task<T?> WaitAsync(TimeSpan timeout, CancellationToken cancellationToken = default)
         {
             if (await ResetEvent.WaitOneAsync(timeout, cancellationToken).ConfigureAwait(false))
             {
-                //TODO: Update return type to Task<T?> in C#9
-                return Value!;
+                return Value;
             }
 
             throw new TimeoutException("Unable to wait for variable. The operation timed out.");
@@ -143,7 +141,7 @@ namespace Foundry.Threading
         /// </summary>
         /// <param name="value"></param>
         /// <exception cref="InvalidOperationException">The variable has already been set.</exception>
-        public void Set([AllowNull] T value)
+        public void Set(T? value)
         {
             lock (SyncRoot)
             {

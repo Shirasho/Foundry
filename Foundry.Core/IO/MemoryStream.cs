@@ -139,6 +139,7 @@ namespace Foundry.IO
         /// <param name="offset">A byte offset relative to the <paramref name="origin" /> parameter.</param>
         /// <param name="origin">A value of type <see cref="SeekOrigin" /> indicating the reference point used to obtain the new position.</param>
         /// <returns>The new position within the current stream.</returns>
+        /// <exception cref="ArgumentException"><paramref name="origin"/> is invalid.</exception>
         /// <exception cref="ObjectDisposedException">Methods were called after the stream was closed.</exception>
         public sealed override long Seek(long offset, SeekOrigin origin)
         {
@@ -149,7 +150,7 @@ namespace Foundry.IO
                 SeekOrigin.Begin => offset,
                 SeekOrigin.Current => Position + offset,
                 SeekOrigin.End => Length + offset,
-                _ => throw new ArgumentException()
+                _ => throw new ArgumentException("Invalid seek origin", nameof(origin))
             };
 
             CheckPosition(index, Memory.Length);
@@ -189,12 +190,11 @@ namespace Foundry.IO
         ///  <paramref name="destination" /> does not support writing.</exception>
         /// <exception cref="ObjectDisposedException">Either the current stream or <paramref name="destination" /> were closed before the <see cref="M:System.IO.Stream.CopyTo(System.IO.Stream)" /> method was called.</exception>
         /// <exception cref="IOException">An I/O error occurred.</exception>
-        [SuppressMessage("Usage", "PC001:API not supported on all platforms", Justification = "False positive.")]
         public sealed override void CopyTo(Stream destination, int bufferSize)
         {
             CheckDisposed();
 
-            var source = Memory.Span.Slice(InternalPosition);
+            var source = Memory.Span[InternalPosition..];
 
             InternalPosition += source.Length;
 
@@ -264,7 +264,6 @@ namespace Foundry.IO
         /// <exception cref="ArgumentNullException"><paramref name="buffer" /> is <see langword="null" />.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="offset" /> or <paramref name="count" /> is negative.</exception>
         /// <exception cref="ObjectDisposedException">Methods were called after the stream was closed.</exception>
-        [SuppressMessage("Usage", "PC001:API not supported on all platforms", Justification = "False positive.")]
         public sealed override int Read(byte[] buffer, int offset, int count)
         {
             CheckDisposed();
@@ -289,7 +288,6 @@ namespace Foundry.IO
         /// <param name="buffer">A region of memory. When this method returns, the contents of this region are replaced by the bytes read from the current source.</param>
         /// <returns>The total number of bytes read into the buffer. This can be less than the number of bytes allocated in the buffer if that many bytes are not currently available, or zero (0) if the end of the stream has been reached.</returns>
         /// <exception cref="ObjectDisposedException">Methods were called after the stream was closed.</exception>
-        [SuppressMessage("Usage", "PC001:API not supported on all platforms", Justification = "False positive.")]
         public sealed override int Read(Span<byte> buffer)
         {
             CheckDisposed();
@@ -383,7 +381,6 @@ namespace Foundry.IO
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="offset" /> or <paramref name="count" /> is negative.</exception>
         /// <exception cref="NotSupportedException">The stream does not support writing.</exception>
         /// <exception cref="ObjectDisposedException"><see cref="M:System.IO.Stream.Write(System.Byte[],System.Int32,System.Int32)" /> was called after the stream was closed.</exception>
-        [SuppressMessage("Usage", "PC001:API not supported on all platforms", Justification = "False positive.")]
         public sealed override void Write(byte[] buffer, int offset, int count)
         {
             CheckDisposed();
@@ -394,7 +391,7 @@ namespace Foundry.IO
             CheckBuffer(buffer, offset, count);
 
             var source = buffer.AsSpan(offset, count);
-            var dest = Memory.Span.Slice(InternalPosition);
+            var dest = Memory.Span[InternalPosition..];
 
             if (!source.TryCopyTo(dest))
             {
@@ -408,7 +405,8 @@ namespace Foundry.IO
         /// When overridden in a derived class, writes a sequence of bytes to the current stream and advances the current position within this stream by the number of bytes written.
         /// </summary>
         /// <param name="buffer">A region of memory. This method copies the contents of this region to the current stream.</param>
-        [SuppressMessage("Usage", "PC001:API not supported on all platforms", Justification = "False positive.")]
+        /// <exception cref="NotSupportedException">This stream does not support writing.</exception>
+        /// <exception cref="ArgumentException">The current stream cannot contain <paramref name="buffer"/></exception>
         public sealed override void Write(ReadOnlySpan<byte> buffer)
         {
             CheckDisposed();
@@ -417,7 +415,7 @@ namespace Foundry.IO
                 throw new NotSupportedException();
             }
 
-            var dest = Memory.Span.Slice(InternalPosition);
+            var dest = Memory.Span[InternalPosition..];
 
             if (!buffer.TryCopyTo(dest))
             {
@@ -524,7 +522,7 @@ namespace Foundry.IO
         }
 
         [DoesNotReturn]
-        private void ThrowDisposedException()
+        private static void ThrowDisposedException()
         {
             throw new ObjectDisposedException(nameof(MemoryStream));
         }
