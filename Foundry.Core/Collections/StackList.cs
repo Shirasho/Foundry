@@ -70,7 +70,7 @@ namespace Foundry.Collections
         /// </summary>
         public ReadOnlySpan<T> AsSpan()
         {
-            return Span;
+            return Span.Length == Length ? Span : Span.Slice(0, Length);
         }
 
         private void Grow()

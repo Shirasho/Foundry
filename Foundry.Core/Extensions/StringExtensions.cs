@@ -379,6 +379,28 @@ namespace Foundry
         }
 
         /// <summary>
+        /// Returns the similarity percentage of two strings.
+        /// </summary>
+        /// <param name="text">The first text instance.</param>
+        /// <param name="other">The second text instance.</param>
+        /// <param name="comparison">How to compare two chars.</param>
+        /// <returns>A number between 0 and 1 that represents a percentage similarity between the two strings.</returns>
+        /// <remarks>
+        /// If either <paramref name="text"/> or <paramref name="other"/> is <see langword="null"/>, 0 will
+        /// be returned, even if both values are <see langword="null"/>. If both arguments are empty strings,
+        /// 1 will be returned.
+        /// </remarks>
+        public static double SimilarityTo(this string? text, string? other, StringComparison comparison = StringComparison.Ordinal)
+        {
+            if (text is null || other is null)
+            {
+                return 0;
+            }
+
+            return text.AsSpan().SimilarityTo(other.AsSpan(), comparison);
+        }
+
+        /// <summary>
         /// Splits the contents of <paramref name="text"/> such that each line is no longer
         /// than <paramref name="maxLength"/> and attempts to maintain the integrity of
         /// words contained within <paramref name="text"/>. If a word within <paramref name="text"/>

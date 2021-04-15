@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
+using System.Text;
 using Foundry.Collections;
+using Foundry.Helpers;
 
 namespace Foundry
 {
     public static class ReadOnlySpanExtensions
     {
+
         /// <summary>
         /// Splits the contents of <paramref name="span"/> on whitespace characters.
         /// </summary>
@@ -32,6 +35,75 @@ namespace Foundry
         /// <param name="stringSplitOptions">The split options.</param>
         public static SpanSplitSequenceEnumerator<char> Split(this ReadOnlySpan<char> span, ReadOnlySpan<char> separator, StringSplitOptions stringSplitOptions = StringSplitOptions.None)
             => new SpanSplitSequenceEnumerator<char>(span, separator, stringSplitOptions);
+
+        /// <summary>
+        /// Returns the similarity percentage of two <see cref="ReadOnlySpan{char}"/>.
+        /// </summary>
+        /// <param name="span">The first text instance.</param>
+        /// <param name="other">The second text instance.</param>
+        /// <param name="comparison">How to compare two chars.</param>
+        /// <returns>A number between 0 and 1 that represents a percentage similarity between the two strings.</returns>
+        /// <remarks>
+        /// If <paramref name="other"/> is <see langword="null"/>, 0 will be returned. If both arguments are empty,
+        /// 1 will be returned.
+        /// </remarks>
+        public static double SimilarityTo(this ReadOnlySpan<char> span, string? other, StringComparison comparison = StringComparison.Ordinal)
+        {
+            if (other is null)
+            {
+                return 0;
+            }
+
+            return SimilarityTo(span, other.AsSpan(), comparison);
+        }
+
+        /// <summary>
+        /// Returns the similarity percentage of two <see cref="ReadOnlySpan{char}"/>.
+        /// </summary>
+        /// <param name="span">The first text instance.</param>
+        /// <param name="other">The second text instance.</param>
+        /// <param name="comparison">How to compare two chars.</param>
+        /// <returns>A number between 0 and 1 that represents a percentage similarity between the two strings.</returns>
+        /// <remarks>
+        /// If both arguments are empty, 1 will be returned.
+        /// </remarks>
+        public static double SimilarityTo(this ReadOnlySpan<char> span, ReadOnlySpan<char> other, StringComparison comparison = StringComparison.Ordinal)
+        {
+            if (span.Length == 0 && other.Length == 0)
+            {
+                return 1;
+            }
+
+            // Runes are still a bit clunky to work with. Since there is no clean way to get the count
+            // head of time we need to rent out a buffer using StackList instead of stackalloc-ing
+            // directly.
+
+            var textRunes = new StackList<Rune>(1);
+            var otherRunes = new StackList<Rune>(1);
+
+            try
+            {
+                foreach (var rune in span.EnumerateRunes())
+                {
+                    textRunes.Append(rune);
+                }
+
+                foreach (var rune in other.EnumerateRunes())
+                {
+                    otherRunes.Append(rune);
+                }
+
+                return RuneHelper.SimilarityTo(ref textRunes, ref otherRunes, comparison);
+            }
+            finally
+            {
+                // Intellisense is still giving a false warning about disposal
+                // when using is used inline with the declaration, so for now
+                // we will wrap in try/finally.
+                textRunes.Dispose();
+                otherRunes.Dispose();
+            }
+        }
 
         /// <remarks>https://gist.github.com/bbartels/87c7daae28d4905c60ae77724a401b20</remarks>
         public ref struct SpanSplitEnumerator<T>
