@@ -4,13 +4,23 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Foundry.Media.Nintendo64.RomData
+namespace Foundry.Media.Nintendo64.Rom
 {
-    internal sealed class RomFile : RomData
+    /// <summary>
+    /// A ROM data source that has been loaded from a file.
+    /// </summary>
+    public sealed class RomFile : RomData
     {
+        /// <summary>
+        /// Whether the ROM file contents can be unloaded from memory and
+        /// reliably loaded at a later time.
+        /// </summary>
         public override bool CanReload => true;
 
-        private readonly FileInfo File;
+        /// <summary>
+        /// The ROM data file.
+        /// </summary>
+        public FileInfo File { get; }
 
         private RomFile(FileInfo file, IMemoryOwner<byte> data)
             : base(data)

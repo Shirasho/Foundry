@@ -1,4 +1,4 @@
-﻿namespace Foundry.Media.Nintendo64.RomData
+﻿namespace Foundry.Media.Nintendo64.Rom
 {
     /// <summary>
     /// The ROM file destination code provided by Nintendo for the cartridge.

@@ -12,7 +12,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Foundry.Serialization.Dbase", "Foundry.Serialization.Dbase\Foundry.Serialization.Dbase.csproj", "{634FFF6F-9A71-424D-B4C6-ECA2B7F62586}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Foundry.Media.Nintendo64.RomData", "Foundry.Media.Nintendo64.RomData\Foundry.Media.Nintendo64.RomData.csproj", "{9CD2E45B-E292-457F-A8BE-C9A31E03711C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Foundry.Media.Nintendo64.Rom", "Foundry.Media.Nintendo64.Rom\Foundry.Media.Nintendo64.Rom.csproj", "{9CD2E45B-E292-457F-A8BE-C9A31E03711C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foundry.Media.Nintendo64.OotDecompiler", "Foundry.Media.Nintendo64.OotDecompiler\Foundry.Media.Nintendo64.OotDecompiler.csproj", "{A78F1D88-A82E-4DE2-8D4D-C2071103DB27}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,6 +34,10 @@ Global
 		{9CD2E45B-E292-457F-A8BE-C9A31E03711C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9CD2E45B-E292-457F-A8BE-C9A31E03711C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9CD2E45B-E292-457F-A8BE-C9A31E03711C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A78F1D88-A82E-4DE2-8D4D-C2071103DB27}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A78F1D88-A82E-4DE2-8D4D-C2071103DB27}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A78F1D88-A82E-4DE2-8D4D-C2071103DB27}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A78F1D88-A82E-4DE2-8D4D-C2071103DB27}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

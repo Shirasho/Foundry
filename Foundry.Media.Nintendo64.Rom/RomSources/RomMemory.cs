@@ -2,10 +2,17 @@
 using System.Buffers;
 using System.Threading.Tasks;
 
-namespace Foundry.Media.Nintendo64.RomData
+namespace Foundry.Media.Nintendo64.Rom
 {
-    internal sealed class RomMemory : RomData
+    /// <summary>
+    /// A ROM data source that has been loaded from a region in memory.
+    /// </summary>
+    public sealed class RomMemory : RomData
     {
+        /// <summary>
+        /// Whether the ROM file contents can be unloaded from memory and
+        /// reliably loaded at a later time.
+        /// </summary>
         public override bool CanReload => true;
 
         public RomMemory(IMemoryOwner<byte> data)

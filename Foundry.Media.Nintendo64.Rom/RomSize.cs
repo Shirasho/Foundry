@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Foundry.Media.Nintendo64.RomData
+namespace Foundry.Media.Nintendo64.Rom
 {
     /// <summary>
     /// ROM size information.

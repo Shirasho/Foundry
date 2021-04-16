@@ -4,10 +4,17 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Foundry.Media.Nintendo64.RomData
+namespace Foundry.Media.Nintendo64.Rom
 {
-    internal sealed class RomStream : RomData
+    /// <summary>
+    /// A ROM data source that has been loaded from a <see cref="System.IO.Stream"/>.
+    /// </summary>
+    public sealed class RomStream : RomData
     {
+        /// <summary>
+        /// Whether the ROM file contents can be unloaded from memory and
+        /// reliably loaded at a later time.
+        /// </summary>
         public override bool CanReload => Stream.CanRead && Stream.CanSeek;
 
         private readonly Stream Stream;

@@ -473,5 +473,13 @@ namespace Foundry
                 }
             }
         }
+
+        public static FileInfo WithExtension(this FileInfo fileInfo, string extension)
+        {
+            Guard.IsNotNull(fileInfo, nameof(fileInfo));
+
+            string directoryName = fileInfo.Directory?.FullName ?? string.Empty;
+            return new FileInfo(Path.Combine(directoryName, Path.GetFileNameWithoutExtension(fileInfo.Name) + extension.EnsureStartsWith('.')));
+        }
     }
 }

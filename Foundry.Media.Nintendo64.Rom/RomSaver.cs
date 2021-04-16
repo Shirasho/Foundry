@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Toolkit.Diagnostics;
 
-namespace Foundry.Media.Nintendo64.RomData
+namespace Foundry.Media.Nintendo64.Rom
 {
     /// <summary>
     /// A utility for saving ROM data to disk.
@@ -24,7 +24,7 @@ namespace Foundry.Media.Nintendo64.RomData
         /// <param name="romData">The data to save.</param>
         /// <param name="path">The output file path.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
-        public static Task SaveAsync(this IRomData romData, string path, CancellationToken cancellationToken)
+        public static Task SaveAsync(this IRomData romData, string path, CancellationToken cancellationToken = default)
             => SaveAsync(romData, new FileInfo(path), cancellationToken);
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace Foundry.Media.Nintendo64.RomData
         /// <param name="romData">The data to save.</param>
         /// <param name="file">The output file.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
-        public static async Task SaveAsync(this IRomData romData, FileInfo file, CancellationToken cancellationToken)
+        public static async Task SaveAsync(this IRomData romData, FileInfo file, CancellationToken cancellationToken = default)
         {
             Guard.IsNotNull(romData, nameof(romData));
             Guard.IsNotNull(file, nameof(file));

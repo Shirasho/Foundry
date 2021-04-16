@@ -7,7 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Toolkit.Diagnostics;
 
-namespace Foundry.Media.Nintendo64.RomData
+namespace Foundry.Media.Nintendo64.Rom
 {
     /// <summary>
     /// The base class for <see cref="IRomData"/> implementations.
@@ -72,9 +72,11 @@ namespace Foundry.Media.Nintendo64.RomData
         /// Reloads the ROM data into memory.
         /// </summary>
         /// <remarks>
-        /// This method will throw an <see cref="InvalidOperationException" /> if <see cref="P:Foundry.Media.Nintendo64.RomData.IRomData.CanReload" />
+        /// This method will throw an <see cref="InvalidOperationException" /> if <see cref="P:Foundry.Media.Nintendo64.Rom.IRomData.CanReload" />
         /// returns <see langword="false" />.
         /// </remarks>
+        /// <exception cref="ObjectDisposedException">The object is disposed.</exception>
+        /// <exception cref="InvalidOperationException">The ROM data source does not support reloading.</exception>
         public void Load()
         {
             CheckDisposed();
@@ -96,9 +98,11 @@ namespace Foundry.Media.Nintendo64.RomData
         /// Reloads the ROM data into memory.
         /// </summary>
         /// <remarks>
-        /// This method will throw an <see cref="InvalidOperationException" /> if <see cref="P:Foundry.Media.Nintendo64.RomData.IRomData.CanReload" />
+        /// This method will throw an <see cref="InvalidOperationException" /> if <see cref="P:Foundry.Media.Nintendo64.Rom.IRomData.CanReload" />
         /// returns <see langword="false" />.
         /// </remarks>
+        /// <exception cref="ObjectDisposedException">The object is disposed.</exception>
+        /// <exception cref="InvalidOperationException">The ROM data source does not support reloading.</exception>
         public ValueTask LoadAsync()
         {
             CheckDisposed();
@@ -121,7 +125,7 @@ namespace Foundry.Media.Nintendo64.RomData
         /// </summary>
         /// <remarks>
         /// To check whether it is safe to call this method and reliably
-        /// reload the contents, check <see cref="P:Foundry.Media.Nintendo64.RomData.IRomData.CanReload" /> before calling
+        /// reload the contents, check <see cref="P:Foundry.Media.Nintendo64.Rom.IRomData.CanReload" /> before calling
         /// this method.
         /// </remarks>
         public void Unload()
@@ -147,9 +151,11 @@ namespace Foundry.Media.Nintendo64.RomData
         /// </para>
         /// <para>
         /// This method will throw an <see cref="InvalidOperationException" /> if the data is unloaded
-        /// and <see cref="P:Foundry.Media.Nintendo64.RomData.IRomData.CanReload" /> is <see langword="false" />.
+        /// and <see cref="P:Foundry.Media.Nintendo64.Rom.IRomData.CanReload" /> is <see langword="false" />.
         /// </para>
         /// </remarks>
+        /// <exception cref="ObjectDisposedException">The object is disposed.</exception>
+        /// <exception cref="InvalidOperationException">The ROM data source does not support reloading.</exception>
         public ReadOnlyMemory<byte> GetData()
         {
             CheckDisposed();
@@ -171,9 +177,11 @@ namespace Foundry.Media.Nintendo64.RomData
         /// </para>
         /// <para>
         /// This method will throw an <see cref="InvalidOperationException" /> if the data is unloaded
-        /// and <see cref="P:Foundry.Media.Nintendo64.RomData.IRomData.CanReload" /> is <see langword="false" />.
+        /// and <see cref="P:Foundry.Media.Nintendo64.Rom.IRomData.CanReload" /> is <see langword="false" />.
         /// </para>
         /// </remarks>
+        /// <exception cref="ObjectDisposedException">The object is disposed.</exception>
+        /// <exception cref="InvalidOperationException">The ROM data source does not support reloading.</exception>
         public async ValueTask<ReadOnlyMemory<byte>> GetDataAsync()
         {
             CheckDisposed();
@@ -190,12 +198,26 @@ namespace Foundry.Media.Nintendo64.RomData
         /// Returns a filename for the ROM that is constructed using ROM
         /// metadata.
         /// </summary>
+        /// <exception cref="ObjectDisposedException">The object is disposed.</exception>
+        /// <exception cref="InvalidOperationException">The metadata is not loaded and <see cref="CanReload"/> is <see langword="false"/>.</exception>
         public string GetFilename()
         {
+            CheckDisposed();
+
+            if (Metadata is null)
+            {
+                Load();
+            }
+
+            if (Metadata is null)
+            {
+                throw new InvalidOperationException("The metadata is not loaded, and reloading did not provide valid metadata.");
+            }
+
             string title = Metadata.Title;
             string extension = Metadata.GetFormatExtension();
 
-            return $"{title}{extension}";
+            return title + extension;
         }
 
         /// <summary>
@@ -203,6 +225,7 @@ namespace Foundry.Media.Nintendo64.RomData
         /// of <see cref="Metadata"/> and <see cref="Size"/>.
         /// </summary>
         /// <param name="data">The new data buffer.</param>
+        [MemberNotNull(nameof(Metadata))]
         protected void SetData(IMemoryOwner<byte>? data)
         {
             CheckDisposed();
@@ -216,7 +239,7 @@ namespace Foundry.Media.Nintendo64.RomData
 
                 if (Data is null)
                 {
-                    Metadata = default;
+                    Metadata = RomMetadata.None;
                     Size = default;
                 }
             }
@@ -226,6 +249,8 @@ namespace Foundry.Media.Nintendo64.RomData
                 Metadata = RomMetadata.Create(Data.Memory.Span);
                 Size = new RomSize(Data.Memory.Span.Length);
             }
+
+            Metadata ??= RomMetadata.None;
         }
 
         /// <summary>
@@ -246,7 +271,7 @@ namespace Foundry.Media.Nintendo64.RomData
         /// <summary>
         /// Loads a ROM at the specified file location.
         /// </summary>
-        /// <param name="romPath">The file path to the ROM.</param>
+        /// <param name="romFile">The ROM file.</param>
         public static IRomData LoadRom(FileInfo romFile)
         {
             Guard.IsNotNull(romFile, nameof(romFile));
@@ -257,7 +282,7 @@ namespace Foundry.Media.Nintendo64.RomData
         /// <summary>
         /// Loads a ROM at the specified file location.
         /// </summary>
-        /// <param name="romPath">The file path to the ROM.</param>
+        /// <param name="romFile">The ROM file.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         public static ValueTask<IRomData> LoadRomAsync(FileInfo romFile, CancellationToken cancellationToken = default)
         {
@@ -266,6 +291,11 @@ namespace Foundry.Media.Nintendo64.RomData
             return RomFile.CreateAsync(romFile, cancellationToken);
         }
 
+        /// <summary>
+        /// Loads a ROM using the data from the provided stream.
+        /// </summary>
+        /// <param name="romStream">The ROM data stream.</param>
+        /// <param name="disposeStream">Whether to dispose of the stream when the ROM data is disposed.</param>
         public static IRomData LoadRom(Stream romStream, bool disposeStream = false)
         {
             Guard.IsNotNull(romStream, nameof(romStream));
@@ -273,6 +303,12 @@ namespace Foundry.Media.Nintendo64.RomData
             return RomStream.Create(romStream, disposeStream);
         }
 
+        /// <summary>
+        /// Loads a ROM using the data from the provided stream.
+        /// </summary>
+        /// <param name="romStream">The ROM data stream.</param>
+        /// <param name="disposeStream">Whether to dispose of the stream when the ROM data is disposed.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         public static ValueTask<IRomData> LoadRomAsync(Stream romStream, bool disposeStream = false, CancellationToken cancellationToken = default)
         {
             Guard.IsNotNull(romStream, nameof(romStream));
@@ -280,11 +316,20 @@ namespace Foundry.Media.Nintendo64.RomData
             return RomStream.CreateAsync(romStream, disposeStream, cancellationToken);
         }
 
+        /// <summary>
+        /// Loads a ROM using the data from the provided memory region.
+        /// </summary>
+        /// <param name="romData">The ROM data.</param>
         public static IRomData LoadRom(Memory<byte> romData)
         {
             return new RomMemory(romData);
         }
 
+        /// <summary>
+        /// Loads a ROM using the data from the provided memory region.
+        /// </summary>
+        /// <param name="romData">The ROM data.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         public static ValueTask<IRomData> LoadRomAsync(Memory<byte> romData, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -292,11 +337,20 @@ namespace Foundry.Media.Nintendo64.RomData
             return new ValueTask<IRomData>(new RomMemory(romData));
         }
 
+        /// <summary>
+        /// Loads a ROM using the data from the provided memory region.
+        /// </summary>
+        /// <param name="romData">The ROM data.</param>
         public static IRomData LoadRom(ReadOnlyMemory<byte> romData)
         {
             return new RomMemory(romData);
         }
 
+        /// <summary>
+        /// Loads a ROM using the data from the provided memory region.
+        /// </summary>
+        /// <param name="romData">The ROM data.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         public static ValueTask<IRomData> LoadRomAsync(ReadOnlyMemory<byte> romData, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -304,11 +358,20 @@ namespace Foundry.Media.Nintendo64.RomData
             return new ValueTask<IRomData>(new RomMemory(romData));
         }
 
+        /// <summary>
+        /// Loads a ROM using the data from the provided memory region.
+        /// </summary>
+        /// <param name="romData">The ROM data.</param>
         public static IRomData LoadRom(IMemoryOwner<byte> romData)
         {
             return new RomMemory(romData);
         }
 
+        /// <summary>
+        /// Loads a ROM using the data from the provided memory region.
+        /// </summary>
+        /// <param name="romData">The ROM data.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         public static ValueTask<IRomData> LoadRomAsync(IMemoryOwner<byte> romData, CancellationToken cancellationToken = default)
         {
             Guard.IsNotNull(romData, nameof(romData));
@@ -318,12 +381,25 @@ namespace Foundry.Media.Nintendo64.RomData
             return new ValueTask<IRomData>(new RomMemory(romData));
         }
 
+        /// <summary>
+        /// Returns the ROM metadata from ROM file located at the provided path.
+        /// </summary>
+        /// <param name="romPath">The file path of the ROM file.</param>
         public static RomMetadata GetMetadata(string romPath)
             => GetMetadata(new FileInfo(romPath));
 
+        /// <summary>
+        /// Returns the ROM metadata from ROM file located at the provided path.
+        /// </summary>
+        /// <param name="romPath">The file path of the ROM file.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         public static ValueTask<RomMetadata> GetMetadataAsync(string romPath, CancellationToken cancellationToken = default)
             => GetMetadataAsync(new FileInfo(romPath), cancellationToken);
 
+        /// <summary>
+        /// Returns the ROM metadata from the provided ROM file.
+        /// </summary>
+        /// <param name="romFile">The ROM file.</param>
         public static RomMetadata GetMetadata(FileInfo romFile)
         {
             Guard.IsNotNull(romFile, nameof(romFile));
@@ -331,6 +407,11 @@ namespace Foundry.Media.Nintendo64.RomData
             return RomFile.GetMetadata(romFile);
         }
 
+        /// <summary>
+        /// Returns the ROM metadata from the provided ROM file.
+        /// </summary>
+        /// <param name="romFile">The ROM file.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         public static ValueTask<RomMetadata> GetMetadataAsync(FileInfo romFile, CancellationToken cancellationToken = default)
         {
             Guard.IsNotNull(romFile, nameof(romFile));
@@ -338,6 +419,10 @@ namespace Foundry.Media.Nintendo64.RomData
             return RomFile.GetMetadataAsync(romFile, cancellationToken);
         }
 
+        /// <summary>
+        /// Returns the ROM metadata using the data from the provided stream.
+        /// </summary>
+        /// <param name="romStream">The ROM data stream.</param>
         public static RomMetadata GetMetadata(Stream romStream)
         {
             Guard.IsNotNull(romStream, nameof(romStream));
@@ -345,6 +430,11 @@ namespace Foundry.Media.Nintendo64.RomData
             return RomStream.GetMetadata(romStream);
         }
 
+        /// <summary>
+        /// Returns the ROM metadata using the data from the provided stream.
+        /// </summary>
+        /// <param name="romStream">The ROM data stream.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         public static ValueTask<RomMetadata> GetMetadataAsync(Stream romStream, CancellationToken cancellationToken = default)
         {
             Guard.IsNotNull(romStream, nameof(romStream));
@@ -352,17 +442,35 @@ namespace Foundry.Media.Nintendo64.RomData
             return RomStream.GetMetadataAsync(romStream, cancellationToken);
         }
 
+        /// <summary>
+        /// Returns the ROM metadata using the data from the provided memory region.
+        /// </summary>
+        /// <param name="romData">The ROM data.</param>
         public static RomMetadata GetMetadata(ReadOnlyMemory<byte> romData)
             => GetMetadata(romData.Span);
 
+        /// <summary>
+        /// Returns the ROM metadata using the data from the provided memory region.
+        /// </summary>
+        /// <param name="romData">The ROM data.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         public static ValueTask<RomMetadata> GetMetadataAsync(ReadOnlyMemory<byte> romData, CancellationToken cancellationToken = default)
             => GetMetadataAsync(romData.Span, cancellationToken);
 
+        /// <summary>
+        /// Returns the ROM metadata using the data from the provided memory region.
+        /// </summary>
+        /// <param name="romData">The ROM data.</param>
         public static RomMetadata GetMetadata(ReadOnlySpan<byte> romData)
         {
             return RomMetadata.Create(romData);
         }
 
+        /// <summary>
+        /// Returns the ROM metadata using the data from the provided memory region.
+        /// </summary>
+        /// <param name="romData">The ROM data.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         public static ValueTask<RomMetadata> GetMetadataAsync(ReadOnlySpan<byte> romData, CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -370,6 +478,10 @@ namespace Foundry.Media.Nintendo64.RomData
             return new ValueTask<RomMetadata>(RomMetadata.Create(romData));
         }
 
+        /// <summary>
+        /// Returns the ROM metadata using the data from the provided memory region.
+        /// </summary>
+        /// <param name="romData">The ROM data.</param>
         public static RomMetadata GetMetadata(IMemoryOwner<byte> romData)
         {
             Guard.IsNotNull(romData, nameof(romData));
@@ -377,6 +489,11 @@ namespace Foundry.Media.Nintendo64.RomData
             return GetMetadata(romData.Memory.Span);
         }
 
+        /// <summary>
+        /// Returns the ROM metadata using the data from the provided memory region.
+        /// </summary>
+        /// <param name="romData">The ROM data.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         public static ValueTask<RomMetadata> GetMetadataAsync(IMemoryOwner<byte> romData, CancellationToken cancellationToken = default)
         {
             Guard.IsNotNull(romData, nameof(romData));
@@ -384,6 +501,10 @@ namespace Foundry.Media.Nintendo64.RomData
             return GetMetadataAsync(romData.Memory.Span, cancellationToken);
         }
 
+        /// <summary>
+        /// Throws an <see cref="ObjectDisposedException"/> if this object is disposed.
+        /// </summary>
+        /// <exception cref="ObjectDisposedException">The object is disposed.</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected void CheckDisposed()
         {
@@ -393,6 +514,7 @@ namespace Foundry.Media.Nintendo64.RomData
             }
         }
 
+        /// <exception cref="ObjectDisposedException">The object is disposed.</exception>
         [DoesNotReturn, MethodImpl(MethodImplOptions.NoInlining)]
         private void ThrowObjectDisposedException()
         {

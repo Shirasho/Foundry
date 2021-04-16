@@ -100,7 +100,7 @@ csharp_prefer_simple_using_statement = true:suggestion
 csharp_prefer_simple_default_expression = true:error
 csharp_style_pattern_local_over_anonymous_function = true:suggestion
 csharp_style_prefer_index_operator = true:suggestion
-csharp_style_prefer_range_operator = true:error
+csharp_style_prefer_range_operator = true:silent
 csharp_style_unused_value_assignment_preference = discard_variable:error
 csharp_style_unused_value_expression_statement_preference = discard_variable:silent
 
@@ -406,3 +406,6 @@ dotnet_diagnostic.HAA0502.severity = none
 
 # HAA0601: Value type to reference type conversion causing boxing allocation
 dotnet_diagnostic.HAA0601.severity = silent
+
+# IDE0057: Use range operator
+dotnet_diagnostic.IDE0057.severity = silent

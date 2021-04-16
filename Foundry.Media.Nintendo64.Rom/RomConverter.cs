@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Toolkit.Diagnostics;
 
-namespace Foundry.Media.Nintendo64.RomData
+namespace Foundry.Media.Nintendo64.Rom
 {
     public static class RomConverter
     {
@@ -40,7 +40,7 @@ namespace Foundry.Media.Nintendo64.RomData
         /// <param name="data">The data to convert to.</param>
         /// <param name="format">The format to convert.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
-        public static async ValueTask<IRomData> ConvertToAsync(this IRomData data, ERomFormat format, CancellationToken cancellationToken)
+        public static async ValueTask<IRomData> ConvertToAsync(this IRomData data, ERomFormat format, CancellationToken cancellationToken = default)
         {
             Guard.IsNotNull(data, nameof(data));
 
@@ -58,7 +58,7 @@ namespace Foundry.Media.Nintendo64.RomData
         /// </summary>
         /// <param name="data">The data to copy.</param>
         public static IRomData Copy(this IRomData data)
-            => ConvertTo(data, data.Metadata.Format);
+            => ConvertTo(data, data.Metadata!.Format);
 
         /// <summary>
         /// Converts the ROM data in <paramref name="data"/> to the format specified in
@@ -66,6 +66,7 @@ namespace Foundry.Media.Nintendo64.RomData
         /// </summary>
         /// <param name="format">The format to convert <paramref name="data"/> to.</param>
         /// <param name="data">The data to convert.</param>
+        /// <exception cref="ArgumentException"><paramref name="data"/> is not a valid ROM.</exception>
         public static void ConvertTo(ERomFormat format, in Span<byte> data)
         {
             var dataFormat = RomMetadata.GetFormat(data);
@@ -102,9 +103,31 @@ namespace Foundry.Media.Nintendo64.RomData
                     ByteManipulation.SwapEndian(data);
                     return;
                 default:
+#pragma warning disable RCS1140 // Add exception to documentation comment.
                     throw new NotSupportedException($"Unable to convert from {dataFormat} to {format}.");
+#pragma warning restore RCS1140 // Add exception to documentation comment.
 
             }
+        }
+
+
+        /// <summary>
+        /// Converts the ROM data in <paramref name="data"/> to the format specified in
+        /// <paramref name="format"/>.The result is stored in <paramref name="dest"/>.
+        /// </summary>
+        /// <param name="format">The format to convert <paramref name="data"/> to.</param>
+        /// <param name="data">The data to convert.</param>
+        /// <param name="dest">The buffer to store the result in.</param>
+        /// <exception cref="ArgumentException"><paramref name="data"/> is not a valid ROM.</exception>
+        public static void ConvertTo(ERomFormat format, in ReadOnlySpan<byte> data, in Span<byte> dest)
+        {
+            var dataFormat = RomMetadata.GetFormat(data);
+            if (dataFormat == ERomFormat.Invalid)
+            {
+                throw new ArgumentException("Data is not a valid ROM.", nameof(data));
+            }
+
+            ConvertTo(format, data, dataFormat, dest);
         }
 
         /// <summary>
@@ -114,15 +137,10 @@ namespace Foundry.Media.Nintendo64.RomData
         /// <param name="format">The format to convert <paramref name="data"/> to.</param>
         /// <param name="data">The data to convert.</param>
         /// <param name="dest">The buffer to store the result in.</param>
-        public static void ConvertTo(ERomFormat format, in ReadOnlySpan<byte> data, in Span<byte> dest)
+        /// <exception cref="ArgumentException"><paramref name="data"/> is not a valid ROM.</exception>
+        public static void ConvertTo(ERomFormat format, in ReadOnlySpan<byte> data, ERomFormat dataFormat, in Span<byte> dest)
         {
             Guard.HasSizeGreaterThanOrEqualTo(dest, data.Length, nameof(dest));
-
-            var dataFormat = RomMetadata.GetFormat(data);
-            if (dataFormat == ERomFormat.Invalid)
-            {
-                throw new ArgumentException("Data is not a valid ROM.", nameof(data));
-            }
 
             if (dataFormat == format)
             {
@@ -153,7 +171,9 @@ namespace Foundry.Media.Nintendo64.RomData
                     ByteManipulation.SwapEndian(dest);
                     return;
                 default:
+#pragma warning disable RCS1140 // Add exception to documentation comment.
                     throw new NotSupportedException($"Unable to convert from {dataFormat} to {format}.");
+#pragma warning restore RCS1140 // Add exception to documentation comment.
 
             }
         }
