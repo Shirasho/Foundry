@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Foundry.Media.Nintendo64.OotDecompiler": {
+      "commandName": "Project",
+      "commandLineArgs": "\"E:\\Games\\Nintendo64\\Legend of Zelda, The - Ocarina of Time (USA).z64\""
+    }
+  }
+}

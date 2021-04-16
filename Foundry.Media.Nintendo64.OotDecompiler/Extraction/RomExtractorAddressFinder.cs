@@ -17,11 +17,16 @@ namespace Foundry.Media.Nintendo64.OotDecompiler.Extraction
         /// The number of assumed files.
         /// </summary>
         public int FileCount { get; set; }
+
+        /// <summary>
+        /// Whether to check the file addresses concurrently.
+        /// </summary>
+        public bool Concurrent { get; set; } = true;
     }
 
     internal sealed class RomExtractorAddressFinder : IRomExtractor
     {
-        private static readonly int[] Numbers = Enumerable.Range(0, 2500).ToArray();
+        private static readonly int[] Numbers = Enumerable.Range(0, 3000).ToArray();
         private readonly IRomData Data;
 
         public RomExtractorAddressFinder(IRomData romData)
@@ -34,15 +39,28 @@ namespace Foundry.Media.Nintendo64.OotDecompiler.Extraction
             int offsetAddress = opts.OffsetAddress;
             var romData = await Data.GetDataAsync();
 
-            var result = Parallel.ForEach(Numbers.Take(opts.FileCount), new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount * 2 }, (file, o) =>
+            if (opts.Concurrent)
+            {
+                var result = Parallel.ForEach(Numbers.Take(opts.FileCount), new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount * 2 }, (file, o) =>
+                {
+                    if (!ExtractFile(romData, file, offsetAddress, cancellationToken))
+                    {
+                        o.Stop();
+                    }
+                });
+
+                return result.IsCompleted;
+            }
+
+            foreach (int file in Numbers.Take(opts.FileCount))
             {
                 if (!ExtractFile(romData, file, offsetAddress, cancellationToken))
                 {
-                    o.Stop();
+                    return false;
                 }
-            });
+            }
 
-            return result.IsCompleted;
+            return true;
         }
 
         private bool ExtractFile(ReadOnlyMemory<byte> data, int fileIndex, int offset, CancellationToken cancellationToken)
@@ -94,10 +112,7 @@ namespace Foundry.Media.Nintendo64.OotDecompiler.Extraction
 
             static uint ReadUInt(ReadOnlyMemory<byte> buffer, int offset)
             {
-                Span<byte> localBuffer = stackalloc byte[4];
-                buffer.Slice(offset, 4).Span.CopyTo(localBuffer);
-
-                return BitConverter.ToUInt32(localBuffer);
+                return BitConverter.ToUInt32(buffer.Slice(offset, 4).Span);
             }
 
             //static ReadOnlyMemory<byte> Decompress(ReadOnlySpan<byte> romData)

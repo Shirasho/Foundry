@@ -63,6 +63,24 @@ namespace Foundry.Media.Nintendo64.Rom
         ValueTask<ReadOnlyMemory<byte>> GetDataAsync();
 
         /// <summary>
+        /// Returns the IPL3, also known as the ROM boot code.
+        /// </summary>
+        /// <remarks>
+        /// The IPL3 is the first 4096 bytes (0x1000) of the ROM data,
+        /// minus the 64 bytes (0x40) required for header info.
+        /// </remarks>
+        ReadOnlyMemory<byte> GetIPL3();
+
+        /// <summary>
+        /// Returns the IPL3, also known as the ROM boot code.
+        /// </summary>
+        /// <remarks>
+        /// The IPL3 is the first 4096 bytes (0x1000) of the ROM data,
+        /// minus the 64 bytes (0x40) required for header info.
+        /// </remarks>
+        ValueTask<ReadOnlyMemory<byte>> GetIPL3Async();
+
+        /// <summary>
         /// Unloads the ROM data from memory.
         /// </summary>
         /// <remarks>

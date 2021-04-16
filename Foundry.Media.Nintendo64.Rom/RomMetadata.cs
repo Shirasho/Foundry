@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Text;
+using Foundry.Media.Nintendo64.Rom.Utilities;
+using Microsoft.Toolkit.Diagnostics;
 
 namespace Foundry.Media.Nintendo64.Rom
 {
@@ -12,12 +13,37 @@ namespace Foundry.Media.Nintendo64.Rom
         /// <summary>
         /// Represents unset, missing, or invalid metadata.
         /// </summary>
-        public static RomMetadata None => new RomMetadata(ERomFormat.Unknown, ERomDestinationCode.Undocumented, string.Empty, string.Empty, 0);
+        public static RomMetadata None { get; } = new RomMetadata();
 
         /// <summary>
         /// The last address of the header byte that we care about, rounded to the nearest 4 bytes.
         /// </summary>
-        internal const int HeaderLength = 0x40;
+        public const int HeaderLength = 0x40;
+
+        /// <summary>
+        /// The clock rate override.
+        /// </summary>
+        public uint ClockrateOverride { get; }
+
+        /// <summary>
+        /// The ROM entry address.
+        /// </summary>
+        public uint EntryAddress { get; }
+
+        /// <summary>
+        /// The return address.
+        /// </summary>
+        public uint ReturnAddress { get; }
+
+        /// <summary>
+        /// The first CRC.
+        /// </summary>
+        public uint Crc1 { get; }
+
+        /// <summary>
+        /// The second CRC.
+        /// </summary>
+        public uint Crc2 { get; }
 
         /// <summary>
         /// The format of the ROM data.
@@ -42,15 +68,40 @@ namespace Foundry.Media.Nintendo64.Rom
         /// <summary>
         /// The mask ROM version.
         /// </summary>
-        public int MaskRomVersion { get; }
+        public byte Version { get; }
 
-        private RomMetadata(ERomFormat format, ERomDestinationCode destinationCode, string title, string gameCode, int maskRomVersion)
+        private RomMetadata()
         {
+            Title = string.Empty;
+            GameCode = string.Empty;
+        }
+
+        private RomMetadata(in Span<byte> bigEndianHeaderBytes, ERomFormat format)
+        {
+            Guard.HasSizeGreaterThanOrEqualTo(bigEndianHeaderBytes, 40, nameof(bigEndianHeaderBytes));
+
             Format = format;
-            DestinationCode = destinationCode;
-            Title = title;
-            GameCode = gameCode;
-            MaskRomVersion = maskRomVersion;
+
+            var reader = new SpanReader(bigEndianHeaderBytes);
+            reader.Seek(0x04);
+
+            ClockrateOverride = reader.ReadUInt32();
+            EntryAddress = reader.ReadUInt32();
+
+            reader.Seek(0x0C);
+            ReturnAddress = reader.ReadUInt32();
+
+            reader.Seek(0x10);
+            Crc1 = reader.ReadUInt32();
+            Crc2 = reader.ReadUInt32();
+
+            reader.Seek(0x20);
+            Title = reader.ReadString(0x20, 20);
+
+            reader.Seek(0x3B);
+            GameCode = reader.ReadString(3);
+            DestinationCode = (ERomDestinationCode)reader.ReadByte();
+            Version = reader.ReadByte();
         }
 
         /// <summary>
@@ -118,14 +169,7 @@ namespace Foundry.Media.Nintendo64.Rom
                 RomConverter.ConvertTo(ERomFormat.BigEndian, headerBuffer);
             }
 
-            var destinationCode = (ERomDestinationCode)headerBuffer[0x3E];
-            int maskRomVersion = headerBuffer[0x3F];
-
-            Span<byte> trimChars = stackalloc byte[] { 0x0, 0x32 };
-            string title = Encoding.ASCII.GetString(headerBuffer.Slice(0x20, 20).Trim(trimChars));
-            string gameCode = Encoding.ASCII.GetString(data.Slice(0x3B, 3).Trim(trimChars));
-
-            result = new RomMetadata(format, destinationCode, title, gameCode, maskRomVersion);
+            result = new RomMetadata(headerBuffer, format);
             return true;
         }
 

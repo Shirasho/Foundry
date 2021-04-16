@@ -4,14 +4,15 @@ using System.IO;
 using System.Threading.Tasks;
 using Foundry.Media.Nintendo64.OotDecompiler.Extraction;
 using Foundry.Media.Nintendo64.Rom;
+using static Foundry.Media.Nintendo64.OotDecompiler.ConsoleEditor;
 
 namespace Foundry.Media.Nintendo64.OotDecompiler
 {
     internal static class Program
     {
-        static async Task Main()
+        static async Task Main(string[] args)
         {
-            using var romFile = await RomData.LoadRomAsync(@"E:\Games\Nintendo64\Legend of Zelda, The - Ocarina of Time (USA).z64");
+            using var romFile = await RomData.LoadRomAsync(args.Length > 0 ? args[0] : throw new ArgumentException("First argument must be the ROM path."));
             var romBuild = romFile.GetRomBuild();
 
             Console.WriteLine($"Name: {romFile.Metadata.Title}");
@@ -20,33 +21,42 @@ namespace Foundry.Media.Nintendo64.OotDecompiler
             Console.WriteLine($"Destination Code: {romFile.Metadata.DestinationCode}");
             Console.WriteLine($"Game Code: {romFile.Metadata.GameCode}");
             Console.WriteLine($"Format: {romFile.Metadata.Format}");
-            Console.WriteLine($"Mask Rom Version: {romFile.Metadata.MaskRomVersion}");
+            Console.WriteLine($"Mask Rom Version: {romFile.Metadata.Version}");
 
-            Console.WriteLine();
             Console.CursorVisible = false;
+            int cursorTop = Console.CursorTop;
 
-            var result = await RequestInputBlockAsync("Enter the number of the operation to perform.",
-                ("Extract files (Debug)", () => ExtractFilesAsync(romFile)),
-                ("Change format", () => ChangeFormatAsync(romFile)),
-                ("Exit", BackTask)
-            );
-
-            if (result == EInputBlockResult.Back)
+            while (true)
             {
-                // The way the Back erasing logic works makes it not erase
-                // correctly here, so we need to manually erase some lines.
-                ErasePreviousLine();
-                return;
+                Console.WriteLine();
+                var result = await RequestInputBlockAsync("Enter the number of the operation to perform.",
+                    ("Extract files (Debug)", () => ExtractFilesAsync(romFile)),
+                    ("Change format", () => ChangeFormatAsync(romFile)),
+                    ("Verify ROM", () => VerifyRomAsync(romFile)),
+                    ("Exit", BackTask)
+                );
+
+                if (result == EInputBlockResult.Back)
+                {
+                    // The way the Back erasing logic works makes it not erase
+                    // correctly here, so we need to manually erase some lines.
+                    ErasePreviousLine();
+                    return;
+                }
+
+                Console.WriteLine();
+                Console.WriteLine("The operation {0}.", result == EInputBlockResult.Success ? "completed successfully" : "has failed");
+                Console.WriteLine();
+                Console.WriteLine("To run another operation press Space, otherwise the application will exit.");
+
+                if (Console.ReadKey().Key != ConsoleKey.Spacebar)
+                {
+                    break;
+                }
+
+                EraseLines(cursorTop);
+                Console.WriteLine();
             }
-
-            Console.WriteLine();
-            Console.WriteLine("The operation {0}.", result == EInputBlockResult.Success ? "completed successfully" : "has failed");
-
-            Console.CursorVisible = true;
-
-            Console.WriteLine();
-            Console.WriteLine("Press any key to exit.");
-            Console.ReadKey();
         }
 
         private static async ValueTask<EInputBlockResult> ExtractFilesAsync(IRomData romData)
@@ -55,18 +65,20 @@ namespace Foundry.Media.Nintendo64.OotDecompiler
 
             // We need our rom in z64.
             var extractor = new RomExtractorAddressFinder(await romData.ConvertToAsync(ERomFormat.BigEndian));
-            var options = new RomExtractionAddressFinderOptions();
+            var options = new RomExtractionAddressFinderOptions { Concurrent = false };
             var stopwatch = Stopwatch.StartNew();
 
             try
             {
-                const int startAddress = 0x10000;
-                const int endAddress = 0x20000;
+                const int startAddress = 0x40080;
+                const int endAddress = 0x40080;
+                // 1532
+                const int startFileCount = 1532;
+                const int endFileCount = 1532;
                 int nextConsoleUpdate = startAddress;
 
                 for (int currentAddress = startAddress; currentAddress <= endAddress; ++currentAddress)
                 {
-
                     if (currentAddress == nextConsoleUpdate)
                     {
                         nextConsoleUpdate = Math.Min(nextConsoleUpdate + 0xF, endAddress);
@@ -74,7 +86,7 @@ namespace Foundry.Media.Nintendo64.OotDecompiler
                         Console.Write($"[{stopwatch.Elapsed}][{percent}%] Testing start position {currentAddress:X} - {nextConsoleUpdate:X}");
                     }
 
-                    for (int fileCount = 1000; fileCount <= 2500; ++fileCount)
+                    for (int fileCount = startFileCount; fileCount <= endFileCount; ++fileCount)
                     {
                         options.OffsetAddress = currentAddress;
                         options.FileCount = fileCount;
@@ -152,8 +164,8 @@ namespace Foundry.Media.Nintendo64.OotDecompiler
                     if (file.Exists)
                     {
                         return await RequestInputBlockAsync($"The file {file.FullName} already exists. Overwrite?",
-                            ("Yes", () => new ValueTask<EInputBlockResult>(EInputBlockResult.Success)),
-                            ("No", () => new ValueTask<EInputBlockResult>(EInputBlockResult.Failed))
+                            ("Yes", SuccessTask),
+                            ("No", FailedTask)
                         );
                     }
 
@@ -162,87 +174,35 @@ namespace Foundry.Media.Nintendo64.OotDecompiler
             }
         }
 
-        private enum EInputBlockResult
+        private static ValueTask<EInputBlockResult> VerifyRomAsync(IRomData romData)
         {
-            Success,
-            Failed,
-            Back
-        }
+            Console.WriteLine("Running diagnostics.");
+            Console.WriteLine($"Entry Address: 0x{romData.Metadata.EntryAddress:X}");
+            Console.WriteLine($"Return Address: 0x{romData.Metadata.ReturnAddress:X}");
+            Console.WriteLine();
 
-        private static Func<ValueTask<EInputBlockResult>> BackTask { get; } = new Func<ValueTask<EInputBlockResult>>(() => new ValueTask<EInputBlockResult>(EInputBlockResult.Back));
-        private static bool BackTracker;
-
-        private static async Task<EInputBlockResult> RequestInputBlockAsync(string title, params (string Title, Func<ValueTask<EInputBlockResult>> Callback)[] callbacks)
-        {
-            int cursorTop = Console.CursorTop;
-            while (true)
-            {
-                Console.WriteLine(title);
-                for (int i = 0; i < callbacks.Length; ++i)
-                {
-                    Console.WriteLine($"{i + 1}. {callbacks[i].Title}");
-                }
-
-                int callbackIndex = (int)Console.ReadKey().Key - (int)ConsoleKey.D1;
-                if (callbackIndex < 0 || callbackIndex >= callbacks.Length)
-                {
-                    EraseLines(cursorTop + 1);
-                    continue;
-                }
-
-                EraseLine();
-                Console.WriteLine($"[{callbackIndex + 1}]");
-                Console.WriteLine();
-
-                var callback = callbacks[callbackIndex];
-                var result = await callback.Callback();
-                switch (result)
-                {
-                    case EInputBlockResult.Back:
-                        EraseLines(cursorTop + 1);
-                        if (!BackTracker)
-                        {
-                            BackTracker = true;
-                            return result;
-                        }
-                        else
-                        {
-                            BackTracker = false;
-                            continue;
-                        }
-                    case EInputBlockResult.Success:
-                    case EInputBlockResult.Failed:
-                        return result;
-
-                }
-            }
-        }
-
-        private static void EraseLine()
-        {
-            Console.SetCursorPosition(0, Console.CursorTop);
-            Console.Write(new string(' ', Console.WindowWidth));
-            Console.SetCursorPosition(0, Console.CursorTop);
-        }
-
-        private static void EraseLines(int toCursorTop)
-        {
-            while (Console.CursorTop >= toCursorTop)
+            Console.Write("[ ] Verifying code entry address.");
+            if (!romData.AssertValidEntryPoint())
             {
                 EraseLine();
-                --Console.CursorTop;
+                Console.WriteLine($"[x] Verifying code entry address. Entry address 0x{romData.Metadata.EntryAddress:X} is not within the expected address range.");
             }
-        }
+            else
+            {
+                EraseLine();
+                Console.WriteLine("[o] Verifying code entry address.");
+            }
 
-        private static void ErasePreviousLine()
-        {
-            EraseLine();
-            --Console.CursorTop;
-            EraseLine();
+            return new ValueTask<EInputBlockResult>(EInputBlockResult.Success);
         }
 
         private static double Percent(int a, int b, int value)
         {
+            double divisor = b - a;
+            if (divisor == 0)
+            {
+                return 1;
+            }
             return (value - a) / (double)(b - a);
         }
     }
