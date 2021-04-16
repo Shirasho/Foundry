@@ -20,7 +20,7 @@ namespace Foundry
     /// <summary>
     /// <see cref="Span{T}"/>, <see cref="ReadOnlySpan{T}"/>, <see cref="Memory{T}"/>, and <see cref="ReadOnlyMemory{T}"/> extensions.
     /// </summary>
-    public static class MemoryExtensions
+    public static partial class MemoryExtensions
     {
         private const ulong XorPowerOfTwoToHighByte = (0x07ul | 0x06ul << 8 | 0x05ul << 16 | 0x04ul << 24 | 0x03ul << 32 | 0x02ul << 40 | 0x01ul << 48) + 1;
 

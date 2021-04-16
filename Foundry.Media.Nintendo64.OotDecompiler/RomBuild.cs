@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Text;
 using Foundry.Media.Nintendo64.Rom;
 
@@ -90,13 +90,12 @@ namespace Foundry.Media.Nintendo64.OotDecompiler
             result = null;
 
             // zelda@ - Some builds (the chinese build for example) has a different prefix,
-            // but we are only supporting decompilation of the NTSC 1.0 ROM.
+            // but we are only supporting decompilation of the NTSC 1.0-1.2 ROMs.
             Span<byte> buildSearchBytes = data.Metadata.Format switch
             {
-                // 00007400
                 ERomFormat.BigEndian => stackalloc byte[] { 0x7A, 0x65, 0x6C, 0x64, 0x61, 0x40 },
                 ERomFormat.ByteSwapped => stackalloc byte[] { 0x65, 0x7A, 0x64, 0x6C, 0x40, 0x61 },
-                ERomFormat.LittleEndian => stackalloc byte[] { 0, 0x65, 0x6C, 0x64, 0x61, 0x40 },
+                ERomFormat.LittleEndian => stackalloc byte[] { 0x64, 0x6C, 0x65, 0x7A, 0x72, 0x73 },
                 _ => Span<byte>.Empty
             };
 
@@ -105,23 +104,39 @@ namespace Foundry.Media.Nintendo64.OotDecompiler
                 return false;
             }
 
-            Debug.Assert(Encoding.ASCII.GetString(buildSearchBytes) == "zelda@");
-
-            ReadOnlySpan<byte> d = stackalloc byte[1];
+            var d = data.GetData().Span;
             int buildStartAddress = d.IndexOf(buildSearchBytes);
             if (buildStartAddress < 0)
             {
                 return false;
             }
 
-            int buildEndAddress = d.Slice(buildStartAddress).IndexOf(0x00);
+            buildStartAddress = GetLowerAddressBoundary(buildStartAddress);
+
+            // The regular build may have a null byte between the build number and the date.
+            // There is a bunch of padding in the ROMs after the date. We can try and use that
+            // as a flag.
+            int buildEndAddress = d.Slice(buildStartAddress).IndexOf(stackalloc byte[] { 0x00, 0x00, 0x00, 0x00 });
             if (buildEndAddress < 0)
             {
                 buildEndAddress = d.Length;
             }
+            else
+            {
+                // We sliced earlier, so we need to add the start address as
+                // an offset.
+                buildEndAddress += buildStartAddress;
+            }
+            buildEndAddress = GetUpperAddressBoundary(buildEndAddress);
 
-            int buildInfoLength = buildEndAddress - buildStartAddress;
-            string buildInfo = Encoding.ASCII.GetString(d.Slice(buildStartAddress, buildInfoLength));
+            Span<byte> span = stackalloc byte[buildEndAddress - buildStartAddress];
+            d.Slice(buildStartAddress, span.Length).CopyTo(span);
+
+            RomConverter.ConvertTo(ERomFormat.BigEndian, data.Metadata.Format, span);
+            span = span.Trim(stackalloc byte[] { 0x00 });
+            span.Replace(0x00, 0x20);
+
+            string buildInfo = Encoding.ASCII.GetString(span);
 
             result = new RomBuild(buildInfo);
             return true;
@@ -138,10 +153,8 @@ namespace Foundry.Media.Nintendo64.OotDecompiler
             result = null;
 
             // zelda@ - Some builds (the chinese build for example) has a different prefix,
-            // but we are only supporting decompilation of the NTSC 1.0 ROM.
+            // but we are only supporting decompilation of the NTSC 1.0-1.2 ROMs.
             Span<byte> buildSearchBytes = stackalloc byte[] { 0x7A, 0x65, 0x6C, 0x64, 0x61, 0x40 };
-
-            Debug.Assert(Encoding.ASCII.GetString(buildSearchBytes) == "zelda@");
 
             int buildStartAddress = data.IndexOf(buildSearchBytes);
             if (buildStartAddress < 0)
@@ -149,17 +162,44 @@ namespace Foundry.Media.Nintendo64.OotDecompiler
                 return false;
             }
 
-            int buildEndAddress = data.Slice(buildStartAddress).IndexOf(0x00);
+            // The regular build may have a null byte between the build number and the date.
+            // There is a bunch of padding in the ROMs after the date. We can try and use that
+            // as a flag.
+            int buildEndAddress = data.Slice(buildStartAddress).IndexOf(stackalloc byte[] { 0x00, 0x00, 0x00, 0x00 });
             if (buildEndAddress < 0)
             {
                 buildEndAddress = data.Length;
             }
 
             int buildInfoLength = buildEndAddress - buildStartAddress;
-            string buildInfo = Encoding.ASCII.GetString(data.Slice(buildStartAddress, buildInfoLength));
+
+            Span<byte> span = stackalloc byte[buildInfoLength];
+            data.Slice(buildStartAddress, buildInfoLength).CopyTo(span);
+
+            span = span.Trim(stackalloc byte[] { 0x00 });
+            span.Replace(0x00, 0x20);
+            string buildInfo = Encoding.ASCII.GetString(span);
 
             result = new RomBuild(buildInfo);
             return true;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static int GetUpperAddressBoundary(int address)
+        {
+            return (int)Math.Ceiling(address * 1.0 / 4) * 4;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static int GetLowerAddressBoundary(int address)
+        {
+            int result = (int)Math.Ceiling(address * 1.0 / 4) * 4;
+            if (result != address)
+            {
+                result -= 4;
+            }
+
+            return result;
         }
     }
 }

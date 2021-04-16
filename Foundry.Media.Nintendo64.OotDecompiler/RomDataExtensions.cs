@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using Foundry.Media.Nintendo64.Rom;
+﻿using Foundry.Media.Nintendo64.Rom;
 
 namespace Foundry.Media.Nintendo64.OotDecompiler
 {
@@ -7,14 +6,7 @@ namespace Foundry.Media.Nintendo64.OotDecompiler
     {
         public static RomBuild GetRomBuild(this IRomData romData)
         {
-            var data = romData.GetData();
-            return RomBuild.Create(data.Span);
-        }
-
-        public static async ValueTask<RomBuild> GetRomBuildAsync(this IRomData romData)
-        {
-            var data = await romData.GetDataAsync();
-            return RomBuild.Create(data.Span);
+            return RomBuild.Create(romData);
         }
     }
 }

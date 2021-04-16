@@ -75,6 +75,18 @@ namespace Foundry.Media.Nintendo64.Rom
                 throw new ArgumentException("Data is not a valid ROM.", nameof(data));
             }
 
+            ConvertTo(format, dataFormat, data);
+        }
+
+        /// <summary>
+        /// Converts the ROM data in <paramref name="data"/> to the format specified in
+        /// <paramref name="format"/>.
+        /// </summary>
+        /// <param name="format">The format to convert <paramref name="data"/> to.</param>
+        /// <param name="data">The data to convert.</param>
+        /// <exception cref="ArgumentException"><paramref name="data"/> is not a valid ROM.</exception>
+        public static void ConvertTo(ERomFormat format, ERomFormat dataFormat, in Span<byte> data)
+        {
             if (dataFormat == format)
             {
                 return;
@@ -109,7 +121,6 @@ namespace Foundry.Media.Nintendo64.Rom
 
             }
         }
-
 
         /// <summary>
         /// Converts the ROM data in <paramref name="data"/> to the format specified in

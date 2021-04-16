@@ -12,10 +12,10 @@ namespace Foundry.Media.Nintendo64.OotDecompiler
         static async Task Main()
         {
             using var romFile = await RomData.LoadRomAsync(@"E:\Games\Nintendo64\Legend of Zelda, The - Ocarina of Time (USA).z64");
-            //var romBuild = await romFile.GetRomBuildAsync();
+            var romBuild = romFile.GetRomBuild();
 
             Console.WriteLine($"Name: {romFile.Metadata.Title}");
-            //Console.WriteLine($"Build: {romBuild.Version} ({romBuild.BuildNumber})");
+            Console.WriteLine($"Build: {romBuild.Version} ({romBuild.BuildNumber})");
             Console.WriteLine($"Size: {romFile.Size.Size.Mebibits}Mib (0x{romFile.Length:X})");
             Console.WriteLine($"Destination Code: {romFile.Metadata.DestinationCode}");
             Console.WriteLine($"Game Code: {romFile.Metadata.GameCode}");
@@ -33,6 +33,9 @@ namespace Foundry.Media.Nintendo64.OotDecompiler
 
             if (result == EInputBlockResult.Back)
             {
+                // The way the Back erasing logic works makes it not erase
+                // correctly here, so we need to manually erase some lines.
+                ErasePreviousLine();
                 return;
             }
 
@@ -221,6 +224,7 @@ namespace Foundry.Media.Nintendo64.OotDecompiler
             Console.Write(new string(' ', Console.WindowWidth));
             Console.SetCursorPosition(0, Console.CursorTop);
         }
+
         private static void EraseLines(int toCursorTop)
         {
             while (Console.CursorTop >= toCursorTop)
@@ -228,6 +232,13 @@ namespace Foundry.Media.Nintendo64.OotDecompiler
                 EraseLine();
                 --Console.CursorTop;
             }
+        }
+
+        private static void ErasePreviousLine()
+        {
+            EraseLine();
+            --Console.CursorTop;
+            EraseLine();
         }
 
         private static double Percent(int a, int b, int value)
