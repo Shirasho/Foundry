@@ -4,14 +4,14 @@ using System.Text;
 namespace Foundry.Media.Nintendo64.Rom.Utilities
 {
     /// <summary>
-    /// Reads the contents of a <see cref="Span{T}"/>.
+    /// Reads the contents of a <see cref="Memory{T}"/>.
     /// </summary>
-    public ref struct SpanReader
+    public struct MemoryReader
     {
-        private readonly ReadOnlySpan<byte> Buffer;
+        private readonly ReadOnlyMemory<byte> Buffer;
         private int Cursor;
 
-        public SpanReader(in ReadOnlySpan<byte> buffer)
+        public MemoryReader(in ReadOnlyMemory<byte> buffer)
         {
             Buffer = buffer;
             Cursor = 0;
@@ -34,7 +34,7 @@ namespace Foundry.Media.Nintendo64.Rom.Utilities
             Span<byte> trimChars = stackalloc byte[] { 0x0, 0x32 };
             Span<byte> buffer = stackalloc byte[length];
 
-            Buffer.Slice(offset, length).CopyTo(buffer);
+            Buffer.Slice(offset, length).Span.CopyTo(buffer);
             buffer = buffer.Trim(trimChars);
             buffer.Replace(0x0, 0x20);
 
@@ -53,7 +53,7 @@ namespace Foundry.Media.Nintendo64.Rom.Utilities
             Span<byte> trimChars = stackalloc byte[] { 0x0, 0x32 };
             Span<byte> buffer = stackalloc byte[length];
 
-            Buffer.Slice(offset, length).CopyTo(buffer);
+            Buffer.Slice(offset, length).Span.CopyTo(buffer);
             buffer = buffer.Trim(trimChars);
             buffer.Replace(0x0, 0x20);
 
@@ -69,7 +69,7 @@ namespace Foundry.Media.Nintendo64.Rom.Utilities
 
         public uint ReadUInt32(int offset)
         {
-            return BitConverter.ToUInt32(Buffer.Slice(offset, sizeof(uint)));
+            return BitConverter.ToUInt32(Buffer.Slice(offset, sizeof(uint)).Span);
         }
 
         public bool TryReadUInt32(int offset, out uint result)
@@ -93,7 +93,7 @@ namespace Foundry.Media.Nintendo64.Rom.Utilities
 
         public ulong ReadUInt64(int offset)
         {
-            return BitConverter.ToUInt64(Buffer.Slice(offset, sizeof(ulong)));
+            return BitConverter.ToUInt64(Buffer.Slice(offset, sizeof(ulong)).Span);
         }
 
         public int ReadInt32()
@@ -105,7 +105,7 @@ namespace Foundry.Media.Nintendo64.Rom.Utilities
 
         public int ReadInt32(int offset)
         {
-            return BitConverter.ToInt32(Buffer.Slice(offset, sizeof(int)));
+            return BitConverter.ToInt32(Buffer.Slice(offset, sizeof(int)).Span);
         }
 
         public byte ReadByte()
@@ -117,7 +117,7 @@ namespace Foundry.Media.Nintendo64.Rom.Utilities
 
         public byte ReadByte(int offset)
         {
-            return Buffer[offset];
+            return Buffer.Span[offset];
         }
     }
 }

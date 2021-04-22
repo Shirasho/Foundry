@@ -65,6 +65,112 @@ namespace Foundry.Media.Nintendo64.OotDecompiler
             }
         }
 
+        public static bool PerformChecklistOperation(string title, Action operation)
+        {
+            return PerformChecklistOperation(title, () =>
+            {
+                try
+                {
+                    operation();
+
+                    return new OperationResult();
+                }
+                catch (Exception e)
+                {
+                    return new OperationResult(e);
+                }
+            });
+        }
+
+        public static bool PerformChecklistOperation(string title, Func<OperationResult> operation)
+        {
+            Console.Write($"[ ] {title}");
+            var operationResult = operation();
+            EraseLine();
+
+            var foreground = Console.ForegroundColor;
+
+            try
+            {
+                if (operationResult.Success)
+                {
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.WriteLine($"[o] {title}");
+                    return true;
+                }
+
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"[x] {title}");
+                if (operationResult.Exception is not null)
+                {
+                    Console.WriteLine(operationResult.Exception);
+                }
+                else if (!string.IsNullOrWhiteSpace(operationResult.ExceptionMessage))
+                {
+                    Console.WriteLine(operationResult.ExceptionMessage);
+                }
+
+                return false;
+            }
+            finally
+            {
+                Console.ForegroundColor = foreground;
+            }
+        }
+
+        public static Task<bool> PerformChecklistOperationAsync(string title, Func<ValueTask> operation)
+        {
+            return PerformChecklistOperationAsync(title, async () =>
+            {
+                try
+                {
+                    await operation();
+
+                    return new OperationResult();
+                }
+                catch (Exception e)
+                {
+                    return new OperationResult(e);
+                }
+            });
+        }
+
+        public static async Task<bool> PerformChecklistOperationAsync(string title, Func<ValueTask<OperationResult>> operation)
+        {
+            Console.Write($"[ ] {title}");
+            var operationResult = await operation();
+            EraseLine();
+
+            var foreground = Console.ForegroundColor;
+
+            try
+            {
+                if (operationResult.Success)
+                {
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.WriteLine($"[o] {title}");
+                    return true;
+                }
+
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"[x] {title}");
+                if (operationResult.Exception is not null)
+                {
+                    Console.WriteLine(operationResult.Exception);
+                }
+                else if (!string.IsNullOrWhiteSpace(operationResult.ExceptionMessage))
+                {
+                    Console.WriteLine(operationResult.ExceptionMessage);
+                }
+
+                return false;
+            }
+            finally
+            {
+                Console.ForegroundColor = foreground;
+            }
+        }
+
         public static void EraseLine()
         {
             Console.SetCursorPosition(0, Console.CursorTop);

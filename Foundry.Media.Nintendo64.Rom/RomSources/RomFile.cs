@@ -46,24 +46,24 @@ namespace Foundry.Media.Nintendo64.Rom
             return new RomFile(file, dump);
         }
 
-        public static new RomMetadata GetMetadata(FileInfo file)
+        public static new RomHeader GetMetadata(FileInfo file)
         {
             using var fs = file.Open(FileMode.Open, FileAccess.Read, FileShare.Read);
-            Span<byte> headerBuffer = stackalloc byte[RomMetadata.HeaderLength];
+            Span<byte> headerBuffer = stackalloc byte[RomHeader.Length];
 
             fs.Read(headerBuffer);
 
-            return RomMetadata.Create(headerBuffer);
+            return RomHeader.Create(headerBuffer);
         }
 
-        public static new async ValueTask<RomMetadata> GetMetadataAsync(FileInfo file, CancellationToken cancellationToken)
+        public static new async ValueTask<RomHeader> GetMetadataAsync(FileInfo file, CancellationToken cancellationToken)
         {
             using var fs = file.Open(FileMode.Open, FileAccess.Read, FileShare.Read);
-            byte[] headerBuffer = new byte[RomMetadata.HeaderLength];
+            byte[] headerBuffer = new byte[RomHeader.Length];
 
             await fs.ReadAsync(headerBuffer, cancellationToken);
 
-            return RomMetadata.Create(headerBuffer);
+            return RomHeader.Create(headerBuffer);
         }
 
         protected override void LoadRomData()

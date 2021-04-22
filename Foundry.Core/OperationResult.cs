@@ -4,6 +4,16 @@ using Microsoft.Toolkit.Diagnostics;
 namespace Foundry
 {
     /// <summary>
+    /// The level of an <see cref="OperationResult"/>'s level.
+    /// </summary>
+    public enum EOperationResultLevel
+    {
+        Success,
+        Warning,
+        Error
+    }
+
+    /// <summary>
     /// Defines an operation result.
     /// </summary>
     public class OperationResult
@@ -11,7 +21,12 @@ namespace Foundry
         /// <summary>
         /// Whether the operation completed successfully.
         /// </summary>
-        public bool Success { get; }
+        public bool Success => Level == EOperationResultLevel.Success;
+
+        /// <summary>
+        /// The result level.
+        /// </summary>
+        public EOperationResultLevel Level { get; }
 
         /// <summary>
         /// The exception that occurred while executing the operation.
@@ -29,23 +44,37 @@ namespace Foundry
 
         public OperationResult()
         {
-            Success = true;
+            Level = EOperationResultLevel.Success;
         }
 
         public OperationResult(Exception e)
+            : this(e, EOperationResultLevel.Error)
+        {
+
+        }
+
+        public OperationResult(Exception e, EOperationResultLevel level)
         {
             Guard.IsNotNull(e, nameof(e));
+            GuardEx.IsValid(level, nameof(level));
 
-            Success = false;
+            Level = level;
             Exception = e;
             ExceptionMessage = e.Message;
         }
 
         public OperationResult(string errorMessage)
+            : this(errorMessage, EOperationResultLevel.Error)
+        {
+
+        }
+
+        public OperationResult(string errorMessage, EOperationResultLevel level)
         {
             Guard.IsNotNullOrWhitespace(errorMessage, nameof(errorMessage));
+            GuardEx.IsValid(level, nameof(level));
 
-            Success = false;
+            Level = level;
             ExceptionMessage = errorMessage;
         }
     }

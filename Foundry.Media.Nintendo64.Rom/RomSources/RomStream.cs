@@ -57,22 +57,22 @@ namespace Foundry.Media.Nintendo64.Rom
             return new RomStream(romStream, dump, streamPosition, disposeStream);
         }
 
-        public static new RomMetadata GetMetadata(Stream romStream)
+        public static new RomHeader GetMetadata(Stream romStream)
         {
-            Span<byte> headerBuffer = stackalloc byte[RomMetadata.HeaderLength];
+            Span<byte> headerBuffer = stackalloc byte[RomHeader.Length];
 
             romStream.Read(headerBuffer);
 
-            return RomMetadata.Create(headerBuffer);
+            return RomHeader.Create(headerBuffer);
         }
 
-        public static new async ValueTask<RomMetadata> GetMetadataAsync(Stream romStream, CancellationToken cancellationToken)
+        public static new async ValueTask<RomHeader> GetMetadataAsync(Stream romStream, CancellationToken cancellationToken)
         {
-            byte[] headerBuffer = new byte[RomMetadata.HeaderLength];
+            byte[] headerBuffer = new byte[RomHeader.Length];
 
             await romStream.ReadAsync(headerBuffer, cancellationToken);
 
-            return RomMetadata.Create(headerBuffer);
+            return RomHeader.Create(headerBuffer);
         }
 
         protected override void LoadRomData()

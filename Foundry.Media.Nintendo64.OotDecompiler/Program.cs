@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
+using Foundry.Media.Nintendo64.OotDecompiler.Disassembly;
 using Foundry.Media.Nintendo64.OotDecompiler.Extraction;
 using Foundry.Media.Nintendo64.Rom;
 using static Foundry.Media.Nintendo64.OotDecompiler.ConsoleEditor;
@@ -13,15 +14,9 @@ namespace Foundry.Media.Nintendo64.OotDecompiler
         static async Task Main(string[] args)
         {
             using var romFile = await RomData.LoadRomAsync(args.Length > 0 ? args[0] : throw new ArgumentException("First argument must be the ROM path."));
-            var romBuild = romFile.GetRomBuild();
 
             Console.WriteLine($"Name: {romFile.Metadata.Title}");
-            Console.WriteLine($"Build: {romBuild.Version} ({romBuild.BuildNumber})");
-            Console.WriteLine($"Size: {romFile.Size.Size.Mebibits}Mib (0x{romFile.Length:X})");
-            Console.WriteLine($"Destination Code: {romFile.Metadata.DestinationCode}");
-            Console.WriteLine($"Game Code: {romFile.Metadata.GameCode}");
             Console.WriteLine($"Format: {romFile.Metadata.Format}");
-            Console.WriteLine($"Mask Rom Version: {romFile.Metadata.Version}");
 
             Console.CursorVisible = false;
             int cursorTop = Console.CursorTop;
@@ -30,9 +25,10 @@ namespace Foundry.Media.Nintendo64.OotDecompiler
             {
                 Console.WriteLine();
                 var result = await RequestInputBlockAsync("Enter the number of the operation to perform.",
-                    ("Extract files (Debug)", () => ExtractFilesAsync(romFile)),
-                    ("Change format", () => ChangeFormatAsync(romFile)),
+                    //("Extract files (Debug)", () => ExtractFilesAsync(romFile)),
+                    ("Disassemble ROM", () => DisassembleRomAsync(romFile)),
                     ("Verify ROM", () => VerifyRomAsync(romFile)),
+                    ("Change ROM Format", () => ChangeFormatAsync(romFile)),
                     ("Exit", BackTask)
                 );
 
@@ -59,6 +55,7 @@ namespace Foundry.Media.Nintendo64.OotDecompiler
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Redundancy", "RCS1213:Remove unused member declaration.", Justification = "<Pending>")]
         private static async ValueTask<EInputBlockResult> ExtractFilesAsync(IRomData romData)
         {
             Console.WriteLine("Extracting files (Debug)");
@@ -116,6 +113,58 @@ namespace Foundry.Media.Nintendo64.OotDecompiler
             return EInputBlockResult.Failed;
         }
 
+        private static async ValueTask<EInputBlockResult> DisassembleRomAsync(IRomData romData)
+        {
+            Console.WriteLine("Disassembling ROM.");
+            Console.WriteLine();
+            Console.WriteLine("HEADER");
+            var romBuild = romData.GetRomBuild();
+            Console.WriteLine($"{romData.Metadata.Title}");
+            Console.WriteLine($"Build: {romBuild.Version} ({romBuild.BuildNumber})");
+            Console.WriteLine($"Size: {romData.Size.Size.Mebibits}Mib (0x{romData.Length:X})");
+            Console.WriteLine($"Destination Code: {romData.Metadata.DestinationCode}");
+            Console.WriteLine($"Game Code: {romData.Metadata.GameCode}");
+            Console.WriteLine($"Format: {romData.Metadata.Format}");
+            Console.WriteLine($"Mask Rom Version: {romData.Metadata.Version}");
+            Console.WriteLine($"Entry Address: 0x{romData.Metadata.EntryAddress:X}");
+            Console.WriteLine($"Return Address: 0x{romData.Metadata.ReturnAddress:X}");
+            Console.WriteLine();
+
+            var disassembler = new Disassembler();
+
+            if (!await PerformChecklistOperationAsync("Constructing internal header fragment.", async () =>
+            {
+                disassembler.AddDataSegment("INTERNAL_HEADER", await romData.GetHeaderDataAsync(), 0xA4000000);
+                disassembler.AddDataRegion("INTERNAL_HEADER", 0xA4000000, 0xA400003F);
+            }))
+            {
+                return EInputBlockResult.Failed;
+            }
+            if (!await PerformChecklistOperationAsync("Constructing IPL3 fragment.", async () =>
+            {
+                disassembler.AddDataSegment("IPL3", await romData.GetIPL3Async(), 0xA4000040);
+            }))
+            {
+                return EInputBlockResult.Failed;
+            }
+            if (!await PerformChecklistOperationAsync("Constructing code fragment.", async () =>
+            {
+                disassembler.AddDataSegment("CODE", await romData.GetCodeDataAsync(), romData.Metadata.EntryAddress, "code.dat");
+            }))
+            {
+                return EInputBlockResult.Failed;
+            }
+
+            Console.WriteLine();
+
+            if (!await PerformChecklistOperationAsync("First pass disassembly.", async () => await disassembler.DisassembleAsync(new DirectoryInfo(@"C:\Users\shira\Desktop\OoTDecomp"), true)))
+            {
+                return EInputBlockResult.Failed;
+            }
+
+            return EInputBlockResult.Success;
+        }
+
         private static async ValueTask<EInputBlockResult> ChangeFormatAsync(IRomData romData)
         {
             return await RequestInputBlockAsync("Enter the number of the format to convert to.",
@@ -146,7 +195,7 @@ namespace Foundry.Media.Nintendo64.OotDecompiler
                 }
 
                 output = data is RomFile rf
-                    ? rf.File.WithExtension(RomMetadata.GetFormatExtension(format))
+                    ? rf.File.WithExtension(RomHeader.GetFormatExtension(format))
                     : new FileInfo(data.GetFilename());
                 var converted = await data.ConvertToAsync(format);
 
@@ -174,26 +223,24 @@ namespace Foundry.Media.Nintendo64.OotDecompiler
             }
         }
 
-        private static ValueTask<EInputBlockResult> VerifyRomAsync(IRomData romData)
+        private static async ValueTask<EInputBlockResult> VerifyRomAsync(IRomData romData)
         {
             Console.WriteLine("Running diagnostics.");
             Console.WriteLine($"Entry Address: 0x{romData.Metadata.EntryAddress:X}");
             Console.WriteLine($"Return Address: 0x{romData.Metadata.ReturnAddress:X}");
             Console.WriteLine();
 
-            Console.Write("[ ] Verifying code entry address.");
-            if (!romData.AssertValidEntryPoint())
+            await PerformChecklistOperationAsync("Verifying code entry address", () =>
             {
-                EraseLine();
-                Console.WriteLine($"[x] Verifying code entry address. Entry address 0x{romData.Metadata.EntryAddress:X} is not within the expected address range.");
-            }
-            else
-            {
-                EraseLine();
-                Console.WriteLine("[o] Verifying code entry address.");
-            }
+                if (romData.AssertValidEntryPoint())
+                {
+                    return new ValueTask<OperationResult>(new OperationResult($"Entry address 0x{romData.Metadata.EntryAddress:X} is not within the expected address range."));
+                }
 
-            return new ValueTask<EInputBlockResult>(EInputBlockResult.Success);
+                return new ValueTask<OperationResult>(new OperationResult());
+            });
+
+            return EInputBlockResult.Success;
         }
 
         private static double Percent(int a, int b, int value)

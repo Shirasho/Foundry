@@ -69,7 +69,7 @@ namespace Foundry.Media.Nintendo64.Rom
         /// <exception cref="ArgumentException"><paramref name="data"/> is not a valid ROM.</exception>
         public static void ConvertTo(ERomFormat format, in Span<byte> data)
         {
-            var dataFormat = RomMetadata.GetFormat(data);
+            var dataFormat = RomHeader.GetFormat(data);
             if (dataFormat == ERomFormat.Invalid)
             {
                 throw new ArgumentException("Data is not a valid ROM.", nameof(data));
@@ -132,7 +132,7 @@ namespace Foundry.Media.Nintendo64.Rom
         /// <exception cref="ArgumentException"><paramref name="data"/> is not a valid ROM.</exception>
         public static void ConvertTo(ERomFormat format, in ReadOnlySpan<byte> data, in Span<byte> dest)
         {
-            var dataFormat = RomMetadata.GetFormat(data);
+            var dataFormat = RomHeader.GetFormat(data);
             if (dataFormat == ERomFormat.Invalid)
             {
                 throw new ArgumentException("Data is not a valid ROM.", nameof(data));

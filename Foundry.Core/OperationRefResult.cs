@@ -11,7 +11,12 @@ namespace Foundry
         /// <summary>
         /// Whether the operation completed successfully.
         /// </summary>
-        public readonly bool Success { get; }
+        public readonly bool Success => Level == EOperationResultLevel.Success;
+
+        /// <summary>
+        /// The result level.
+        /// </summary>
+        public readonly EOperationResultLevel Level { get; }
 
         /// <summary>
         /// The exception that occurred while executing the operation.
@@ -27,30 +32,34 @@ namespace Foundry
         /// </remarks>
         public string? ExceptionMessage { get; }
 
-        public OperationRefResult(bool success)
+        public OperationRefResult(Exception e)
+            : this(e, EOperationResultLevel.Error)
         {
-            Guard.IsTrue(success, nameof(success));
 
-            Success = success;
-            Exception = null;
-            ExceptionMessage = null;
         }
 
-        public OperationRefResult(Exception e)
+        public OperationRefResult(Exception e, EOperationResultLevel level)
         {
-
             Guard.IsNotNull(e, nameof(e));
+            GuardEx.IsValid(level, nameof(level));
 
-            Success = false;
+            Level = level;
             Exception = e;
             ExceptionMessage = e.Message;
         }
 
         public OperationRefResult(string errorMessage)
+            : this(errorMessage, EOperationResultLevel.Error)
+        {
+
+        }
+
+        public OperationRefResult(string errorMessage, EOperationResultLevel level)
         {
             Guard.IsNotNullOrWhitespace(errorMessage, nameof(errorMessage));
+            GuardEx.IsValid(level, nameof(level));
 
-            Success = false;
+            Level = level;
             Exception = null;
             ExceptionMessage = errorMessage;
         }

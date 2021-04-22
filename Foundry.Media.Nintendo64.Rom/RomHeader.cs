@@ -8,17 +8,17 @@ namespace Foundry.Media.Nintendo64.Rom
     /// <summary>
     /// ROM metadata.
     /// </summary>
-    public sealed class RomMetadata
+    public sealed class RomHeader
     {
         /// <summary>
         /// Represents unset, missing, or invalid metadata.
         /// </summary>
-        public static RomMetadata None { get; } = new RomMetadata();
+        public static RomHeader None { get; } = new RomHeader();
 
         /// <summary>
-        /// The last address of the header byte that we care about, rounded to the nearest 4 bytes.
+        /// The number of bytes that make up the ROM header.
         /// </summary>
-        public const int HeaderLength = 0x40;
+        public const int Length = 0x40;
 
         /// <summary>
         /// The clock rate override.
@@ -70,13 +70,13 @@ namespace Foundry.Media.Nintendo64.Rom
         /// </summary>
         public byte Version { get; }
 
-        private RomMetadata()
+        private RomHeader()
         {
             Title = string.Empty;
             GameCode = string.Empty;
         }
 
-        private RomMetadata(in Span<byte> bigEndianHeaderBytes, ERomFormat format)
+        private RomHeader(in Span<byte> bigEndianHeaderBytes, ERomFormat format)
         {
             Guard.HasSizeGreaterThanOrEqualTo(bigEndianHeaderBytes, 40, nameof(bigEndianHeaderBytes));
 
@@ -126,7 +126,7 @@ namespace Foundry.Media.Nintendo64.Rom
             };
         }
 
-        internal static RomMetadata Create(ReadOnlySpan<byte> data)
+        internal static RomHeader Create(ReadOnlySpan<byte> data)
         {
             if (!TryCreate(data, out var result))
             {
@@ -142,9 +142,9 @@ namespace Foundry.Media.Nintendo64.Rom
         /// <param name="data">The data containing the ROM metadata.</param>
         /// <param name="result">If this method returns <see langword="true"/>, contains the parsed ROM metadata.</param>
         /// <returns><see langword="true"/> if the metadata was extracted successfully, <see langword="false"/> otherwise.</returns>
-        public static bool TryCreate(ReadOnlySpan<byte> data, [NotNullWhen(true)] out RomMetadata? result)
+        public static bool TryCreate(ReadOnlySpan<byte> data, [NotNullWhen(true)] out RomHeader? result)
         {
-            if (data.Length < HeaderLength)
+            if (data.Length < Length)
             {
                 result = default;
                 return false;
@@ -160,8 +160,8 @@ namespace Foundry.Media.Nintendo64.Rom
             // This can be an unnecessary "allocation" in certain cases,
             // but the size is small enough that we will do so in order
             // to reduce complexity.
-            Span<byte> headerBuffer = stackalloc byte[HeaderLength];
-            data.Slice(0, HeaderLength).CopyTo(headerBuffer);
+            Span<byte> headerBuffer = stackalloc byte[Length];
+            data.Slice(0, Length).CopyTo(headerBuffer);
 
             if (format != ERomFormat.BigEndian)
             {
@@ -169,7 +169,7 @@ namespace Foundry.Media.Nintendo64.Rom
                 RomConverter.ConvertTo(ERomFormat.BigEndian, headerBuffer);
             }
 
-            result = new RomMetadata(headerBuffer, format);
+            result = new RomHeader(headerBuffer, format);
             return true;
         }
 
