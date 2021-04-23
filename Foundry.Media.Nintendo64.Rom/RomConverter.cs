@@ -58,7 +58,7 @@ namespace Foundry.Media.Nintendo64.Rom
         /// </summary>
         /// <param name="data">The data to copy.</param>
         public static IRomData Copy(this IRomData data)
-            => ConvertTo(data, data.Metadata!.Format);
+            => ConvertTo(data, data.Header!.Format);
 
         /// <summary>
         /// Converts the ROM data in <paramref name="data"/> to the format specified in

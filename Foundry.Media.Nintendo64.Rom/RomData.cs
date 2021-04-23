@@ -28,7 +28,7 @@ namespace Foundry.Media.Nintendo64.Rom
         /// <summary>
         /// The ROM metadata.
         /// </summary>
-        public RomHeader Metadata { get; private set; }
+        public RomHeader Header { get; private set; }
 
         /// <summary>
         /// Information about the size of the ROM data.
@@ -227,28 +227,28 @@ namespace Foundry.Media.Nintendo64.Rom
         {
             CheckDisposed();
 
-            if (Metadata is null)
+            if (Header is null)
             {
                 Load();
             }
 
-            if (Metadata is null)
+            if (Header is null)
             {
                 throw new InvalidOperationException("The metadata is not loaded, and reloading did not provide valid metadata.");
             }
 
-            string title = Metadata.Title;
-            string extension = Metadata.GetFormatExtension();
+            string title = Header.Title;
+            string extension = Header.GetFormatExtension();
 
             return title + extension;
         }
 
         /// <summary>
         /// Sets <see cref="Data"/> with the specified value and updates the values
-        /// of <see cref="Metadata"/> and <see cref="Size"/>.
+        /// of <see cref="Header"/> and <see cref="Size"/>.
         /// </summary>
         /// <param name="data">The new data buffer.</param>
-        [MemberNotNull(nameof(Metadata))]
+        [MemberNotNull(nameof(Header))]
         protected void SetData(IMemoryOwner<byte>? data)
         {
             CheckDisposed();
@@ -262,18 +262,18 @@ namespace Foundry.Media.Nintendo64.Rom
 
                 if (Data is null)
                 {
-                    Metadata = RomHeader.None;
+                    Header = RomHeader.None;
                     Size = default;
                 }
             }
 
             if (Data is not null)
             {
-                Metadata = RomHeader.Create(Data.Memory.Span);
+                Header = RomHeader.Create(Data.Memory.Span);
                 Size = new RomSize(Data.Memory.Span.Length);
             }
 
-            Metadata ??= RomHeader.None;
+            Header ??= RomHeader.None;
         }
 
         /// <summary>

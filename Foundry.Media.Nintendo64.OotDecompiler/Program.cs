@@ -15,8 +15,8 @@ namespace Foundry.Media.Nintendo64.OotDecompiler
         {
             using var romFile = await RomData.LoadRomAsync(args.Length > 0 ? args[0] : throw new ArgumentException("First argument must be the ROM path."));
 
-            Console.WriteLine($"Name: {romFile.Metadata.Title}");
-            Console.WriteLine($"Format: {romFile.Metadata.Format}");
+            Console.WriteLine($"Name: {romFile.Header.Title}");
+            Console.WriteLine($"Format: {romFile.Header.Format}");
 
             Console.CursorVisible = false;
             int cursorTop = Console.CursorTop;
@@ -119,41 +119,18 @@ namespace Foundry.Media.Nintendo64.OotDecompiler
             Console.WriteLine();
             Console.WriteLine("HEADER");
             var romBuild = romData.GetRomBuild();
-            Console.WriteLine($"{romData.Metadata.Title}");
+            Console.WriteLine($"{romData.Header.Title}");
             Console.WriteLine($"Build: {romBuild.Version} ({romBuild.BuildNumber})");
             Console.WriteLine($"Size: {romData.Size.Size.Mebibits}Mib (0x{romData.Length:X})");
-            Console.WriteLine($"Destination Code: {romData.Metadata.DestinationCode}");
-            Console.WriteLine($"Game Code: {romData.Metadata.GameCode}");
-            Console.WriteLine($"Format: {romData.Metadata.Format}");
-            Console.WriteLine($"Mask Rom Version: {romData.Metadata.Version}");
-            Console.WriteLine($"Entry Address: 0x{romData.Metadata.EntryAddress:X}");
-            Console.WriteLine($"Return Address: 0x{romData.Metadata.ReturnAddress:X}");
+            Console.WriteLine($"Destination Code: {romData.Header.DestinationCode}");
+            Console.WriteLine($"Game Code: {romData.Header.GameCode}");
+            Console.WriteLine($"Format: {romData.Header.Format}");
+            Console.WriteLine($"Mask Rom Version: {romData.Header.Version}");
+            Console.WriteLine($"Entry Address: 0x{romData.Header.EntryAddress:X}");
+            Console.WriteLine($"Return Address: 0x{romData.Header.ReturnAddress:X}");
             Console.WriteLine();
 
             var disassembler = new Disassembler();
-
-            if (!await PerformChecklistOperationAsync("Constructing internal header fragment.", async () =>
-            {
-                disassembler.AddDataSegment("INTERNAL_HEADER", await romData.GetHeaderDataAsync(), 0xA4000000);
-                disassembler.AddDataRegion("INTERNAL_HEADER", 0xA4000000, 0xA400003F);
-            }))
-            {
-                return EInputBlockResult.Failed;
-            }
-            if (!await PerformChecklistOperationAsync("Constructing IPL3 fragment.", async () =>
-            {
-                disassembler.AddDataSegment("IPL3", await romData.GetIPL3Async(), 0xA4000040);
-            }))
-            {
-                return EInputBlockResult.Failed;
-            }
-            if (!await PerformChecklistOperationAsync("Constructing code fragment.", async () =>
-            {
-                disassembler.AddDataSegment("CODE", await romData.GetCodeDataAsync(), romData.Metadata.EntryAddress, "code.dat");
-            }))
-            {
-                return EInputBlockResult.Failed;
-            }
 
             Console.WriteLine();
 
@@ -179,7 +156,7 @@ namespace Foundry.Media.Nintendo64.OotDecompiler
                 FileInfo output;
 
                 EraseLine();
-                if (data.Metadata.Format == format)
+                if (data.Header.Format == format)
                 {
                     Console.WriteLine();
                     Console.WriteLine("The ROM data is already in the correct format.");
@@ -226,15 +203,15 @@ namespace Foundry.Media.Nintendo64.OotDecompiler
         private static async ValueTask<EInputBlockResult> VerifyRomAsync(IRomData romData)
         {
             Console.WriteLine("Running diagnostics.");
-            Console.WriteLine($"Entry Address: 0x{romData.Metadata.EntryAddress:X}");
-            Console.WriteLine($"Return Address: 0x{romData.Metadata.ReturnAddress:X}");
+            Console.WriteLine($"Entry Address: 0x{romData.Header.EntryAddress:X}");
+            Console.WriteLine($"Return Address: 0x{romData.Header.ReturnAddress:X}");
             Console.WriteLine();
 
             await PerformChecklistOperationAsync("Verifying code entry address", () =>
             {
                 if (romData.AssertValidEntryPoint())
                 {
-                    return new ValueTask<OperationResult>(new OperationResult($"Entry address 0x{romData.Metadata.EntryAddress:X} is not within the expected address range."));
+                    return new ValueTask<OperationResult>(new OperationResult($"Entry address 0x{romData.Header.EntryAddress:X} is not within the expected address range."));
                 }
 
                 return new ValueTask<OperationResult>(new OperationResult());

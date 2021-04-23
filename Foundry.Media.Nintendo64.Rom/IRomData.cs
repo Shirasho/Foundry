@@ -22,7 +22,7 @@ namespace Foundry.Media.Nintendo64.Rom
         /// <summary>
         /// The ROM metadata.
         /// </summary>
-        RomHeader Metadata { get; }
+        RomHeader Header { get; }
 
         /// <summary>
         /// Information about the size of the ROM data.
