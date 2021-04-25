@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers.Binary;
 using System.Text;
 
 namespace Foundry.Media.Nintendo64.Rom.Utilities
@@ -63,49 +64,13 @@ namespace Foundry.Media.Nintendo64.Rom.Utilities
         public uint ReadUInt32()
         {
             uint result = ReadUInt32(Cursor);
-            Cursor += sizeof(int);
+            Cursor += sizeof(uint);
             return result;
         }
 
         public uint ReadUInt32(int offset)
         {
-            return BitConverter.ToUInt32(Buffer.Slice(offset, sizeof(uint)));
-        }
-
-        public bool TryReadUInt32(int offset, out uint result)
-        {
-            if (offset + 4 > Buffer.Length)
-            {
-                result = 0;
-                return false;
-            }
-
-            result = ReadUInt32(offset);
-            return true;
-        }
-
-        public ulong ReadUInt64()
-        {
-            ulong result = ReadUInt64(Cursor);
-            Cursor += sizeof(long);
-            return result;
-        }
-
-        public ulong ReadUInt64(int offset)
-        {
-            return BitConverter.ToUInt64(Buffer.Slice(offset, sizeof(ulong)));
-        }
-
-        public int ReadInt32()
-        {
-            int result = ReadInt32(Cursor);
-            Cursor += sizeof(int);
-            return result;
-        }
-
-        public int ReadInt32(int offset)
-        {
-            return BitConverter.ToInt32(Buffer.Slice(offset, sizeof(int)));
+            return BinaryPrimitives.ReadUInt32BigEndian(Buffer.Slice(offset, sizeof(uint)));
         }
 
         public byte ReadByte()

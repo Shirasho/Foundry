@@ -390,7 +390,7 @@ dotnet_diagnostic.RCS1232.severity = error
 dotnet_diagnostic.HAA0101.severity = none
 
 # HAA0102: Non-overridden virtual method call on value type
-dotnet_diagnostic.HAA0102.severity = silent
+dotnet_diagnostic.HAA0102.severity = suggestion
 
 # HAA0202: Value type to reference type conversion allocation for string concatenation
 dotnet_diagnostic.HAA0202.severity = none

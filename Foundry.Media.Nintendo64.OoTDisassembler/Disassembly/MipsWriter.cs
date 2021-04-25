@@ -3,7 +3,7 @@ using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Foundry.Media.Nintendo64.Disassembly.OoT.Syntax;
+using Foundry.Media.Nintendo64.Disassembly.OoT.Operations;
 
 namespace Foundry.Media.Nintendo64.Disassembly.OoT.Disassembly
 {
@@ -49,15 +49,13 @@ namespace Foundry.Media.Nintendo64.Disassembly.OoT.Disassembly
         }
 
         public ValueTask WriteLabelAsync(string label, CancellationToken cancellationToken)
-        {
-            return WriteLineAsync($".L_{label}:", cancellationToken);
-        }
+            => WriteLineAsync($".L_{label}:", cancellationToken);
 
         public ValueTask WriteLabelAsync(RomLabel label, CancellationToken cancellationToken)
-            => WriteLabelAsync(label.Name, cancellationToken);
+            => WriteLineAsync(label.Name, cancellationToken);
 
         public ValueTask WriteSwitchCaseAsync(uint addr, CancellationToken cancellationToken)
-            => WriteLineAsync($"glabel .L_{addr:X}", cancellationToken);
+            => WriteLineAsync($"glabel .L_{addr:X8}", cancellationToken);
 
         public async ValueTask WriteFunctionAsync(RomFunction function, CancellationToken cancellationToken)
         {
@@ -66,37 +64,50 @@ namespace Foundry.Media.Nintendo64.Disassembly.OoT.Disassembly
         }
 
         public ValueTask WriteFunctionCallAsync(int instructionOffset, Instruction addr, RomFunction function, CancellationToken cancellationToken)
-            => WriteLineAsync($"/* {instructionOffset} {addr} */ .word\t{function.GetName()}", cancellationToken);
+            => WriteLineAsync($"/* 0x{instructionOffset:X5} {addr} 0x{0:X8} */ .word\t{function.GetName()}", cancellationToken);
 
         public ValueTask WriteGoToCallAsync(int instructionOffset, Instruction addr, uint instruction, CancellationToken cancellationToken)
-            => WriteLineAsync($"/* {instructionOffset} {addr} */ .word\tL_{instruction:X}", cancellationToken);
+            => WriteLineAsync($"/* 0x{instructionOffset:X5} {addr} 0x{0:X8} */ .word\tL_{instruction:X}", cancellationToken);
 
         public ValueTask WriteVariableCallAsync(int instructionOffset, Instruction addr, string variableName, CancellationToken cancellationToken)
             => WriteVariableCallWordAsync(instructionOffset, addr, variableName, cancellationToken);
 
         public ValueTask WriteVariableCallByteAsync(int instructionOffset, Instruction addr, string variableName, CancellationToken cancellationToken)
-            => WriteLineAsync($"/* {instructionOffset} 0x{addr:X} */ .byte\t{variableName}", cancellationToken);
+            => WriteLineAsync($"/* 0x{instructionOffset:X5} 0x{addr:X8} 0x{0:X8} */ .byte\t{variableName}", cancellationToken);
 
         public ValueTask WriteVariableCallShortAsync(int instructionOffset, Instruction addr, string variableName, CancellationToken cancellationToken)
-            => WriteLineAsync($"/* {instructionOffset} 0x{addr:X} */ .short\t{variableName}", cancellationToken);
+            => WriteLineAsync($"/* 0x{instructionOffset:X5} 0x{addr:X8} 0x{0:X8} */ .short\t{variableName}", cancellationToken);
 
         public ValueTask WriteVariableCallWordAsync(int instructionOffset, Instruction addr, string variableName, CancellationToken cancellationToken)
-            => WriteLineAsync($"/* {instructionOffset} 0x{addr:X} */ .word\t{variableName}", cancellationToken);
+            => WriteLineAsync($"/* 0x{instructionOffset:X5} 0x{addr:X8} 0x{0:X8} */ .word\t{variableName}", cancellationToken);
 
         public ValueTask WriteVariableCallAsync(int instructionOffset, Instruction addr, string variableName, uint offset, CancellationToken cancellationToken)
-            => WriteLineAsync($"/* {instructionOffset} 0x{addr:X} */ .word\t({variableName} + 0x{offset:X})", cancellationToken);
+            => WriteLineAsync($"/* 0x{instructionOffset:X5} 0x{addr:X8} 0x{0:X8} */ .word\t({variableName} + 0x{offset:X})", cancellationToken);
 
-        public async ValueTask WriteSyntaxAsync(ISyntax syntax, Instruction instruction, Instruction addr, int instructionOffset, CancellationToken cancellationToken)
+        public async ValueTask WriteOperationAsync(IOperation syntax, ECommentLevel commentLevel, Instruction instruction, Instruction addr, int instructionOffset, CancellationToken cancellationToken)
         {
             var sb = new StringBuilder();
-            await syntax.WriteToAsync(sb, cancellationToken);
-            await WriteLineAsync($"/* 0x{instructionOffset:X} {addr} {instruction} */ {sb}", cancellationToken);
+            await syntax.WriteToAsync(sb, commentLevel, cancellationToken);
+
+            string operation = sb.ToString();
+
+            if (syntax is StubOperation)
+            {
+                await WriteLineAsync($"/* 0x{instructionOffset:X5} {addr} {instruction} */ /* STUB - NOT IMPLEMENTED */", cancellationToken);
+            }
+            await WriteAsync($"/* 0x{instructionOffset:X5} {addr} {instruction} */ {(operation.EndsWith(Environment.NewLine) ? operation : operation + Environment.NewLine)}", cancellationToken);
         }
 
         public ValueTask WriteVariableAsync(string name, CancellationToken cancellationToken)
             => WriteLineAsync($"glabel {name}", cancellationToken);
 
-        private ValueTask WriteLineAsync(string value, CancellationToken cancellationToken)
+        private async ValueTask WriteLineAsync(string value, CancellationToken cancellationToken)
+        {
+            await WriteAsync(value, cancellationToken);
+            await Destination.WriteAsync(Encoding.GetBytes(Environment.NewLine).AsMemory(), cancellationToken);
+        }
+
+        private ValueTask WriteAsync(string value, CancellationToken cancellationToken)
             => Destination.WriteAsync(Encoding.GetBytes(value).AsMemory(), cancellationToken);
     }
 }

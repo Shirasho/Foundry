@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using Foundry.Media.Nintendo64.Rom.Utilities;
 using Microsoft.Toolkit.Diagnostics;
 
@@ -28,6 +29,11 @@ namespace Foundry.Media.Nintendo64.Rom
         /// <summary>
         /// The ROM entry address.
         /// </summary>
+        /// <remarks>
+        /// Also known as the program counter. This value sets the boot location (RAM entry point)
+        /// when performing certain kinds of resets (0x8000030C), however some CIC chips will alter
+        /// this location in the same way they affect the CRC calculation.
+        /// </remarks>
         public uint EntryAddress { get; }
 
         /// <summary>
@@ -83,25 +89,27 @@ namespace Foundry.Media.Nintendo64.Rom
             Format = format;
 
             var reader = new SpanReader(bigEndianHeaderBytes);
-            reader.Seek(0x04);
+            reader.Seek(0x04);                                      // 0x04
+            ClockrateOverride = reader.ReadUInt32() & 0xFFF0;       // 0x04 - 0x07            
+            EntryAddress = reader.ReadUInt32();                     // 0x08 - 0x0B
+            ReturnAddress = reader.ReadUInt32();                    // 0x0C - 0x0F
+            Crc1 = reader.ReadUInt32();                             // 0x10 - 0x13
+            Crc2 = reader.ReadUInt32();                             // 0x14 - 0x17 (Official N64 does not look beyond 0x18)
+            reader.Seek(0x20);                                      // 0x20
+            Title = reader.ReadString(0x20, 20);                    // 0x20 - 0x33
+            reader.Seek(0x3B);                                      // 0x3B
+            GameCode = reader.ReadString(3);                        // 0x3B - 0x3D
+            DestinationCode = (ERomDestinationCode)reader.ReadByte();// 0x3E
+            Version = reader.ReadByte();                            // 0x3F
 
-            ClockrateOverride = reader.ReadUInt32();
-            EntryAddress = reader.ReadUInt32();
-
-            reader.Seek(0x0C);
-            ReturnAddress = reader.ReadUInt32();
-
-            reader.Seek(0x10);
-            Crc1 = reader.ReadUInt32();
-            Crc2 = reader.ReadUInt32();
-
-            reader.Seek(0x20);
-            Title = reader.ReadString(0x20, 20);
-
-            reader.Seek(0x3B);
-            GameCode = reader.ReadString(3);
-            DestinationCode = (ERomDestinationCode)reader.ReadByte();
-            Version = reader.ReadByte();
+            //TODO: Entry point relocation
+            // 6105-7105 CIC OOT
+            //
+            // 6101 Doesn't relocate
+            // 6102 Doesn't relocate
+            // 6103 Subtract 0x100000 (0x80100400 to 0x80000400)
+            // 6105 Doesn't relocate
+            // 6106 Subtract 0x200000 (0x80200400 to 0x80000400)
         }
 
         /// <summary>

@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
-using Foundry.Media.Nintendo64.OotDecompiler.Disassembly;
-using Foundry.Media.Nintendo64.OotDecompiler.Extraction;
+using Foundry.Disassembly.Mips;
 using Foundry.Media.Nintendo64.Rom;
 using static Foundry.Media.Nintendo64.OotDecompiler.ConsoleEditor;
 
@@ -25,9 +23,7 @@ namespace Foundry.Media.Nintendo64.OotDecompiler
             {
                 Console.WriteLine();
                 var result = await RequestInputBlockAsync("Enter the number of the operation to perform.",
-                    //("Extract files (Debug)", () => ExtractFilesAsync(romFile)),
                     ("Disassemble ROM", () => DisassembleRomAsync(romFile)),
-                    ("Verify ROM", () => VerifyRomAsync(romFile)),
                     ("Change ROM Format", () => ChangeFormatAsync(romFile)),
                     ("Exit", BackTask)
                 );
@@ -55,65 +51,7 @@ namespace Foundry.Media.Nintendo64.OotDecompiler
             }
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Redundancy", "RCS1213:Remove unused member declaration.", Justification = "<Pending>")]
-        private static async ValueTask<EInputBlockResult> ExtractFilesAsync(IRomData romData)
-        {
-            Console.WriteLine("Extracting files (Debug)");
-
-            // We need our rom in z64.
-            var extractor = new RomExtractorAddressFinder(await romData.ConvertToAsync(ERomFormat.BigEndian));
-            var options = new RomExtractionAddressFinderOptions { Concurrent = false };
-            var stopwatch = Stopwatch.StartNew();
-
-            try
-            {
-                const int startAddress = 0x40080;
-                const int endAddress = 0x40080;
-                // 1532
-                const int startFileCount = 1532;
-                const int endFileCount = 1532;
-                int nextConsoleUpdate = startAddress;
-
-                for (int currentAddress = startAddress; currentAddress <= endAddress; ++currentAddress)
-                {
-                    if (currentAddress == nextConsoleUpdate)
-                    {
-                        nextConsoleUpdate = Math.Min(nextConsoleUpdate + 0xF, endAddress);
-                        string percent = (Percent(startAddress, endAddress, currentAddress) * 100).ToString("F2").PadLeft(6, '0');
-                        Console.Write($"[{stopwatch.Elapsed}][{percent}%] Testing start position {currentAddress:X} - {nextConsoleUpdate:X}");
-                    }
-
-                    for (int fileCount = startFileCount; fileCount <= endFileCount; ++fileCount)
-                    {
-                        options.OffsetAddress = currentAddress;
-                        options.FileCount = fileCount;
-
-                        try
-                        {
-                            if (await extractor.ExtractAsync(options))
-                            {
-                                Console.WriteLine($"Detected successful extract at {currentAddress:X} with {fileCount} files.");
-                                return EInputBlockResult.Success;
-                            }
-
-                            Console.CursorLeft = 0;
-                        }
-                        catch
-                        {
-                            Console.CursorLeft = 0;
-                        }
-                    }
-                }
-            }
-            finally
-            {
-                stopwatch.Stop();
-            }
-
-            return EInputBlockResult.Failed;
-        }
-
-        private static async ValueTask<EInputBlockResult> DisassembleRomAsync(IRomData romData)
+        private static ValueTask<EInputBlockResult> DisassembleRomAsync(IRomData romData)
         {
             Console.WriteLine("Disassembling ROM.");
             Console.WriteLine();
@@ -130,16 +68,24 @@ namespace Foundry.Media.Nintendo64.OotDecompiler
             Console.WriteLine($"Return Address: 0x{romData.Header.ReturnAddress:X}");
             Console.WriteLine();
 
-            var disassembler = new Disassembler();
+            var disassembler = new MipsDisassembler();
+            //disassembler.AddSegment(new DataSegment("INTERNAL_HEADER", romData.GetHeaderData(), 0xA4000000));
+            //disassembler.AddSegment(new DataSegment("IPL3", romData.GetIPL3(), 0xA4000040));
+            disassembler.AddSegment(new DataSegment("CODE", romData.GetCodeData(), romData.Header.EntryAddress));
+
+            //disassembler.AddRegion(new DataRegion("INTERNAL_HEADER", 0xA4000000, 0xA400003F));
 
             Console.WriteLine();
 
-            if (!await PerformChecklistOperationAsync("First pass disassembly.", async () => await disassembler.DisassembleAsync(new DirectoryInfo(@"C:\Users\shira\Desktop\OoTDecomp"), true)))
+            using var fs = File.Open(@"C:\Users\shira\Desktop\OoTDecomp\code.asm", FileMode.Create, FileAccess.Write, FileShare.Read);
+            using var tw = fs.GetStreamWriter();
+
+            if (!PerformChecklistOperation("Disassembling ROM to MIPS.", () => disassembler.Disassemble(tw)))
             {
-                return EInputBlockResult.Failed;
+                return new ValueTask<EInputBlockResult>(EInputBlockResult.Failed);
             }
 
-            return EInputBlockResult.Success;
+            return new ValueTask<EInputBlockResult>(EInputBlockResult.Success);
         }
 
         private static async ValueTask<EInputBlockResult> ChangeFormatAsync(IRomData romData)
@@ -198,36 +144,6 @@ namespace Foundry.Media.Nintendo64.OotDecompiler
                     return EInputBlockResult.Success;
                 }
             }
-        }
-
-        private static async ValueTask<EInputBlockResult> VerifyRomAsync(IRomData romData)
-        {
-            Console.WriteLine("Running diagnostics.");
-            Console.WriteLine($"Entry Address: 0x{romData.Header.EntryAddress:X}");
-            Console.WriteLine($"Return Address: 0x{romData.Header.ReturnAddress:X}");
-            Console.WriteLine();
-
-            await PerformChecklistOperationAsync("Verifying code entry address", () =>
-            {
-                if (romData.AssertValidEntryPoint())
-                {
-                    return new ValueTask<OperationResult>(new OperationResult($"Entry address 0x{romData.Header.EntryAddress:X} is not within the expected address range."));
-                }
-
-                return new ValueTask<OperationResult>(new OperationResult());
-            });
-
-            return EInputBlockResult.Success;
-        }
-
-        private static double Percent(int a, int b, int value)
-        {
-            double divisor = b - a;
-            if (divisor == 0)
-            {
-                return 1;
-            }
-            return (value - a) / (double)(b - a);
         }
     }
 }
