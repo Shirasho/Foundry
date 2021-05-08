@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using Foundry.Media.Nintendo64.Rom;
 
-namespace Foundry.Media.Nintendo64.OotDecompiler
+namespace Foundry.Media.Nintendo64.OotDisassembler
 {
     internal enum ERomVersion
     {

@@ -1,12 +1,12 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
-using Foundry.Media.Nintendo64.OotDecompiler.Tools;
+using Foundry.Media.Nintendo64.OotDisassembler.Tools;
 using Foundry.Media.Nintendo64.Rom;
 using Foundry.Media.Nintendo64.Rom.Disassembly;
-using static Foundry.Media.Nintendo64.OotDecompiler.ConsoleEditor;
+using static Foundry.Media.Nintendo64.OotDisassembler.ConsoleEditor;
 
-namespace Foundry.Media.Nintendo64.OotDecompiler
+namespace Foundry.Media.Nintendo64.OotDisassembler
 {
     internal static class Program
     {

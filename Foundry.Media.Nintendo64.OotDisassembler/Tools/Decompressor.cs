@@ -5,7 +5,7 @@ using Foundry.Media.Nintendo64.Rom.Utilities;
 using Microsoft.Toolkit.Diagnostics;
 using Microsoft.Toolkit.HighPerformance;
 
-namespace Foundry.Media.Nintendo64.OotDecompiler.Tools
+namespace Foundry.Media.Nintendo64.OotDisassembler.Tools
 {
     /// <summary>
     /// A utility for decompressing an OoT ROM.

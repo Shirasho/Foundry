@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using Foundry.Media.Nintendo64.Rom;
 
-namespace Foundry.Media.Nintendo64.OotDecompiler.Tools
+namespace Foundry.Media.Nintendo64.OotDisassembler.Tools
 {
     /// <summary>
     /// A utility for calculating and fixing OoT ROM CRC data.

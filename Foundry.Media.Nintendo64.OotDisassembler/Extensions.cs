@@ -2,10 +2,10 @@
 using System.Buffers;
 using System.Threading;
 using System.Threading.Tasks;
-using Foundry.Media.Nintendo64.OotDecompiler.Tools;
+using Foundry.Media.Nintendo64.OotDisassembler.Tools;
 using Foundry.Media.Nintendo64.Rom;
 
-namespace Foundry.Media.Nintendo64.OotDecompiler
+namespace Foundry.Media.Nintendo64.OotDisassembler
 {
     internal static class Extensions
     {

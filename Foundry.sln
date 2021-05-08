@@ -14,7 +14,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Foundry.Serialization.Dbase
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Foundry.Media.Nintendo64.Rom", "Foundry.Media.Nintendo64.Rom\Foundry.Media.Nintendo64.Rom.csproj", "{9CD2E45B-E292-457F-A8BE-C9A31E03711C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Foundry.Media.Nintendo64.OotDecompiler", "Foundry.Media.Nintendo64.OotDecompiler\Foundry.Media.Nintendo64.OotDecompiler.csproj", "{A78F1D88-A82E-4DE2-8D4D-C2071103DB27}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Foundry.Media.Nintendo64.OotDisassembler", "Foundry.Media.Nintendo64.OotDisassembler\Foundry.Media.Nintendo64.OotDisassembler.csproj", "{A78F1D88-A82E-4DE2-8D4D-C2071103DB27}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

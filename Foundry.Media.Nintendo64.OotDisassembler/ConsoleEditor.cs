@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace Foundry.Media.Nintendo64.OotDecompiler
+namespace Foundry.Media.Nintendo64.OotDisassembler
 {
     internal enum EInputBlockResult
     {
