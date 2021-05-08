@@ -331,8 +331,8 @@ namespace Foundry.Media.Nintendo64.Rom.Disassembly
             //}
             //else
             //{
-                return new Operation(EOperationCode.Addiu, instruction, file, static (string name, in Instruction i) =>
-                    $"{name}\t{i.RT.RegisterName()}, {i.RS.RegisterName()}, 0x{i.IMMSigned:X}");
+            return new Operation(EOperationCode.Addiu, instruction, file, static (string name, in Instruction i) =>
+                $"{name}\t{i.RT.RegisterName()}, {i.RS.RegisterName()}, 0x{i.IMMSigned:X}");
             //}
         }
 
@@ -356,122 +356,122 @@ namespace Foundry.Media.Nintendo64.Rom.Disassembly
 
         private Operation BC1F(in Instruction instruction, DataFile file)
         {
-           return new Operation(EOperationCode.Bc1f, instruction, file, static (string name, in Instruction i)
-               => $"{name}\t0x{i.IMMSigned:X8} /* 0x{i.GetAbsoluteJumpAddress():X8} */");
+            return new Operation(EOperationCode.Bc1f, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t0x{i.IMMSigned:X8} /* 0x{i.GetAbsoluteJumpAddress():X8} */");
         }
 
         private Operation BC1FL(in Instruction instruction, DataFile file)
         {
-           return new Operation(EOperationCode.Bc1fl, instruction, file, static (string name, in Instruction i)
-               => $"{name}\t0x{i.IMMSigned:X8} /* 0x{i.GetAbsoluteJumpAddress():X8} */");
+            return new Operation(EOperationCode.Bc1fl, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t0x{i.IMMSigned:X8} /* 0x{i.GetAbsoluteJumpAddress():X8} */");
         }
 
         private Operation BC1T(in Instruction instruction, DataFile file)
         {
-           return new Operation(EOperationCode.Bc1t, instruction, file, static (string name, in Instruction i)
-               => $"{name}\t0x{i.IMMSigned:X8} /* 0x{i.GetAbsoluteJumpAddress():X8} */");
+            return new Operation(EOperationCode.Bc1t, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t0x{i.IMMSigned:X8} /* 0x{i.GetAbsoluteJumpAddress():X8} */");
         }
 
         private Operation BC1TL(in Instruction instruction, DataFile file)
         {
-           return new Operation(EOperationCode.Bc1tl, instruction, file, static (string name, in Instruction i)
-               => $"{name}\t0x{i.IMMSigned:X8} /* 0x{i.GetAbsoluteJumpAddress():X8} */");
+            return new Operation(EOperationCode.Bc1tl, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t0x{i.IMMSigned:X8} /* 0x{i.GetAbsoluteJumpAddress():X8} */");
         }
 
         private Operation BEQ(in Instruction instruction, DataFile file)
         {
-           return new Operation(EOperationCode.Beq, instruction, file, static (string name, in Instruction i)
-               => $"{name}\t{i.RS.RegisterName()}, {i.RT.RegisterName()}, 0x{i.IMMSigned:X8} /* 0x{i.GetAbsoluteJumpAddress():X8} */");
+            return new Operation(EOperationCode.Beq, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RS.RegisterName()}, {i.RT.RegisterName()}, 0x{i.IMMSigned:X8} /* 0x{i.GetAbsoluteJumpAddress():X8} */");
         }
 
         private Operation BEQL(in Instruction instruction, DataFile file)
         {
-           return new Operation(EOperationCode.Beql, instruction, file, static (string name, in Instruction i)
-               => $"{name}\t{i.RS.RegisterName()}, {i.RT.RegisterName()}, 0x{i.IMMSigned:X8} /* 0x{i.GetAbsoluteJumpAddress():X8} */");
+            return new Operation(EOperationCode.Beql, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RS.RegisterName()}, {i.RT.RegisterName()}, 0x{i.IMMSigned:X8} /* 0x{i.GetAbsoluteJumpAddress():X8} */");
         }
 
         private Operation BGEZ(in Instruction instruction, DataFile file)
         {
-           return new Operation(EOperationCode.Bgez, instruction, file, static (string name, in Instruction i)
-               => $"{name}\t{i.RS.RegisterName()}, 0x{i.IMMSigned:X8} /* 0x{i.GetAbsoluteJumpAddress():X8} */");
+            return new Operation(EOperationCode.Bgez, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RS.RegisterName()}, 0x{i.IMMSigned:X8} /* 0x{i.GetAbsoluteJumpAddress():X8} */");
         }
 
         private Operation BGEZAL(in Instruction instruction, DataFile file)
         {
-           return new Operation(EOperationCode.Bgezal, instruction, file, static (string name, in Instruction i)
-               => $"{name}\t{i.RS.RegisterName()}, 0x{i.IMMSigned:X8} /* 0x{i.GetAbsoluteJumpAddress():X8} */");
+            return new Operation(EOperationCode.Bgezal, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RS.RegisterName()}, 0x{i.IMMSigned:X8} /* 0x{i.GetAbsoluteJumpAddress():X8} */");
         }
 
         private Operation BGEZALL(in Instruction instruction, DataFile file)
         {
-           return new Operation(EOperationCode.Bgezall, instruction, file, static (string name, in Instruction i)
-               => $"{name}\t{i.RS.RegisterName()}, 0x{i.IMMSigned:X8} /* 0x{i.GetAbsoluteJumpAddress():X8} */");
+            return new Operation(EOperationCode.Bgezall, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RS.RegisterName()}, 0x{i.IMMSigned:X8} /* 0x{i.GetAbsoluteJumpAddress():X8} */");
         }
 
         private Operation BGEZL(in Instruction instruction, DataFile file)
         {
-           return new Operation(EOperationCode.Bgezl, instruction, file, static (string name, in Instruction i)
-               => $"{name}\t{i.RS.RegisterName()}, 0x{i.IMMSigned:X8} /* 0x{i.GetAbsoluteJumpAddress():X8} */");
+            return new Operation(EOperationCode.Bgezl, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RS.RegisterName()}, 0x{i.IMMSigned:X8} /* 0x{i.GetAbsoluteJumpAddress():X8} */");
         }
 
         private Operation BGTZ(in Instruction instruction, DataFile file)
         {
-           return new Operation(EOperationCode.Bgtz, instruction, file, static (string name, in Instruction i)
-               => $"{name}\t{i.RS.RegisterName()}, 0x{i.IMMSigned:X8} /* 0x{i.GetAbsoluteJumpAddress():X8} */");
+            return new Operation(EOperationCode.Bgtz, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RS.RegisterName()}, 0x{i.IMMSigned:X8} /* 0x{i.GetAbsoluteJumpAddress():X8} */");
         }
 
         private Operation BGTZL(in Instruction instruction, DataFile file)
         {
-           return new Operation(EOperationCode.Bgtzl, instruction, file, static (string name, in Instruction i)
-               => $"{name}\t{i.RS.RegisterName()}, 0x{i.IMMSigned:X8} /* 0x{i.GetAbsoluteJumpAddress():X8} */");
+            return new Operation(EOperationCode.Bgtzl, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RS.RegisterName()}, 0x{i.IMMSigned:X8} /* 0x{i.GetAbsoluteJumpAddress():X8} */");
         }
 
         private Operation BLEZ(in Instruction instruction, DataFile file)
         {
-           return new Operation(EOperationCode.Blez, instruction, file, static (string name, in Instruction i)
-               => $"{name}\t{i.RS.RegisterName()}, 0x{i.IMMSigned:X8} /* 0x{i.GetAbsoluteJumpAddress():X8} */");
+            return new Operation(EOperationCode.Blez, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RS.RegisterName()}, 0x{i.IMMSigned:X8} /* 0x{i.GetAbsoluteJumpAddress():X8} */");
         }
 
         private Operation BLEZL(in Instruction instruction, DataFile file)
         {
-           return new Operation(EOperationCode.Blezl, instruction, file, static (string name, in Instruction i)
-               => $"{name}\t{i.RS.RegisterName()}, 0x{i.IMMSigned:X8} /* 0x{i.GetAbsoluteJumpAddress():X8} */");
+            return new Operation(EOperationCode.Blezl, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RS.RegisterName()}, 0x{i.IMMSigned:X8} /* 0x{i.GetAbsoluteJumpAddress():X8} */");
         }
 
         private Operation BLTZ(in Instruction instruction, DataFile file)
         {
-           return new Operation(EOperationCode.Bltz, instruction, file, static (string name, in Instruction i)
-               => $"{name}\t{i.RS.RegisterName()}, 0x{i.IMMSigned:X8} /* 0x{i.GetAbsoluteJumpAddress():X8} */");
+            return new Operation(EOperationCode.Bltz, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RS.RegisterName()}, 0x{i.IMMSigned:X8} /* 0x{i.GetAbsoluteJumpAddress():X8} */");
         }
 
         private Operation BLTZAL(in Instruction instruction, DataFile file)
         {
-           return new Operation(EOperationCode.Bltzal, instruction, file, static (string name, in Instruction i)
-               => $"{name}\t{i.RS.RegisterName()}, 0x{i.IMMSigned:X8} /* 0x{i.GetAbsoluteJumpAddress():X8} */");
+            return new Operation(EOperationCode.Bltzal, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RS.RegisterName()}, 0x{i.IMMSigned:X8} /* 0x{i.GetAbsoluteJumpAddress():X8} */");
         }
 
         private Operation BLTZALL(in Instruction instruction, DataFile file)
         {
-           return new Operation(EOperationCode.Bltzall, instruction, file, static (string name, in Instruction i)
-               => $"{name}\t{i.RS.RegisterName()}, 0x{i.IMMSigned:X8} /* 0x{i.GetAbsoluteJumpAddress():X8} */");
+            return new Operation(EOperationCode.Bltzall, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RS.RegisterName()}, 0x{i.IMMSigned:X8} /* 0x{i.GetAbsoluteJumpAddress():X8} */");
         }
 
         private Operation BLTZL(in Instruction instruction, DataFile file)
         {
-           return new Operation(EOperationCode.Bltzl, instruction, file, static (string name, in Instruction i)
-               => $"{name}\t{i.RS.RegisterName()}, 0x{i.IMMSigned:X8} /* 0x{i.GetAbsoluteJumpAddress():X8} */");
+            return new Operation(EOperationCode.Bltzl, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RS.RegisterName()}, 0x{i.IMMSigned:X8} /* 0x{i.GetAbsoluteJumpAddress():X8} */");
         }
 
         private Operation BNE(in Instruction instruction, DataFile file)
         {
-           return new Operation(EOperationCode.Bne, instruction, file, static (string name, in Instruction i)
-               => $"{name}\t{i.RS.RegisterName()}, {i.RT.RegisterName()}, 0x{i.IMMSigned:X8} /* 0x{i.GetAbsoluteJumpAddress():X8} */");
+            return new Operation(EOperationCode.Bne, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RS.RegisterName()}, {i.RT.RegisterName()}, 0x{i.IMMSigned:X8} /* 0x{i.GetAbsoluteJumpAddress():X8} */");
         }
 
         private Operation BNEL(in Instruction instruction, DataFile file)
         {
-           return new Operation(EOperationCode.Bnel, instruction, file, static (string name, in Instruction i)
-               => $"{name}\t{i.RS.RegisterName()}, {i.RT.RegisterName()}, 0x{i.IMMSigned:X8} /* 0x{i.GetAbsoluteJumpAddress():X8} */");
+            return new Operation(EOperationCode.Bnel, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RS.RegisterName()}, {i.RT.RegisterName()}, 0x{i.IMMSigned:X8} /* 0x{i.GetAbsoluteJumpAddress():X8} */");
         }
 
         private Operation BREAK(in Instruction instruction, DataFile file)
@@ -882,22 +882,34 @@ namespace Foundry.Media.Nintendo64.Rom.Disassembly
 
         private Operation J(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.J, instruction, file);
+            return new Operation(EOperationCode.J, instruction, file, static (string name, in Instruction i) =>
+                $"{name}\t0x{i.Address:X8}");
         }
 
         private Operation JAL(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Jal, instruction, file);
+            return new Operation(EOperationCode.Jal, instruction, file, static (string name, in Instruction i) =>
+                $"{name}\t0x{i.Address:X8}");
         }
 
         private Operation JALR(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Jalr, instruction, file);
+            if (instruction.RS == 31)
+            {
+                return new Operation(EOperationCode.Jalr, instruction, file, static (string name, in Instruction i) =>
+                    $"{name}\t{i.RS.RegisterName()}");
+            }
+            else
+            {
+                return new Operation(EOperationCode.Jalr, instruction, file, static (string name, in Instruction i) =>
+                    $"{name}\t{i.RD.RegisterName()}, {i.RS.RegisterName()}");
+            }
         }
 
         private Operation JR(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Jr, instruction, file);
+            return new Operation(EOperationCode.Jr, instruction, file, static (string name, in Instruction i) =>
+                $"{name}\t{i.RS.RegisterName()}");
         }
 
         private Operation LB(in Instruction instruction, DataFile file)
@@ -962,7 +974,8 @@ namespace Foundry.Media.Nintendo64.Rom.Disassembly
 
         private Operation LW(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Lw, instruction, file);
+            return new Operation(EOperationCode.Lw, instruction, file, static (string name, in Instruction i) =>
+                $"{name}\t{i.RT.RegisterName()}, 0x{i.IMMSigned:X}({i.RS.RegisterName()})");
         }
 
         private Operation LWC1(in Instruction instruction, DataFile file)
@@ -1088,17 +1101,20 @@ namespace Foundry.Media.Nintendo64.Rom.Disassembly
 
         private Operation NOR(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Nor, instruction, file);
+            return new Operation(EOperationCode.Nor, instruction, file, static (string name, in Instruction i) =>
+                $"{name}\t{i.RD.RegisterName()}, {i.RS.RegisterName()}, {i.RT.RegisterName()}");
         }
 
         private Operation OR(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Or, instruction, file);
+            return new Operation(EOperationCode.Or, instruction, file, static (string name, in Instruction i) =>
+                $"{name}\t{i.RD.RegisterName()}, {i.RS.RegisterName()}, {i.RT.RegisterName()}");
         }
 
         private Operation ORI(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Ori, instruction, file);
+            return new Operation(EOperationCode.Nor, instruction, file, static (string name, in Instruction i) =>
+                $"{name}\t{i.RT.RegisterName()}, {i.RS.RegisterName()}, 0x{i.IMM:X}");
         }
 
         private Operation PREF(in Instruction instruction, DataFile file)
@@ -1134,47 +1150,56 @@ namespace Foundry.Media.Nintendo64.Rom.Disassembly
 
         private Operation SB(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Sb, instruction, file);
+            return new Operation(EOperationCode.Sb, instruction, file, static (string name, in Instruction i) =>
+                $"{name}\t{i.RT.RegisterName()}, 0x{i.IMMSigned:X}({i.RS.RegisterName()})");
         }
 
         private Operation SC(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Sc, instruction, file);
+            return new Operation(EOperationCode.Sc, instruction, file, static (string name, in Instruction i) =>
+                $"{name}\t{i.RT.RegisterName()}, 0x{i.IMMSigned:X}({i.RS.RegisterName()})");
         }
 
         private Operation SCD(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Scd, instruction, file);
+            return new Operation(EOperationCode.Scd, instruction, file, static (string name, in Instruction i) =>
+                $"{name}\t{i.RT.RegisterName()}, 0x{i.IMMSigned:X}({i.RS.RegisterName()})");
         }
 
         private Operation SD(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Sd, instruction, file);
+            return new Operation(EOperationCode.Sd, instruction, file, static (string name, in Instruction i) =>
+                $"{name}\t{i.RT.RegisterName()}, 0x{i.IMMSigned:X}({i.RS.RegisterName()})");
         }
 
         private Operation SDC1(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Sdc1, instruction, file);
+            return new Operation(EOperationCode.Sdc1, instruction, file, static (string name, in Instruction i) =>
+                $"{name}\t{i.RT.RegisterName()}, 0x{i.IMMSigned:X}({i.RS.RegisterName()})");
         }
 
         private Operation SDC2(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Sdc2, instruction, file);
+            return new Operation(EOperationCode.Sdc2, instruction, file, static (string name, in Instruction i) =>
+                $"{name}\t{i.RT.RegisterName()}, 0x{i.IMMSigned:X}({i.RS.RegisterName()})");
         }
 
         private Operation SDL(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Sdl, instruction, file);
+            return new Operation(EOperationCode.Sdl, instruction, file, static (string name, in Instruction i) =>
+                $"{name}\t{i.RT.RegisterName()}, 0x{i.IMMSigned:X}({i.RS.RegisterName()})");
         }
 
         private Operation SDR(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Sdr, instruction, file);
+            return new Operation(EOperationCode.Sdr, instruction, file, static (string name, in Instruction i) =>
+                $"{name}\t{i.RT.RegisterName()}, 0x{i.IMMSigned:X}({i.RS.RegisterName()})");
         }
 
         private Operation SH(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Sh, instruction, file);
+            return new Operation(EOperationCode.Sh, instruction, file, static (string name, in Instruction i) =>
+                $"{name}\t{i.RT.RegisterName()}, 0x{i.IMMSigned:X}({i.RS.RegisterName()})");
         }
 
         private Operation SLL(in Instruction instruction, DataFile file)
@@ -1259,7 +1284,8 @@ namespace Foundry.Media.Nintendo64.Rom.Disassembly
 
         private Operation SW(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Sw, instruction, file);
+            return new Operation(EOperationCode.Sw, instruction, file, static (string name, in Instruction i) =>
+                $"{name}\t{i.RT.RegisterName()}, 0x{i.IMMSigned:X}({i.RS.RegisterName()})");
         }
 
         private Operation SWC1(in Instruction instruction, DataFile file)
@@ -1399,7 +1425,8 @@ namespace Foundry.Media.Nintendo64.Rom.Disassembly
 
         private Operation XORI(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Xori, instruction, file);
+            return new Operation(EOperationCode.Xori, instruction, file, static (string name, in Instruction i) =>
+                $"{name}\t{i.RT.RegisterName()}, {i.RS.RegisterName()}, 0x{i.IMM}");
         }
     }
 }
