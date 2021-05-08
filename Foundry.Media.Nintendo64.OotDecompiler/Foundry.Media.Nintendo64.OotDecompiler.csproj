@@ -26,14 +26,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Roslynator.Analyzers" Version="3.0.0">
+    <PackageReference Include="Roslynator.Analyzers" Version="3.1.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Foundry.Disassembly.Mips\Foundry.Disassembly.Mips.csproj" />
     <ProjectReference Include="..\Foundry.Media.Nintendo64.Rom\Foundry.Media.Nintendo64.Rom.csproj" />
   </ItemGroup>
 

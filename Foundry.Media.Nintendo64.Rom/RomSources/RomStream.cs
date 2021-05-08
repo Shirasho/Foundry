@@ -39,6 +39,12 @@ namespace Foundry.Media.Nintendo64.Rom
             base.OnDispose();
         }
 
+        /// <summary>
+        /// Creates an <see cref="IRomData"/> instance using a <see cref="Stream"/> as the
+        /// data source.
+        /// </summary>
+        /// <param name="romStream">The stream containing the ROM data.</param>
+        /// <param name="disposeStream">Whether to dispose of the stream when the <see cref="IRomData"/> instance is disposed.</param>
         public static IRomData Create(Stream romStream, bool disposeStream)
         {
             var dump = MemoryPool<byte>.Shared.Rent((int)romStream.Length);
@@ -48,6 +54,13 @@ namespace Foundry.Media.Nintendo64.Rom
             return new RomStream(romStream, dump, streamPosition, disposeStream);
         }
 
+        /// <summary>
+        /// Creates an <see cref="IRomData"/> instance using a <see cref="Stream"/> as the
+        /// data source.
+        /// </summary>
+        /// <param name="romStream">The stream containing the ROM data.</param>
+        /// <param name="disposeStream">Whether to dispose of the stream when the <see cref="IRomData"/> instance is disposed.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         public static async ValueTask<IRomData> CreateAsync(Stream romStream, bool disposeStream, CancellationToken cancellationToken = default)
         {
             var dump = MemoryPool<byte>.Shared.Rent((int)romStream.Length);
@@ -57,7 +70,11 @@ namespace Foundry.Media.Nintendo64.Rom
             return new RomStream(romStream, dump, streamPosition, disposeStream);
         }
 
-        public static new RomHeader GetMetadata(Stream romStream)
+        /// <summary>
+        /// Obtains the <see cref="RomHeader"/> for the ROM data in the stream.
+        /// </summary>
+        /// <param name="romStream">The stream containing the ROM data.</param>
+        public static RomHeader GetHeaderFromStream(Stream romStream)
         {
             Span<byte> headerBuffer = stackalloc byte[RomHeader.Length];
 
@@ -66,7 +83,12 @@ namespace Foundry.Media.Nintendo64.Rom
             return RomHeader.Create(headerBuffer);
         }
 
-        public static new async ValueTask<RomHeader> GetMetadataAsync(Stream romStream, CancellationToken cancellationToken)
+        /// <summary>
+        /// Obtains the <see cref="RomHeader"/> for the ROM data in the stream.
+        /// </summary>
+        /// <param name="romStream">The stream containing the ROM data.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        public static async ValueTask<RomHeader> GetHeaderFromStreamAsync(Stream romStream, CancellationToken cancellationToken)
         {
             byte[] headerBuffer = new byte[RomHeader.Length];
 
@@ -75,6 +97,9 @@ namespace Foundry.Media.Nintendo64.Rom
             return RomHeader.Create(headerBuffer);
         }
 
+        /// <summary>
+        /// Reloads the ROM data into memory.
+        /// </summary>
         protected override void LoadRomData()
         {
             var dump = MemoryPool<byte>.Shared.Rent((int)Stream.Length);
@@ -85,12 +110,16 @@ namespace Foundry.Media.Nintendo64.Rom
             SetData(dump);
         }
 
-        protected override async ValueTask LoadRomDataAsync()
+        /// <summary>
+        /// Reloads the ROM data into memory.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        protected override async ValueTask LoadRomDataAsync(CancellationToken cancellationToken)
         {
             var dump = MemoryPool<byte>.Shared.Rent((int)Stream.Length);
 
             Stream.Seek(StreamPosition, SeekOrigin.Begin);
-            await Stream.ReadAsync(dump.Memory);
+            await Stream.ReadAsync(dump.Memory, cancellationToken);
 
             SetData(dump);
         }

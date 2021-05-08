@@ -90,7 +90,7 @@ namespace Foundry.Serialization.Dbase
         /// <exception cref="DirectoryNotFoundException">The specified path is invalid, such as being on an unmapped drive.</exception>
         public DataTable Parse(string filePath, bool throwOnMissingFile, in CancellationToken cancellationToken = default)
         {
-            Guard.IsNotNullOrWhitespace(filePath, nameof(filePath));
+            Guard.IsNotNullOrWhiteSpace(filePath, nameof(filePath));
 
             return Parse(new FileInfo(filePath), throwOnMissingFile, cancellationToken);
         }

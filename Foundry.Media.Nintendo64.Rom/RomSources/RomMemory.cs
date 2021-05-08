@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Buffers;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Foundry.Media.Nintendo64.Rom
@@ -32,6 +33,9 @@ namespace Foundry.Media.Nintendo64.Rom
 
         }
 
+        /// <summary>
+        /// Reloads the ROM data into memory.
+        /// </summary>
         protected override void LoadRomData()
         {
             // Memory ROM data cannot be unloaded without disposing the RomData, so there is no reason
@@ -39,7 +43,11 @@ namespace Foundry.Media.Nintendo64.Rom
             SetData(Data);
         }
 
-        protected override ValueTask LoadRomDataAsync()
+        /// <summary>
+        /// Reloads the ROM data into memory.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        protected override ValueTask LoadRomDataAsync(CancellationToken cancellationToken)
         {
             // Memory ROM data cannot be unloaded without disposing the RomData, so there is no reason
             // to reload from the underlying memory source. SetData() will handle reloading of metadata.

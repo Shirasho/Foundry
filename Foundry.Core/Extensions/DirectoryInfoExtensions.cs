@@ -52,7 +52,7 @@ namespace Foundry
         public static FileInfo CombineFile(this DirectoryInfo directory, string fileName)
         {
             Guard.IsNotNull(directory, nameof(directory));
-            Guard.IsNotNullOrWhitespace(fileName, nameof(fileName));
+            Guard.IsNotNullOrWhiteSpace(fileName, nameof(fileName));
 
             return new FileInfo(Path.Combine(directory.FullName, fileName));
         }

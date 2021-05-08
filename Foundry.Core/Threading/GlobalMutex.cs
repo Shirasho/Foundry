@@ -47,7 +47,7 @@ namespace Foundry.Threading
         /// <exception cref="ArgumentException"><paramref name="mutexName"/> is null or empty.</exception>
         public GlobalMutex(string mutexName)
         {
-            Guard.IsNotNullOrWhitespace(mutexName, nameof(mutexName));
+            Guard.IsNotNullOrWhiteSpace(mutexName, nameof(mutexName));
 
             Name = mutexName.Replace("\\", "");
             Mutex = new Mutex(false, $"Global\\{Name}");

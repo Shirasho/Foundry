@@ -1,8 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
-using Foundry.Disassembly.Mips;
+using Foundry.Media.Nintendo64.OotDecompiler.Tools;
 using Foundry.Media.Nintendo64.Rom;
+using Foundry.Media.Nintendo64.Rom.Disassembly;
 using static Foundry.Media.Nintendo64.OotDecompiler.ConsoleEditor;
 
 namespace Foundry.Media.Nintendo64.OotDecompiler
@@ -24,6 +25,7 @@ namespace Foundry.Media.Nintendo64.OotDecompiler
                 Console.WriteLine();
                 var result = await RequestInputBlockAsync("Enter the number of the operation to perform.",
                     ("Disassemble ROM", () => DisassembleRomAsync(romFile)),
+                    ("Verify ROM CRC", () => VerifyRomCRCAsync(romFile)),
                     ("Change ROM Format", () => ChangeFormatAsync(romFile)),
                     ("Exit", BackTask)
                 );
@@ -68,24 +70,68 @@ namespace Foundry.Media.Nintendo64.OotDecompiler
             Console.WriteLine($"Return Address: 0x{romData.Header.ReturnAddress:X}");
             Console.WriteLine();
 
-            var disassembler = new MipsDisassembler();
-            //disassembler.AddSegment(new DataSegment("INTERNAL_HEADER", romData.GetHeaderData(), 0xA4000000));
-            //disassembler.AddSegment(new DataSegment("IPL3", romData.GetIPL3(), 0xA4000040));
-            disassembler.AddSegment(new DataSegment("CODE", romData.GetCodeData(), romData.Header.EntryAddress));
+            using var decompressedRomData = romData.Decompress();
+
+            var disassembler = new Disassembler();
+            var options = new DisassemblerOptions
+            {
+                OutputDir = new DirectoryInfo(@"C:\Users\shira\Desktop\OoTDecomp"),
+                SplitFiles = false,
+                KnownFiles =
+                {
+                    new FileEntry("INTERNAL_HEADER", 0xA4000000, romData.GetHeaderData()),
+                    new FileEntry("IPL3", 0xA4000040, romData.GetIPL3Data()),
+                    // We don't know what this is, but we can figure this out
+                    // when we start disassembling correctly and getting a bunch of opcode errors.
+                    // For reference, we know that Mario ends at 0x0B6A40. We'll go a bit higher then
+                    // work our way down.
+                    new FileEntry("CODE", romData.Header.EntryAddress, decompressedRomData.GetCodeData(0x0C3500))
+                },
+                Regions =
+                {
+                    new DataRegion("INTERNAL_HEADER", 0xA4000000, 0xA400003F)
+                },
+                KnownFunctions =
+                {
+                    { 0x80000400, "Main" }
+                }
+            };
 
             //disassembler.AddRegion(new DataRegion("INTERNAL_HEADER", 0xA4000000, 0xA400003F));
 
             Console.WriteLine();
 
-            using var fs = File.Open(@"C:\Users\shira\Desktop\OoTDecomp\code.asm", FileMode.Create, FileAccess.Write, FileShare.Read);
-            using var tw = fs.GetStreamWriter();
-
-            if (!PerformChecklistOperation("Disassembling ROM to MIPS.", () => disassembler.Disassemble(tw)))
+            if (!PerformChecklistOperation("Disassembling ROM to MIPS.", () => disassembler.Disassemble(options), r => r.Exception))
             {
                 return new ValueTask<EInputBlockResult>(EInputBlockResult.Failed);
             }
 
             return new ValueTask<EInputBlockResult>(EInputBlockResult.Success);
+        }
+
+        private static async ValueTask<EInputBlockResult> VerifyRomCRCAsync(IRomData romData)
+        {
+            Console.WriteLine("Disassembling ROM.");
+            Console.WriteLine();
+
+            var data = await romData.GetDataAsync();
+            switch (Crc.HasCorrectCrc(data.Span, out var crc))
+            {
+                case false:
+                    Console.WriteLine("ROM has invalid CRC values.");
+                    Console.WriteLine($"Expected CRC1: 0x{crc.Crc1:X8}, Actual CRC1: 0x{romData.Header.Crc1:X8}");
+                    Console.WriteLine($"Expected CRC2: 0x{crc.Crc1:X8}, Actual CRC2: 0x{romData.Header.Crc2:X8}");
+                    break;
+                case true:
+                    Console.WriteLine("CRC OK.");
+                    break;
+                case null:
+                default:
+                    Console.WriteLine("Unable to calculate CRC - unknown boot code.");
+                    break;
+            }
+
+            return EInputBlockResult.Success;
         }
 
         private static async ValueTask<EInputBlockResult> ChangeFormatAsync(IRomData romData)

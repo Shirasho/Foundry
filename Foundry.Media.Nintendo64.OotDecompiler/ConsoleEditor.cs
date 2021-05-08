@@ -82,6 +82,48 @@ namespace Foundry.Media.Nintendo64.OotDecompiler
             });
         }
 
+        public static bool PerformChecklistOperation<T>(string title, Func<T> operation, Predicate<T> validate)
+        {
+            return PerformChecklistOperation(title, () =>
+            {
+                try
+                {
+                    if (!validate(operation()))
+                    {
+                        throw new Exception("Validation of result failed.");
+                    }
+
+                    return new OperationResult();
+                }
+                catch (Exception e)
+                {
+                    return new OperationResult(e);
+                }
+            });
+        }
+
+        public static bool PerformChecklistOperation<T>(string title, Func<T> operation, Func<T, Exception?> validate)
+        {
+            return PerformChecklistOperation(title, () =>
+            {
+                try
+                {
+                    var result = operation();
+                    var error = validate(result);
+                    if (error is not null)
+                    {
+                        return new OperationResult(error);
+                    }
+
+                    return new OperationResult();
+                }
+                catch (Exception e)
+                {
+                    return new OperationResult(e);
+                }
+            });
+        }
+
         public static bool PerformChecklistOperation(string title, Func<OperationResult> operation)
         {
             Console.Write($"[ ] {title}");
@@ -125,6 +167,48 @@ namespace Foundry.Media.Nintendo64.OotDecompiler
                 try
                 {
                     await operation();
+
+                    return new OperationResult();
+                }
+                catch (Exception e)
+                {
+                    return new OperationResult(e);
+                }
+            });
+        }
+
+        public static Task<bool> PerformChecklistOperationAsync<T>(string title, Func<ValueTask<T>> operation, Predicate<T> validate)
+        {
+            return PerformChecklistOperationAsync(title, async () =>
+            {
+                try
+                {
+                    if (!validate(await operation()))
+                    {
+                        throw new Exception("Validation of result failed.");
+                    }
+
+                    return new OperationResult();
+                }
+                catch (Exception e)
+                {
+                    return new OperationResult(e);
+                }
+            });
+        }
+
+        public static Task<bool> PerformChecklistOperationAsync<T>(string title, Func<ValueTask<T>> operation, Func<T, Exception?> validate)
+        {
+            return PerformChecklistOperationAsync(title, async () =>
+            {
+                try
+                {
+                    var result = await operation();
+                    var error = validate(result);
+                    if (error is not null)
+                    {
+                        return new OperationResult(error);
+                    }
 
                     return new OperationResult();
                 }

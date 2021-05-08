@@ -22,7 +22,7 @@ namespace Foundry
         public static void CompressFile(this ZipArchive archive, string file, string? destination, CompressionLevel compressionLevel)
         {
             Guard.IsNotNull(archive, nameof(archive));
-            Guard.IsNotNullOrWhitespace(file, nameof(file));
+            Guard.IsNotNullOrWhiteSpace(file, nameof(file));
             GuardEx.IsValid(compressionLevel, nameof(compressionLevel));
 
             string desiredFileName = !string.IsNullOrWhiteSpace(destination) ? destination! : Path.GetFileName(file);

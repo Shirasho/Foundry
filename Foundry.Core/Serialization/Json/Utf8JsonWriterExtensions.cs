@@ -20,7 +20,7 @@ namespace Foundry.Serialization.Json
         public static void WriteObject(this Utf8JsonWriter writer, string propertyName, object? value, bool ignoreNullValues, JsonSerializerOptions options)
         {
             Guard.IsNotNull(writer, nameof(writer));
-            Guard.IsNotNullOrWhitespace(propertyName, nameof(propertyName));
+            Guard.IsNotNullOrWhiteSpace(propertyName, nameof(propertyName));
             Guard.IsNotNull(options, nameof(options));
 
             if (value is null && ignoreNullValues)

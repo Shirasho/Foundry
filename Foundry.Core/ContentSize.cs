@@ -55,26 +55,26 @@ namespace Foundry
         /// <summary>
         /// The size of this content in bytes.
         /// </summary>
-        public readonly long Bytes { get; }
+        public readonly ulong Bytes { get; }
 
-        public ContentSize(long bytes)
+        public ContentSize(ulong bytes)
         {
             Bytes = bytes;
         }
 
         public static ContentSize FromKibibits(double kibibits)
         {
-            return new ContentSize((long)(kibibits * 1024));
+            return new ContentSize((ulong)(kibibits * 1024));
         }
 
         public static ContentSize FromMebibits(double mebibits)
         {
-            return new ContentSize((long)(mebibits * 1024 * 1024));
+            return new ContentSize((ulong)(mebibits * 1024 * 1024));
         }
 
         public static ContentSize FromGibibits(double gibibits)
         {
-            return new ContentSize((long)(gibibits * 1024 * 1024 * 1024));
+            return new ContentSize((ulong)(gibibits * 1024 * 1024 * 1024));
         }
 
         public readonly int CompareTo(ContentSize other)

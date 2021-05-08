@@ -1,28 +1,51 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Foundry.Media.Nintendo64.Rom
 {
     /// <summary>
     /// ROM size information.
     /// </summary>
-    public readonly struct RomSize
+    public sealed class RomSize : IEquatable<RomSize>, IComparable<RomSize>, IEquatable<ContentSize>, IComparable<ContentSize>
     {
+        private static readonly IReadOnlyList<ulong> ValidRomSizes = new ulong[]{
+            // 32Mbit
+            4194304,
+            // 64Mbit
+            8388608,
+            // 96Mbit
+            12582912,
+            // 128Mbit
+            16777216,
+            // 256Mbit
+            33554432,
+            // 320Mbit
+            41943040,
+            // 512MBit
+            67108864
+        };
+
+        /// <summary>
+        /// A <see cref="RomSize"/> representing 0 bytes.
+        /// </summary>
+        public static RomSize Empty { get; } = new RomSize(0);
+
         /// <summary>
         /// The size of the ROM data.
         /// </summary>
-        public readonly ContentSize Size { get; }
+        public ContentSize Size { get; }
 
         /// <summary>
         /// The number of overdump bytes.
         /// </summary>
-        public readonly long OverdumpSize { get; }
+        public ulong OverdumpSize { get; }
 
         /// <summary>
         /// Whether the ROM data has any overdump bytes.
         /// </summary>
-        public readonly bool HasOverdump => OverdumpSize != 0;
+        public bool HasOverdump => OverdumpSize != 0;
 
-        public RomSize(long bytes)
+        public RomSize(ulong bytes)
             : this(new ContentSize(bytes))
         {
 
@@ -33,32 +56,40 @@ namespace Foundry.Media.Nintendo64.Rom
             Size = size;
             OverdumpSize = 0;
 
-            Span<long> validRomSizes = stackalloc long[] {
-                // 32Mbit
-                4194304,
-                // 64Mbit
-                8388608,
-                // 96Mbit
-                12582912,
-                // 128Mbit
-                16777216,
-                // 256Mbit
-                33554432,
-                // 320Mbit
-                41943040,
-                // 512MBit
-                67108864
-            };
-
-            for (int i = 0; i < (uint)validRomSizes.Length; ++i)
+            for (int i = 0; i < ValidRomSizes.Count; ++i)
             {
-                long bytes = validRomSizes[i];
-                if (Size.Bytes >= bytes || i == validRomSizes.Length - 1)
+                ulong bytes = ValidRomSizes[i];
+                if (Size.Bytes >= bytes || i == ValidRomSizes.Count - 1)
                 {
                     OverdumpSize = Size.Bytes - bytes;
                     break;
                 }
             }
+        }
+
+        public bool Equals(RomSize? other)
+        {
+            return other is not null && Size == other.Size;
+        }
+
+        public int CompareTo(RomSize? other)
+        {
+            if (other is null)
+            {
+                return 1;
+            }
+
+            return Size.CompareTo(other.Size);
+        }
+
+        public bool Equals(ContentSize other)
+        {
+            return Size.Equals(other);
+        }
+
+        public int CompareTo(ContentSize other)
+        {
+            return Size.CompareTo(other);
         }
     }
 }

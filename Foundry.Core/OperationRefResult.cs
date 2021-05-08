@@ -56,7 +56,7 @@ namespace Foundry
 
         public OperationRefResult(string errorMessage, EOperationResultLevel level)
         {
-            Guard.IsNotNullOrWhitespace(errorMessage, nameof(errorMessage));
+            Guard.IsNotNullOrWhiteSpace(errorMessage, nameof(errorMessage));
             GuardEx.IsValid(level, nameof(level));
 
             Level = level;
@@ -118,7 +118,7 @@ namespace Foundry
 
         public OperationRefResult(string errorMessage)
         {
-            Guard.IsNotNullOrWhitespace(errorMessage, nameof(errorMessage));
+            Guard.IsNotNullOrWhiteSpace(errorMessage, nameof(errorMessage));
 
             Success = false;
             Result = default;
@@ -188,7 +188,7 @@ namespace Foundry
 
         public OperationRefResult(string errorMessage)
         {
-            Guard.IsNotNullOrWhitespace(errorMessage, nameof(errorMessage));
+            Guard.IsNotNullOrWhiteSpace(errorMessage, nameof(errorMessage));
 
             Success = false;
             Result1 = default;

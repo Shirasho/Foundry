@@ -71,7 +71,7 @@ namespace Foundry
 
         public OperationResult(string errorMessage, EOperationResultLevel level)
         {
-            Guard.IsNotNullOrWhitespace(errorMessage, nameof(errorMessage));
+            Guard.IsNotNullOrWhiteSpace(errorMessage, nameof(errorMessage));
             GuardEx.IsValid(level, nameof(level));
 
             Level = level;

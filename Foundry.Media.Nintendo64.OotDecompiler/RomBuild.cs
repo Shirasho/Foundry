@@ -7,7 +7,7 @@ using Foundry.Media.Nintendo64.Rom;
 
 namespace Foundry.Media.Nintendo64.OotDecompiler
 {
-    public enum ERomVersion
+    internal enum ERomVersion
     {
         Unsupported,
         NTSC1_0,
@@ -21,7 +21,7 @@ namespace Foundry.Media.Nintendo64.OotDecompiler
         Europe_MasterQuestDebug
     };
 
-    public sealed class RomBuild
+    internal sealed class RomBuild
     {
         private static readonly Dictionary<string, ERomVersion> VersionMap = new Dictionary<string, ERomVersion>
         {

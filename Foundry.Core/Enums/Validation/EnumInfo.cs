@@ -975,7 +975,7 @@ namespace Foundry
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="value" /> is not a valid value or flag combination of type <typeparamref name="TEnum" />.</exception>
         public TEnum Validate(TEnum value, string paramName)
         {
-            Guard.IsNotNullOrWhitespace(paramName, nameof(paramName));
+            Guard.IsNotNullOrWhiteSpace(paramName, nameof(paramName));
 
             return !IsFlagEnum
                 ? IsDefined(value) ? value : throw new ArgumentOutOfRangeException(paramName, EnumErrors<TEnum>.InvalidEnumValue(value))

@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Foundry.Media.Nintendo64.Rom.Utilities;
 using Microsoft.Toolkit.Diagnostics;
 
 namespace Foundry.Media.Nintendo64.Rom
 {
+    /// <summary>
+    /// Utilities for converting ROM data between different formats.
+    /// </summary>
     public static class RomConverter
     {
         /// <summary>
@@ -94,7 +98,7 @@ namespace Foundry.Media.Nintendo64.Rom
 
             switch (format)
             {
-                // Switch endians.
+                // Switch endian.
                 case ERomFormat.BigEndian when dataFormat == ERomFormat.LittleEndian:
                 case ERomFormat.LittleEndian when dataFormat == ERomFormat.BigEndian:
                     ByteManipulation.SwapEndian(data);
@@ -161,7 +165,7 @@ namespace Foundry.Media.Nintendo64.Rom
 
             switch (format)
             {
-                // Switch endians.
+                // Switch endian.
                 case ERomFormat.BigEndian when dataFormat == ERomFormat.LittleEndian:
                 case ERomFormat.LittleEndian when dataFormat == ERomFormat.BigEndian:
                     ByteManipulation.SwapEndian(data, dest);
