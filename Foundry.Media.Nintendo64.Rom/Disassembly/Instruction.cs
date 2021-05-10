@@ -88,6 +88,26 @@ namespace Foundry.Media.Nintendo64.Rom.Disassembly
         /// </summary>
         public readonly uint Address => Mask.GetAddr(Value);
 
+        /// <summary>
+        /// The code if <see cref="OpCode"/> is <see cref="EOperationCode.Break"/>.
+        /// </summary>
+        public readonly uint BreakCode => Mask.GetBreakCode(Value);
+
+        /// <summary>
+        /// The code if <see cref="OpCode"/> is <see cref="EOperationCode.Syscall"/>.
+        /// </summary>
+        public readonly uint SyscallCode => Mask.GetSyscallCode(Value);
+
+        /// <summary>
+        /// The float condition code (cc) used in float comparison values.
+        /// </summary>
+        public readonly uint FloatConditionCode => Mask.GetFloatConditionCode(Value);
+
+        /// <summary>
+        /// The trap code for "compare conditional trap" instructions.
+        /// </summary>
+        public readonly uint CompareTrapCode => Mask.GetCompareTrapCode(Value);
+
         public Instruction(uint value, uint virtualAddress, uint number)
         {
             Value = value;
@@ -110,18 +130,22 @@ namespace Foundry.Media.Nintendo64.Rom.Disassembly
             /// The op code bytes that all types share.
             /// </summary>
             public const uint OpCode = 0b11111100000000000000000000000000;
-            public const uint RS = 0b00000011111000000000000000000000;
-            public const uint RT = 0b00000000000111110000000000000000;
-            public const uint RD = 0b00000000000000001111100000000000;
-            public const uint Shamd = 0b00000000000000000000011111000000;
-            public const uint Funct = 0b00000000000000000000000000111111;
+            public const uint RS     = 0b00000011111000000000000000000000;
+            public const uint RT     = 0b00000000000111110000000000000000;
+            public const uint RD     = 0b00000000000000001111100000000000;
+            public const uint Shamd  = 0b00000000000000000000011111000000;
+            public const uint Funct  = 0b00000000000000000000000000111111;
 
-            public const uint FT = 0b00000000000111110000000000000000;
-            public const uint FS = 0b00000000000000001111100000000000;
-            public const uint FD = 0b00000000000000000000011111000000;
+            public const uint FT     = 0b00000000000111110000000000000000;
+            public const uint FS     = 0b00000000000000001111100000000000;
+            public const uint FD     = 0b00000000000000000000011111000000;
 
             public const uint IMM = 0b00000000000000001111111111111111;
             public const uint Addr = 0b00000011111111111111111111111111;
+            public const uint CompareTrapCode = 0b00000000000000001111111111000000;
+            public const uint BreakCode = 0b00000011111111111111111111000000;
+            public const uint SyscallCode = 0b00000011111111111111111111000000;
+            public const uint FloatConditionCode = 0b00000000000000000000011100000000;
 
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public static uint GetOpCode(uint instruction)
@@ -202,6 +226,31 @@ namespace Foundry.Media.Nintendo64.Rom.Disassembly
             public static uint GetAddr(uint instruction)
             {
                 return instruction & Addr;
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public static uint GetBreakCode(uint instruction)
+            {
+                return (instruction & BreakCode) >> 6;
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public static uint GetSyscallCode(uint instruction)
+            {
+                return (instruction & SyscallCode) >> 6;
+            }
+
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public static uint GetFloatConditionCode(uint instruction)
+            {
+                return (instruction & FloatConditionCode) >> 8;
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public static uint GetCompareTrapCode(uint instruction)
+            {
+                return (instruction & CompareTrapCode) >> 6;
             }
         }
     }

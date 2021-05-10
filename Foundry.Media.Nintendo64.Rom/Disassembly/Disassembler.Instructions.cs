@@ -285,38 +285,38 @@ namespace Foundry.Media.Nintendo64.Rom.Disassembly
 
         private Operation ABS_D(in Instruction instruction, DataFile file)
         {
-            return new Operation(EOperationCode.Abs_D, instruction, file, static (string name, in Instruction i) =>
-                $"{name}\t{i.FD.FloatRegisterName()}, {i.FS.FloatRegisterName()}");
+            return new Operation(EOperationCode.Abs_D, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.FD.FloatRegisterName()}, {i.FS.FloatRegisterName()}");
         }
 
         private Operation ABS_S(in Instruction instruction, DataFile file)
         {
-            return new Operation(EOperationCode.Abs_S, instruction, file, static (string name, in Instruction i) =>
-                $"{name}\t{i.FD.FloatRegisterName()}, {i.FS.FloatRegisterName()}");
+            return new Operation(EOperationCode.Abs_S, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.FD.FloatRegisterName()}, {i.FS.FloatRegisterName()}");
         }
 
         private Operation ADD(in Instruction instruction, DataFile file)
         {
-            return new Operation(EOperationCode.Add, instruction, file, static (string name, in Instruction i) =>
-                $"{name}\t{i.RD.RegisterName()}, {i.RS.RegisterName()}, {i.RT.RegisterName()}");
+            return new Operation(EOperationCode.Add, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RD.RegisterName()}, {i.RS.RegisterName()}, {i.RT.RegisterName()}");
         }
 
         private Operation ADD_D(in Instruction instruction, DataFile file)
         {
-            return new Operation(EOperationCode.Add_D, instruction, file, static (string name, in Instruction i) =>
-                $"{name}\t{i.FD.FloatRegisterName()}, {i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}");
+            return new Operation(EOperationCode.Add_D, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.FD.FloatRegisterName()}, {i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}");
         }
 
         private Operation ADD_S(in Instruction instruction, DataFile file)
         {
-            return new Operation(EOperationCode.Add_S, instruction, file, static (string name, in Instruction i) =>
-                $"{name}\t{i.FD.FloatRegisterName()}, {i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}");
+            return new Operation(EOperationCode.Add_S, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.FD.FloatRegisterName()}, {i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}");
         }
 
         private Operation ADDI(in Instruction instruction, DataFile file)
         {
-            return new Operation(EOperationCode.Addi, instruction, file, static (string name, in Instruction i) =>
-                $"{name}\t{i.RT.RegisterName()}, {i.RS.RegisterName()}, 0x{i.IMM:X}");
+            return new Operation(EOperationCode.Addi, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RT.RegisterName()}, {i.RS.RegisterName()}, 0x{i.IMMSigned:X} /* 0x{i.IMMSigned:X} = {i.IMMSigned} */");
         }
 
         private Operation ADDIU(in Instruction instruction, DataFile file)
@@ -331,192 +331,409 @@ namespace Foundry.Media.Nintendo64.Rom.Disassembly
             //}
             //else
             //{
-            return new Operation(EOperationCode.Addiu, instruction, file, static (string name, in Instruction i) =>
-                $"{name}\t{i.RT.RegisterName()}, {i.RS.RegisterName()}, 0x{i.IMMSigned:X}");
+            return new Operation(EOperationCode.Addiu, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RT.RegisterName()}, {i.RS.RegisterName()}, 0x{i.IMMSigned:X} /* 0x{i.IMMSigned:X} = {i.IMMSigned} */");
             //}
         }
 
         private Operation ADDU(in Instruction instruction, DataFile file)
         {
-            return new Operation(EOperationCode.Addu, instruction, file, static (string name, in Instruction i) =>
-                $"{name}\t{i.RD.RegisterName()}, {i.RS.RegisterName()}, {i.RT.RegisterName()}");
+            return new Operation(EOperationCode.Addu, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RD.RegisterName()}, {i.RS.RegisterName()}, {i.RT.RegisterName()}");
         }
 
         private Operation AND(in Instruction instruction, DataFile file)
         {
-            return new Operation(EOperationCode.And, instruction, file, static (string name, in Instruction i) =>
-                $"{name}\t{i.RD.RegisterName()}, {i.RS.RegisterName()}, {i.RT.RegisterName()}");
+            return new Operation(EOperationCode.And, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RD.RegisterName()}, {i.RS.RegisterName()}, {i.RT.RegisterName()}");
         }
 
         private Operation ANDI(in Instruction instruction, DataFile file)
         {
-            return new Operation(EOperationCode.And, instruction, file, static (string name, in Instruction i) =>
-                $"{name}\t{i.RT.RegisterName()}, {i.RS.RegisterName()}, 0x{i.IMM:X}");
+            return new Operation(EOperationCode.And, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RT.RegisterName()}, {i.RS.RegisterName()}, 0x{i.IMM:X} /* 0x{i.IMM:X} = {Convert.ToString(i.IMMSigned, 2)} */");
         }
 
         private Operation BC1F(in Instruction instruction, DataFile file)
         {
             return new Operation(EOperationCode.Bc1f, instruction, file, static (string name, in Instruction i)
-                => $"{name}\t0x{i.IMMSigned:X8} /* 0x{i.GetAbsoluteJumpAddress():X8} */");
+                => $"{name}\t0x{i.IMMSigned:X8} /* Absolute address = 0x{i.GetAbsoluteJumpAddress():X8} */");
         }
 
         private Operation BC1FL(in Instruction instruction, DataFile file)
         {
             return new Operation(EOperationCode.Bc1fl, instruction, file, static (string name, in Instruction i)
-                => $"{name}\t0x{i.IMMSigned:X8} /* 0x{i.GetAbsoluteJumpAddress():X8} */");
+                => $"{name}\t0x{i.IMMSigned:X8} /* Absolute address = 0x{i.GetAbsoluteJumpAddress():X8} */");
         }
 
         private Operation BC1T(in Instruction instruction, DataFile file)
         {
             return new Operation(EOperationCode.Bc1t, instruction, file, static (string name, in Instruction i)
-                => $"{name}\t0x{i.IMMSigned:X8} /* 0x{i.GetAbsoluteJumpAddress():X8} */");
+                => $"{name}\t0x{i.IMMSigned:X8} /* Absolute address = 0x{i.GetAbsoluteJumpAddress():X8} */");
         }
 
         private Operation BC1TL(in Instruction instruction, DataFile file)
         {
             return new Operation(EOperationCode.Bc1tl, instruction, file, static (string name, in Instruction i)
-                => $"{name}\t0x{i.IMMSigned:X8} /* 0x{i.GetAbsoluteJumpAddress():X8} */");
+                => $"{name}\t0x{i.IMMSigned:X8} /* Absolute address = 0x{i.GetAbsoluteJumpAddress():X8} */");
         }
 
         private Operation BEQ(in Instruction instruction, DataFile file)
         {
             return new Operation(EOperationCode.Beq, instruction, file, static (string name, in Instruction i)
-                => $"{name}\t{i.RS.RegisterName()}, {i.RT.RegisterName()}, 0x{i.IMMSigned:X8} /* 0x{i.GetAbsoluteJumpAddress():X8} */");
+                => $"{name}\t{i.RS.RegisterName()}, {i.RT.RegisterName()}, 0x{i.IMMSigned:X8} /* Absolute address = 0x{i.GetAbsoluteJumpAddress():X8} */");
         }
 
         private Operation BEQL(in Instruction instruction, DataFile file)
         {
             return new Operation(EOperationCode.Beql, instruction, file, static (string name, in Instruction i)
-                => $"{name}\t{i.RS.RegisterName()}, {i.RT.RegisterName()}, 0x{i.IMMSigned:X8} /* 0x{i.GetAbsoluteJumpAddress():X8} */");
+                => $"{name}\t{i.RS.RegisterName()}, {i.RT.RegisterName()}, 0x{i.IMMSigned:X8} /* Absolute address = 0x{i.GetAbsoluteJumpAddress():X8} */");
         }
 
         private Operation BGEZ(in Instruction instruction, DataFile file)
         {
             return new Operation(EOperationCode.Bgez, instruction, file, static (string name, in Instruction i)
-                => $"{name}\t{i.RS.RegisterName()}, 0x{i.IMMSigned:X8} /* 0x{i.GetAbsoluteJumpAddress():X8} */");
+                => $"{name}\t{i.RS.RegisterName()}, 0x{i.IMMSigned:X8} /* Absolute address = 0x{i.GetAbsoluteJumpAddress():X8} */");
         }
 
         private Operation BGEZAL(in Instruction instruction, DataFile file)
         {
             return new Operation(EOperationCode.Bgezal, instruction, file, static (string name, in Instruction i)
-                => $"{name}\t{i.RS.RegisterName()}, 0x{i.IMMSigned:X8} /* 0x{i.GetAbsoluteJumpAddress():X8} */");
+                => $"{name}\t{i.RS.RegisterName()}, 0x{i.IMMSigned:X8} /* Absolute address = 0x{i.GetAbsoluteJumpAddress():X8} */");
         }
 
         private Operation BGEZALL(in Instruction instruction, DataFile file)
         {
             return new Operation(EOperationCode.Bgezall, instruction, file, static (string name, in Instruction i)
-                => $"{name}\t{i.RS.RegisterName()}, 0x{i.IMMSigned:X8} /* 0x{i.GetAbsoluteJumpAddress():X8} */");
+                => $"{name}\t{i.RS.RegisterName()}, 0x{i.IMMSigned:X8} /* Absolute address = 0x{i.GetAbsoluteJumpAddress():X8} */");
         }
 
         private Operation BGEZL(in Instruction instruction, DataFile file)
         {
             return new Operation(EOperationCode.Bgezl, instruction, file, static (string name, in Instruction i)
-                => $"{name}\t{i.RS.RegisterName()}, 0x{i.IMMSigned:X8} /* 0x{i.GetAbsoluteJumpAddress():X8} */");
+                => $"{name}\t{i.RS.RegisterName()}, 0x{i.IMMSigned:X8} /* Absolute address = 0x{i.GetAbsoluteJumpAddress():X8} */");
         }
 
         private Operation BGTZ(in Instruction instruction, DataFile file)
         {
             return new Operation(EOperationCode.Bgtz, instruction, file, static (string name, in Instruction i)
-                => $"{name}\t{i.RS.RegisterName()}, 0x{i.IMMSigned:X8} /* 0x{i.GetAbsoluteJumpAddress():X8} */");
+                => $"{name}\t{i.RS.RegisterName()}, 0x{i.IMMSigned:X8} /* Absolute address = 0x{i.GetAbsoluteJumpAddress():X8} */");
         }
 
         private Operation BGTZL(in Instruction instruction, DataFile file)
         {
             return new Operation(EOperationCode.Bgtzl, instruction, file, static (string name, in Instruction i)
-                => $"{name}\t{i.RS.RegisterName()}, 0x{i.IMMSigned:X8} /* 0x{i.GetAbsoluteJumpAddress():X8} */");
+                => $"{name}\t{i.RS.RegisterName()}, 0x{i.IMMSigned:X8} /* Absolute address = 0x{i.GetAbsoluteJumpAddress():X8} */");
         }
 
         private Operation BLEZ(in Instruction instruction, DataFile file)
         {
             return new Operation(EOperationCode.Blez, instruction, file, static (string name, in Instruction i)
-                => $"{name}\t{i.RS.RegisterName()}, 0x{i.IMMSigned:X8} /* 0x{i.GetAbsoluteJumpAddress():X8} */");
+                => $"{name}\t{i.RS.RegisterName()}, 0x{i.IMMSigned:X8} /* Absolute address = 0x{i.GetAbsoluteJumpAddress():X8} */");
         }
 
         private Operation BLEZL(in Instruction instruction, DataFile file)
         {
             return new Operation(EOperationCode.Blezl, instruction, file, static (string name, in Instruction i)
-                => $"{name}\t{i.RS.RegisterName()}, 0x{i.IMMSigned:X8} /* 0x{i.GetAbsoluteJumpAddress():X8} */");
+                => $"{name}\t{i.RS.RegisterName()}, 0x{i.IMMSigned:X8} /* Absolute address = 0x{i.GetAbsoluteJumpAddress():X8} */");
         }
 
         private Operation BLTZ(in Instruction instruction, DataFile file)
         {
             return new Operation(EOperationCode.Bltz, instruction, file, static (string name, in Instruction i)
-                => $"{name}\t{i.RS.RegisterName()}, 0x{i.IMMSigned:X8} /* 0x{i.GetAbsoluteJumpAddress():X8} */");
+                => $"{name}\t{i.RS.RegisterName()}, 0x{i.IMMSigned:X8} /* Absolute address = 0x{i.GetAbsoluteJumpAddress():X8} */");
         }
 
         private Operation BLTZAL(in Instruction instruction, DataFile file)
         {
             return new Operation(EOperationCode.Bltzal, instruction, file, static (string name, in Instruction i)
-                => $"{name}\t{i.RS.RegisterName()}, 0x{i.IMMSigned:X8} /* 0x{i.GetAbsoluteJumpAddress():X8} */");
+                => $"{name}\t{i.RS.RegisterName()}, 0x{i.IMMSigned:X8} /* Absolute address = 0x{i.GetAbsoluteJumpAddress():X8} */");
         }
 
         private Operation BLTZALL(in Instruction instruction, DataFile file)
         {
             return new Operation(EOperationCode.Bltzall, instruction, file, static (string name, in Instruction i)
-                => $"{name}\t{i.RS.RegisterName()}, 0x{i.IMMSigned:X8} /* 0x{i.GetAbsoluteJumpAddress():X8} */");
+                => $"{name}\t{i.RS.RegisterName()}, 0x{i.IMMSigned:X8} /* Absolute address = 0x{i.GetAbsoluteJumpAddress():X8} */");
         }
 
         private Operation BLTZL(in Instruction instruction, DataFile file)
         {
             return new Operation(EOperationCode.Bltzl, instruction, file, static (string name, in Instruction i)
-                => $"{name}\t{i.RS.RegisterName()}, 0x{i.IMMSigned:X8} /* 0x{i.GetAbsoluteJumpAddress():X8} */");
+                => $"{name}\t{i.RS.RegisterName()}, 0x{i.IMMSigned:X8} /* Absolute address = 0x{i.GetAbsoluteJumpAddress():X8} */");
         }
 
         private Operation BNE(in Instruction instruction, DataFile file)
         {
             return new Operation(EOperationCode.Bne, instruction, file, static (string name, in Instruction i)
-                => $"{name}\t{i.RS.RegisterName()}, {i.RT.RegisterName()}, 0x{i.IMMSigned:X8} /* 0x{i.GetAbsoluteJumpAddress():X8} */");
+                => $"{name}\t{i.RS.RegisterName()}, {i.RT.RegisterName()}, 0x{i.IMMSigned:X8} /* Absolute address = 0x{i.GetAbsoluteJumpAddress():X8} */");
         }
 
         private Operation BNEL(in Instruction instruction, DataFile file)
         {
             return new Operation(EOperationCode.Bnel, instruction, file, static (string name, in Instruction i)
-                => $"{name}\t{i.RS.RegisterName()}, {i.RT.RegisterName()}, 0x{i.IMMSigned:X8} /* 0x{i.GetAbsoluteJumpAddress():X8} */");
+                => $"{name}\t{i.RS.RegisterName()}, {i.RT.RegisterName()}, 0x{i.IMMSigned:X8} /* Absolute address = 0x{i.GetAbsoluteJumpAddress():X8} */");
         }
 
         private Operation BREAK(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Break, instruction, file);
+            return new Operation(EOperationCode.Break, instruction, file, static (string name, in Instruction i)
+                => $"{name} /* Break Code = 0x{i.BreakCode:X}");
         }
 
         private Operation C_F_D(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.C_F_D, instruction, file);
+            return new Operation(EOperationCode.C_F_D, instruction, file, static (string name, in Instruction i)
+                => i.FloatConditionCode != 0
+                    ? $"{name}\t{i.FloatConditionCode}, {i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}"
+                    : $"{name}\t{i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}");
         }
 
         private Operation C_F_S(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.C_F_S, instruction, file);
+            return new Operation(EOperationCode.C_F_S, instruction, file, static (string name, in Instruction i)
+                => i.FloatConditionCode != 0
+                    ? $"{name}\t{i.FloatConditionCode}, {i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}"
+                    : $"{name}\t{i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}");
         }
 
         private Operation C_UN_D(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.C_UN_D, instruction, file);
+            return new Operation(EOperationCode.C_UN_D, instruction, file, static (string name, in Instruction i)
+                => i.FloatConditionCode != 0
+                    ? $"{name}\t{i.FloatConditionCode}, {i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}"
+                    : $"{name}\t{i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}");
         }
 
         private Operation C_UN_S(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.C_UN_S, instruction, file);
+            return new Operation(EOperationCode.C_UN_S, instruction, file, static (string name, in Instruction i)
+                => i.FloatConditionCode != 0
+                    ? $"{name}\t{i.FloatConditionCode}, {i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}"
+                    : $"{name}\t{i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}");
         }
 
         private Operation C_EQ_D(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.C_EQ_D, instruction, file);
+            return new Operation(EOperationCode.C_EQ_D, instruction, file, static (string name, in Instruction i)
+                => i.FloatConditionCode != 0
+                    ? $"{name}\t{i.FloatConditionCode}, {i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}"
+                    : $"{name}\t{i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}");
         }
 
         private Operation C_EQ_S(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.C_EQ_S, instruction, file);
+            return new Operation(EOperationCode.C_EQ_S, instruction, file, static (string name, in Instruction i)
+                => i.FloatConditionCode != 0
+                    ? $"{name}\t{i.FloatConditionCode}, {i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}"
+                    : $"{name}\t{i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}");
         }
 
         private Operation C_UEQ_D(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.C_UEQ_D, instruction, file);
+            return new Operation(EOperationCode.C_UEQ_D, instruction, file, static (string name, in Instruction i)
+                => i.FloatConditionCode != 0
+                    ? $"{name}\t{i.FloatConditionCode}, {i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}"
+                    : $"{name}\t{i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}");
         }
 
         private Operation C_UEQ_S(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.C_UEQ_S, instruction, file);
+            return new Operation(EOperationCode.C_UEQ_S, instruction, file, static (string name, in Instruction i)
+                => i.FloatConditionCode != 0
+                    ? $"{name}\t{i.FloatConditionCode}, {i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}"
+                    : $"{name}\t{i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}");
+        }
+
+        private Operation C_OLT_D(in Instruction instruction, DataFile file)
+        {
+            return new Operation(EOperationCode.C_OLT_D, instruction, file, static (string name, in Instruction i)
+                => i.FloatConditionCode != 0
+                    ? $"{name}\t{i.FloatConditionCode}, {i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}"
+                    : $"{name}\t{i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}");
+        }
+
+        private Operation C_OLT_S(in Instruction instruction, DataFile file)
+        {
+            return new Operation(EOperationCode.C_OLT_S, instruction, file, static (string name, in Instruction i)
+                => i.FloatConditionCode != 0
+                    ? $"{name}\t{i.FloatConditionCode}, {i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}"
+                    : $"{name}\t{i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}");
+        }
+
+        private Operation C_ULT_D(in Instruction instruction, DataFile file)
+        {
+            return new Operation(EOperationCode.C_ULT_D, instruction, file, static (string name, in Instruction i)
+                => i.FloatConditionCode != 0
+                    ? $"{name}\t{i.FloatConditionCode}, {i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}"
+                    : $"{name}\t{i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}");
+        }
+
+        private Operation C_ULT_S(in Instruction instruction, DataFile file)
+        {
+            return new Operation(EOperationCode.C_ULT_S, instruction, file, static (string name, in Instruction i)
+                => i.FloatConditionCode != 0
+                    ? $"{name}\t{i.FloatConditionCode}, {i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}"
+                    : $"{name}\t{i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}");
+        }
+
+        private Operation C_OLE_D(in Instruction instruction, DataFile file)
+        {
+            return new Operation(EOperationCode.C_OLE_D, instruction, file, static (string name, in Instruction i)
+                => i.FloatConditionCode != 0
+                    ? $"{name}\t{i.FloatConditionCode}, {i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}"
+                    : $"{name}\t{i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}");
+        }
+
+        private Operation C_OLE_S(in Instruction instruction, DataFile file)
+        {
+            return new Operation(EOperationCode.C_OLE_S, instruction, file, static (string name, in Instruction i)
+                => i.FloatConditionCode != 0
+                    ? $"{name}\t{i.FloatConditionCode}, {i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}"
+                    : $"{name}\t{i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}");
+        }
+
+        private Operation C_ULE_D(in Instruction instruction, DataFile file)
+        {
+            return new Operation(EOperationCode.C_ULE_D, instruction, file, static (string name, in Instruction i)
+                => i.FloatConditionCode != 0
+                    ? $"{name}\t{i.FloatConditionCode}, {i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}"
+                    : $"{name}\t{i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}");
+        }
+
+        private Operation C_ULE_S(in Instruction instruction, DataFile file)
+        {
+            return new Operation(EOperationCode.C_ULE_S, instruction, file, static (string name, in Instruction i)
+                => i.FloatConditionCode != 0
+                    ? $"{name}\t{i.FloatConditionCode}, {i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}"
+                    : $"{name}\t{i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}");
+        }
+
+        private Operation C_SF_D(in Instruction instruction, DataFile file)
+        {
+            return new Operation(EOperationCode.C_SF_D, instruction, file, static (string name, in Instruction i)
+                => i.FloatConditionCode != 0
+                    ? $"{name}\t{i.FloatConditionCode}, {i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}"
+                    : $"{name}\t{i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}");
+        }
+
+        private Operation C_SF_S(in Instruction instruction, DataFile file)
+        {
+            return new Operation(EOperationCode.C_SF_S, instruction, file, static (string name, in Instruction i)
+                => i.FloatConditionCode != 0
+                    ? $"{name}\t{i.FloatConditionCode}, {i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}"
+                    : $"{name}\t{i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}");
+        }
+
+        private Operation C_NGLE_D(in Instruction instruction, DataFile file)
+        {
+            return new Operation(EOperationCode.C_NGLE_D, instruction, file, static (string name, in Instruction i)
+                => i.FloatConditionCode != 0
+                    ? $"{name}\t{i.FloatConditionCode}, {i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}"
+                    : $"{name}\t{i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}");
+        }
+
+        private Operation C_NGLE_S(in Instruction instruction, DataFile file)
+        {
+            return new Operation(EOperationCode.C_NGLE_S, instruction, file, static (string name, in Instruction i)
+                => i.FloatConditionCode != 0
+                    ? $"{name}\t{i.FloatConditionCode}, {i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}"
+                    : $"{name}\t{i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}");
+        }
+
+        private Operation C_SEQ_D(in Instruction instruction, DataFile file)
+        {
+            return new Operation(EOperationCode.C_SEQ_D, instruction, file, static (string name, in Instruction i)
+                => i.FloatConditionCode != 0
+                    ? $"{name}\t{i.FloatConditionCode}, {i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}"
+                    : $"{name}\t{i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}");
+        }
+
+        private Operation C_SEQ_S(in Instruction instruction, DataFile file)
+        {
+            return new Operation(EOperationCode.C_SEQ_S, instruction, file, static (string name, in Instruction i)
+                => i.FloatConditionCode != 0
+                    ? $"{name}\t{i.FloatConditionCode}, {i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}"
+                    : $"{name}\t{i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}");
+        }
+
+        private Operation C_NGL_D(in Instruction instruction, DataFile file)
+        {
+            return new Operation(EOperationCode.C_NGL_D, instruction, file, static (string name, in Instruction i)
+                => i.FloatConditionCode != 0
+                    ? $"{name}\t{i.FloatConditionCode}, {i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}"
+                    : $"{name}\t{i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}");
+        }
+
+        private Operation C_NGL_S(in Instruction instruction, DataFile file)
+        {
+            return new Operation(EOperationCode.C_NGL_S, instruction, file, static (string name, in Instruction i)
+                => i.FloatConditionCode != 0
+                    ? $"{name}\t{i.FloatConditionCode}, {i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}"
+                    : $"{name}\t{i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}");
+        }
+
+        private Operation C_LT_D(in Instruction instruction, DataFile file)
+        {
+            return new Operation(EOperationCode.C_LT_D, instruction, file, static (string name, in Instruction i)
+                => i.FloatConditionCode != 0
+                    ? $"{name}\t{i.FloatConditionCode}, {i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}"
+                    : $"{name}\t{i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}");
+        }
+
+        private Operation C_LT_S(in Instruction instruction, DataFile file)
+        {
+            return new Operation(EOperationCode.C_LT_S, instruction, file, static (string name, in Instruction i)
+                => i.FloatConditionCode != 0
+                    ? $"{name}\t{i.FloatConditionCode}, {i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}"
+                    : $"{name}\t{i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}");
+        }
+
+        private Operation C_NGE_D(in Instruction instruction, DataFile file)
+        {
+            return new Operation(EOperationCode.C_NGE_D, instruction, file, static (string name, in Instruction i)
+                => i.FloatConditionCode != 0
+                    ? $"{name}\t{i.FloatConditionCode}, {i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}"
+                    : $"{name}\t{i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}");
+        }
+
+        private Operation C_NGE_S(in Instruction instruction, DataFile file)
+        {
+            return new Operation(EOperationCode.C_NGE_S, instruction, file, static (string name, in Instruction i)
+                => i.FloatConditionCode != 0
+                    ? $"{name}\t{i.FloatConditionCode}, {i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}"
+                    : $"{name}\t{i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}");
+        }
+
+        private Operation C_LE_D(in Instruction instruction, DataFile file)
+        {
+            return new Operation(EOperationCode.C_LE_D, instruction, file, static (string name, in Instruction i)
+                => i.FloatConditionCode != 0
+                    ? $"{name}\t{i.FloatConditionCode}, {i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}"
+                    : $"{name}\t{i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}");
+        }
+
+        private Operation C_LE_S(in Instruction instruction, DataFile file)
+        {
+            return new Operation(EOperationCode.C_LE_S, instruction, file, static (string name, in Instruction i)
+                => i.FloatConditionCode != 0
+                    ? $"{name}\t{i.FloatConditionCode}, {i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}"
+                    : $"{name}\t{i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}");
+        }
+
+        private Operation C_NGT_D(in Instruction instruction, DataFile file)
+        {
+            return new Operation(EOperationCode.C_NGT_D, instruction, file, static (string name, in Instruction i)
+                => i.FloatConditionCode != 0
+                    ? $"{name}\t{i.FloatConditionCode}, {i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}"
+                    : $"{name}\t{i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}");
+        }
+
+        private Operation C_NGT_S(in Instruction instruction, DataFile file)
+        {
+            return new Operation(EOperationCode.C_NGT_S, instruction, file, static (string name, in Instruction i)
+                => i.FloatConditionCode != 0
+                    ? $"{name}\t{i.FloatConditionCode}, {i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}"
+                    : $"{name}\t{i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}");
         }
 
         private Operation CACHE(in Instruction instruction, DataFile file)
@@ -524,264 +741,172 @@ namespace Foundry.Media.Nintendo64.Rom.Disassembly
             return Operation.NotImplemented(EOperationCode.Cache, instruction, file);
         }
 
-        private Operation C_OLT_D(in Instruction instruction, DataFile file)
-        {
-            return Operation.NotImplemented(EOperationCode.C_OLT_D, instruction, file);
-        }
-
-        private Operation C_OLT_S(in Instruction instruction, DataFile file)
-        {
-            return Operation.NotImplemented(EOperationCode.C_OLT_S, instruction, file);
-        }
-
-        private Operation C_ULT_D(in Instruction instruction, DataFile file)
-        {
-            return Operation.NotImplemented(EOperationCode.C_ULT_D, instruction, file);
-        }
-
-        private Operation C_ULT_S(in Instruction instruction, DataFile file)
-        {
-            return Operation.NotImplemented(EOperationCode.C_ULT_S, instruction, file);
-        }
-
-        private Operation C_OLE_D(in Instruction instruction, DataFile file)
-        {
-            return Operation.NotImplemented(EOperationCode.C_OLE_D, instruction, file);
-        }
-
-        private Operation C_OLE_S(in Instruction instruction, DataFile file)
-        {
-            return Operation.NotImplemented(EOperationCode.C_OLE_S, instruction, file);
-        }
-
-        private Operation C_ULE_D(in Instruction instruction, DataFile file)
-        {
-            return Operation.NotImplemented(EOperationCode.C_ULE_D, instruction, file);
-        }
-
-        private Operation C_ULE_S(in Instruction instruction, DataFile file)
-        {
-            return Operation.NotImplemented(EOperationCode.C_ULE_S, instruction, file);
-        }
-
-        private Operation C_SF_D(in Instruction instruction, DataFile file)
-        {
-            return Operation.NotImplemented(EOperationCode.C_SF_D, instruction, file);
-        }
-
-        private Operation C_SF_S(in Instruction instruction, DataFile file)
-        {
-            return Operation.NotImplemented(EOperationCode.C_SF_S, instruction, file);
-        }
-
-        private Operation C_NGLE_D(in Instruction instruction, DataFile file)
-        {
-            return Operation.NotImplemented(EOperationCode.C_NGLE_D, instruction, file);
-        }
-
-        private Operation C_NGLE_S(in Instruction instruction, DataFile file)
-        {
-            return Operation.NotImplemented(EOperationCode.C_NGLE_S, instruction, file);
-        }
-
-        private Operation C_SEQ_D(in Instruction instruction, DataFile file)
-        {
-            return Operation.NotImplemented(EOperationCode.C_SEQ_D, instruction, file);
-        }
-
-        private Operation C_SEQ_S(in Instruction instruction, DataFile file)
-        {
-            return Operation.NotImplemented(EOperationCode.C_SEQ_S, instruction, file);
-        }
-
-        private Operation C_NGL_D(in Instruction instruction, DataFile file)
-        {
-            return Operation.NotImplemented(EOperationCode.C_NGL_D, instruction, file);
-        }
-
-        private Operation C_NGL_S(in Instruction instruction, DataFile file)
-        {
-            return Operation.NotImplemented(EOperationCode.C_NGL_S, instruction, file);
-        }
-
-        private Operation C_LT_D(in Instruction instruction, DataFile file)
-        {
-            return Operation.NotImplemented(EOperationCode.C_LT_D, instruction, file);
-        }
-
-        private Operation C_LT_S(in Instruction instruction, DataFile file)
-        {
-            return Operation.NotImplemented(EOperationCode.C_LT_S, instruction, file);
-        }
-
-        private Operation C_NGE_D(in Instruction instruction, DataFile file)
-        {
-            return Operation.NotImplemented(EOperationCode.C_NGE_D, instruction, file);
-        }
-
-        private Operation C_NGE_S(in Instruction instruction, DataFile file)
-        {
-            return Operation.NotImplemented(EOperationCode.C_NGE_S, instruction, file);
-        }
-
-        private Operation C_LE_D(in Instruction instruction, DataFile file)
-        {
-            return Operation.NotImplemented(EOperationCode.C_LE_D, instruction, file);
-        }
-
-        private Operation C_LE_S(in Instruction instruction, DataFile file)
-        {
-            return Operation.NotImplemented(EOperationCode.C_LE_S, instruction, file);
-        }
-
-        private Operation C_NGT_D(in Instruction instruction, DataFile file)
-        {
-            return Operation.NotImplemented(EOperationCode.C_NGT_D, instruction, file);
-        }
-
-        private Operation C_NGT_S(in Instruction instruction, DataFile file)
-        {
-            return Operation.NotImplemented(EOperationCode.C_NGT_S, instruction, file);
-        }
-
         private Operation CEIL_L_D(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Ceil_L_D, instruction, file);
+            return new Operation(EOperationCode.Ceil_L_D, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.FD.FloatRegisterName()}, {i.FS.FloatRegisterName()}");
         }
 
         private Operation CEIL_L_S(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Ceil_L_S, instruction, file);
+            return new Operation(EOperationCode.Ceil_L_S, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.FD.FloatRegisterName()}, {i.FS.FloatRegisterName()}");
         }
 
         private Operation CEIL_W_D(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Ceil_W_D, instruction, file);
+            return new Operation(EOperationCode.Ceil_W_D, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.FD.FloatRegisterName()}, {i.FS.FloatRegisterName()}");
         }
 
         private Operation CEIL_W_S(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Ceil_W_S, instruction, file);
+            return new Operation(EOperationCode.Ceil_W_S, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.FD.FloatRegisterName()}, {i.FS.FloatRegisterName()}");
         }
 
         private Operation CFC1(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Cfc1, instruction, file);
+            return new Operation(EOperationCode.Cfc1, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RT.RegisterName()}, {i.FS.FloatRegisterName()}");
         }
 
         private Operation CTC1(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Ctc1, instruction, file);
+            return new Operation(EOperationCode.Ctc1, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RT.RegisterName()}, {i.FS.FloatRegisterName()}");
         }
 
         private Operation CVT_D_L(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Cvt_D_L, instruction, file);
+            return new Operation(EOperationCode.Cvt_D_L, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.FD.FloatRegisterName()}, {i.FS.FloatRegisterName()}");
         }
 
         private Operation CVT_D_S(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Cvt_D_S, instruction, file);
+            return new Operation(EOperationCode.Cvt_D_S, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.FD.FloatRegisterName()}, {i.FS.FloatRegisterName()}");
         }
 
         private Operation CVT_D_W(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Cvt_D_W, instruction, file);
+            return new Operation(EOperationCode.Cvt_D_W, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.FD.FloatRegisterName()}, {i.FS.FloatRegisterName()}");
         }
 
         private Operation CVT_L_D(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Cvt_L_D, instruction, file);
+            return new Operation(EOperationCode.Cvt_L_D, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.FD.FloatRegisterName()}, {i.FS.FloatRegisterName()}");
         }
 
         private Operation CVT_L_S(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Cvt_L_S, instruction, file);
+            return new Operation(EOperationCode.Cvt_L_S, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.FD.FloatRegisterName()}, {i.FS.FloatRegisterName()}");
         }
 
         private Operation CVT_S_D(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Cvt_S_D, instruction, file);
+            return new Operation(EOperationCode.Cvt_S_D, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.FD.FloatRegisterName()}, {i.FS.FloatRegisterName()}");
         }
 
         private Operation CVT_S_L(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Cvt_S_L, instruction, file);
+            return new Operation(EOperationCode.Cvt_S_L, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.FD.FloatRegisterName()}, {i.FS.FloatRegisterName()}");
         }
 
         private Operation CVT_S_W(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Cvt_S_W, instruction, file);
+            return new Operation(EOperationCode.Cvt_S_W, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.FD.FloatRegisterName()}, {i.FS.FloatRegisterName()}");
         }
 
         private Operation CVT_W_D(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Cvt_W_D, instruction, file);
+            return new Operation(EOperationCode.Cvt_W_D, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.FD.FloatRegisterName()}, {i.FS.FloatRegisterName()}");
         }
 
         private Operation CVT_W_S(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Cvt_W_S, instruction, file);
+            return new Operation(EOperationCode.Cvt_W_S, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.FD.FloatRegisterName()}, {i.FS.FloatRegisterName()}");
         }
 
         private Operation DADD(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Dadd, instruction, file);
+            return new Operation(EOperationCode.Dadd, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RD.RegisterName()}, {i.RS.RegisterName()}, {i.RT.RegisterName()}");
         }
 
         private Operation DADDI(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Daddi, instruction, file);
+            return new Operation(EOperationCode.Daddi, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RT.RegisterName()}, {i.RS.RegisterName()}, 0x{i.IMMSigned:X8} /* 0x{i.IMMSigned:X} = {i.IMMSigned} */");
         }
 
         private Operation DADDIU(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Daddiu, instruction, file);
+            return new Operation(EOperationCode.Daddiu, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RT.RegisterName()}, {i.RS.RegisterName()}, 0x{i.IMMSigned:X8} /* 0x{i.IMMSigned:X} = {i.IMMSigned} */");
         }
 
         private Operation DADDU(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Daddu, instruction, file);
+            return new Operation(EOperationCode.Daddu, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RD.RegisterName()}, {i.RS.RegisterName()}, {i.RT.RegisterName()}");
         }
 
         private Operation DDIV(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Ddiv, instruction, file);
+            return new Operation(EOperationCode.Ddiv, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RS.RegisterName()}, {i.RT.RegisterName()}");
         }
 
         private Operation DDIVU(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Ddivu, instruction, file);
+            return new Operation(EOperationCode.Ddivu, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RS.RegisterName()}, {i.RT.RegisterName()}");
         }
 
         private Operation DIV(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Div, instruction, file);
+            return new Operation(EOperationCode.Div, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RS.RegisterName()}, {i.RT.RegisterName()}");
         }
 
         private Operation DIV_D(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Div_D, instruction, file);
+            return new Operation(EOperationCode.Div_D, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.FD.FloatRegisterName()}, {i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}");
         }
 
         private Operation DIV_S(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Div_S, instruction, file);
+            return new Operation(EOperationCode.Div_S, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.FD.FloatRegisterName()}, {i.FS.FloatRegisterName()}, {i.FT.FloatRegisterName()}");
         }
 
         private Operation DIVU(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Divu, instruction, file);
+            return new Operation(EOperationCode.Divu, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RS.RegisterName()}, {i.RT.RegisterName()}");
         }
 
         private Operation DMFC1(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Dmfc1, instruction, file);
+            return new Operation(EOperationCode.Dmfc1, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RT.RegisterName()}, {i.FS.FloatRegisterName()}");
         }
 
         private Operation DMTC1(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Dmtc1, instruction, file);
+            return new Operation(EOperationCode.Dmtc1, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RT.RegisterName()}, {i.FS.FloatRegisterName()}");
         }
 
         private Operation DMULT(in Instruction instruction, DataFile file)
@@ -856,60 +981,64 @@ namespace Foundry.Media.Nintendo64.Rom.Disassembly
 
         private Operation FLOOR_L_D(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Floor_L_D, instruction, file);
+            return new Operation(EOperationCode.Floor_L_D, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.FD.FloatRegisterName()}, {i.FS.FloatRegisterName()}");
         }
 
         private Operation FLOOR_L_S(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Floor_L_S, instruction, file);
+            return new Operation(EOperationCode.Floor_L_S, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.FD.FloatRegisterName()}, {i.FS.FloatRegisterName()}");
         }
 
         private Operation FLOOR_W_D(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Floor_W_D, instruction, file);
+            return new Operation(EOperationCode.Floor_W_D, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.FD.FloatRegisterName()}, {i.FS.FloatRegisterName()}");
         }
 
         private Operation FLOOR_W_S(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Floor_W_S, instruction, file);
+            return new Operation(EOperationCode.Floor_W_S, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.FD.FloatRegisterName()}, {i.FS.FloatRegisterName()}");
         }
 
         private Operation INVALID(in Instruction instruction, DataFile file)
         {
-            return new Operation(EOperationCode.Invalid, instruction, file, static (string _, in Instruction i) =>
-                $"/* INVALID INSTRUCTION {Convert.ToString(i.Value, 2).PadLeft(32, '0')} */", new Exception($"The instruction {Convert.ToString(instruction.Value, 2).PadLeft(32, '0')} is not supported or is not valid."));
+            return new Operation(EOperationCode.Invalid, instruction, file, static (string _, in Instruction i)
+                => $"/* INVALID INSTRUCTION {Convert.ToString(i.Value, 2).PadLeft(32, '0')} */", new Exception($"The instruction {Convert.ToString(instruction.Value, 2).PadLeft(32, '0')} is not supported or is not valid."));
         }
 
         private Operation J(in Instruction instruction, DataFile file)
         {
-            return new Operation(EOperationCode.J, instruction, file, static (string name, in Instruction i) =>
-                $"{name}\t0x{i.Address:X8}");
+            return new Operation(EOperationCode.J, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t0x{i.Address:X8}");
         }
 
         private Operation JAL(in Instruction instruction, DataFile file)
         {
-            return new Operation(EOperationCode.Jal, instruction, file, static (string name, in Instruction i) =>
-                $"{name}\t0x{i.Address:X8}");
+            return new Operation(EOperationCode.Jal, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t0x{i.Address:X8}");
         }
 
         private Operation JALR(in Instruction instruction, DataFile file)
         {
             if (instruction.RS == 31)
             {
-                return new Operation(EOperationCode.Jalr, instruction, file, static (string name, in Instruction i) =>
-                    $"{name}\t{i.RS.RegisterName()}");
+                return new Operation(EOperationCode.Jalr, instruction, file, static (string name, in Instruction i)
+                    => $"{name}\t{i.RS.RegisterName()}");
             }
             else
             {
-                return new Operation(EOperationCode.Jalr, instruction, file, static (string name, in Instruction i) =>
-                    $"{name}\t{i.RD.RegisterName()}, {i.RS.RegisterName()}");
+                return new Operation(EOperationCode.Jalr, instruction, file, static (string name, in Instruction i)
+                    => $"{name}\t{i.RD.RegisterName()}, {i.RS.RegisterName()}");
             }
         }
 
         private Operation JR(in Instruction instruction, DataFile file)
         {
-            return new Operation(EOperationCode.Jr, instruction, file, static (string name, in Instruction i) =>
-                $"{name}\t{i.RS.RegisterName()}");
+            return new Operation(EOperationCode.Jr, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RS.RegisterName()}");
         }
 
         private Operation LB(in Instruction instruction, DataFile file)
@@ -929,12 +1058,14 @@ namespace Foundry.Media.Nintendo64.Rom.Disassembly
 
         private Operation LDC1(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Ldc1, instruction, file);
+            return new Operation(EOperationCode.Ldc1, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.FT.FloatRegisterName()}, 0x{i.IMMSigned:X}({i.RS.RegisterName()})");
         }
 
         private Operation LDC2(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Ldc2, instruction, file);
+            return new Operation(EOperationCode.Ldc2, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.FT.FloatRegisterName()}, 0x{i.IMMSigned:X}({i.RS.RegisterName()})");
         }
 
         private Operation LDL(in Instruction instruction, DataFile file)
@@ -974,18 +1105,20 @@ namespace Foundry.Media.Nintendo64.Rom.Disassembly
 
         private Operation LW(in Instruction instruction, DataFile file)
         {
-            return new Operation(EOperationCode.Lw, instruction, file, static (string name, in Instruction i) =>
-                $"{name}\t{i.RT.RegisterName()}, 0x{i.IMMSigned:X}({i.RS.RegisterName()})");
+            return new Operation(EOperationCode.Lw, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RT.RegisterName()}, 0x{i.IMMSigned:X}({i.RS.RegisterName()})");
         }
 
         private Operation LWC1(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Lwc1, instruction, file);
+            return new Operation(EOperationCode.Lwc1, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.FT.FloatRegisterName()}, 0x{i.IMMSigned:X}({i.RS.RegisterName()})");
         }
 
         private Operation LWC2(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Lwc2, instruction, file);
+            return new Operation(EOperationCode.Lwc2, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.FT.FloatRegisterName()}, 0x{i.IMMSigned:X}({i.RS.RegisterName()})");
         }
 
         private Operation LWL(in Instruction instruction, DataFile file)
@@ -1005,42 +1138,50 @@ namespace Foundry.Media.Nintendo64.Rom.Disassembly
 
         private Operation MFC0(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Mfc0, instruction, file);
+            return new Operation(EOperationCode.Mfc0, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RT.RegisterName()}, {i.FS.FloatRegisterName()}");
         }
 
         private Operation MFC1(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Mfc1, instruction, file);
+            return new Operation(EOperationCode.Mfc1, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RT.RegisterName()}, {i.FS.FloatRegisterName()}");
         }
 
         private Operation MFHI(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Mfhi, instruction, file);
+            return new Operation(EOperationCode.Mfhi, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RS.RegisterName()}");
         }
 
         private Operation MFLO(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Mflo, instruction, file);
+            return new Operation(EOperationCode.Mflo, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RS.RegisterName()}");
         }
 
         private Operation MOV_D(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Mov_D, instruction, file);
+            return new Operation(EOperationCode.Mov_D, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.FD.FloatRegisterName()}, {i.FS.FloatRegisterName()}");
         }
 
         private Operation MOV_S(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Mov_S, instruction, file);
+            return new Operation(EOperationCode.Mov_S, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.FD.FloatRegisterName()}, {i.FS.FloatRegisterName()}");
         }
 
         private Operation MOVN(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Movn, instruction, file);
+            return new Operation(EOperationCode.Movn, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RD.RegisterName()}, {i.RS.RegisterName()}, {i.RT.RegisterName()}");
         }
 
         private Operation MOVZ(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Movz, instruction, file);
+            return new Operation(EOperationCode.Movz, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RD.RegisterName()}, {i.RS.RegisterName()}, {i.RT.RegisterName()}");
         }
 
         private Operation MTC0(in Instruction instruction, DataFile file)
@@ -1075,12 +1216,14 @@ namespace Foundry.Media.Nintendo64.Rom.Disassembly
 
         private Operation MULT(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Mult, instruction, file);
+            return new Operation(EOperationCode.Mult, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RS.RegisterName()}, {i.RT.RegisterName()}");
         }
 
         private Operation MULTU(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Multu, instruction, file);
+            return new Operation(EOperationCode.Multu, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RS.RegisterName()}, {i.RT.RegisterName()}");
         }
 
         private Operation NEG_D(in Instruction instruction, DataFile file)
@@ -1101,31 +1244,32 @@ namespace Foundry.Media.Nintendo64.Rom.Disassembly
 
         private Operation NOR(in Instruction instruction, DataFile file)
         {
-            return new Operation(EOperationCode.Nor, instruction, file, static (string name, in Instruction i) =>
-                $"{name}\t{i.RD.RegisterName()}, {i.RS.RegisterName()}, {i.RT.RegisterName()}");
+            return new Operation(EOperationCode.Nor, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RD.RegisterName()}, {i.RS.RegisterName()}, {i.RT.RegisterName()}");
         }
 
         private Operation OR(in Instruction instruction, DataFile file)
         {
-            return new Operation(EOperationCode.Or, instruction, file, static (string name, in Instruction i) =>
-                $"{name}\t{i.RD.RegisterName()}, {i.RS.RegisterName()}, {i.RT.RegisterName()}");
+            return new Operation(EOperationCode.Or, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RD.RegisterName()}, {i.RS.RegisterName()}, {i.RT.RegisterName()}");
         }
 
         private Operation ORI(in Instruction instruction, DataFile file)
         {
-            return new Operation(EOperationCode.Nor, instruction, file, static (string name, in Instruction i) =>
-                $"{name}\t{i.RT.RegisterName()}, {i.RS.RegisterName()}, 0x{i.IMM:X}");
+            return new Operation(EOperationCode.Nor, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RT.RegisterName()}, {i.RS.RegisterName()}, 0x{i.IMM:X}  /* 0x{i.IMM:X} = {Convert.ToString(i.IMM, 2)} */");
         }
 
         private Operation PREF(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Pref, instruction, file);
+            return new Operation(EOperationCode.Pref, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RT.RegisterName()}, 0x{i.IMMSigned:X}({i.RS.RegisterName()})");
         }
 
         private Operation RESERVED(in Instruction instruction, DataFile file)
         {
-            return new Operation(EOperationCode.Invalid, instruction, file, static (string _, in Instruction i) =>
-                $"/* RESERVED INSTRUCTION {Convert.ToString(i.Value, 2).PadLeft(32, '0')} */", new Exception($"The instruction {Convert.ToString(instruction.Value, 2).PadLeft(32, '0')} is reserved or not implemented."));
+            return new Operation(EOperationCode.Invalid, instruction, file, static (string _, in Instruction i)
+                => $"/* RESERVED INSTRUCTION {Convert.ToString(i.Value, 2).PadLeft(32, '0')} */", new Exception($"The instruction {Convert.ToString(instruction.Value, 2).PadLeft(32, '0')} is reserved or not implemented."));
         }
 
         private Operation ROUND_L_D(in Instruction instruction, DataFile file)
@@ -1150,86 +1294,92 @@ namespace Foundry.Media.Nintendo64.Rom.Disassembly
 
         private Operation SB(in Instruction instruction, DataFile file)
         {
-            return new Operation(EOperationCode.Sb, instruction, file, static (string name, in Instruction i) =>
-                $"{name}\t{i.RT.RegisterName()}, 0x{i.IMMSigned:X}({i.RS.RegisterName()})");
+            return new Operation(EOperationCode.Sb, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RT.RegisterName()}, 0x{i.IMMSigned:X}({i.RS.RegisterName()})");
         }
 
         private Operation SC(in Instruction instruction, DataFile file)
         {
-            return new Operation(EOperationCode.Sc, instruction, file, static (string name, in Instruction i) =>
-                $"{name}\t{i.RT.RegisterName()}, 0x{i.IMMSigned:X}({i.RS.RegisterName()})");
+            return new Operation(EOperationCode.Sc, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RT.RegisterName()}, 0x{i.IMMSigned:X}({i.RS.RegisterName()})");
         }
 
         private Operation SCD(in Instruction instruction, DataFile file)
         {
-            return new Operation(EOperationCode.Scd, instruction, file, static (string name, in Instruction i) =>
-                $"{name}\t{i.RT.RegisterName()}, 0x{i.IMMSigned:X}({i.RS.RegisterName()})");
+            return new Operation(EOperationCode.Scd, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RT.RegisterName()}, 0x{i.IMMSigned:X}({i.RS.RegisterName()})");
         }
 
         private Operation SD(in Instruction instruction, DataFile file)
         {
-            return new Operation(EOperationCode.Sd, instruction, file, static (string name, in Instruction i) =>
-                $"{name}\t{i.RT.RegisterName()}, 0x{i.IMMSigned:X}({i.RS.RegisterName()})");
+            return new Operation(EOperationCode.Sd, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RT.RegisterName()}, 0x{i.IMMSigned:X}({i.RS.RegisterName()})");
         }
 
         private Operation SDC1(in Instruction instruction, DataFile file)
         {
-            return new Operation(EOperationCode.Sdc1, instruction, file, static (string name, in Instruction i) =>
-                $"{name}\t{i.RT.RegisterName()}, 0x{i.IMMSigned:X}({i.RS.RegisterName()})");
+            return new Operation(EOperationCode.Sdc1, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RT.RegisterName()}, 0x{i.IMMSigned:X}({i.RS.RegisterName()})");
         }
 
         private Operation SDC2(in Instruction instruction, DataFile file)
         {
-            return new Operation(EOperationCode.Sdc2, instruction, file, static (string name, in Instruction i) =>
-                $"{name}\t{i.RT.RegisterName()}, 0x{i.IMMSigned:X}({i.RS.RegisterName()})");
+            return new Operation(EOperationCode.Sdc2, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RT.RegisterName()}, 0x{i.IMMSigned:X}({i.RS.RegisterName()})");
         }
 
         private Operation SDL(in Instruction instruction, DataFile file)
         {
-            return new Operation(EOperationCode.Sdl, instruction, file, static (string name, in Instruction i) =>
-                $"{name}\t{i.RT.RegisterName()}, 0x{i.IMMSigned:X}({i.RS.RegisterName()})");
+            return new Operation(EOperationCode.Sdl, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RT.RegisterName()}, 0x{i.IMMSigned:X}({i.RS.RegisterName()})");
         }
 
         private Operation SDR(in Instruction instruction, DataFile file)
         {
-            return new Operation(EOperationCode.Sdr, instruction, file, static (string name, in Instruction i) =>
-                $"{name}\t{i.RT.RegisterName()}, 0x{i.IMMSigned:X}({i.RS.RegisterName()})");
+            return new Operation(EOperationCode.Sdr, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RT.RegisterName()}, 0x{i.IMMSigned:X}({i.RS.RegisterName()})");
         }
 
         private Operation SH(in Instruction instruction, DataFile file)
         {
-            return new Operation(EOperationCode.Sh, instruction, file, static (string name, in Instruction i) =>
-                $"{name}\t{i.RT.RegisterName()}, 0x{i.IMMSigned:X}({i.RS.RegisterName()})");
+            return new Operation(EOperationCode.Sh, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RT.RegisterName()}, 0x{i.IMMSigned:X}({i.RS.RegisterName()})");
         }
 
         private Operation SLL(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Sll, instruction, file);
+            return new Operation(EOperationCode.Sll, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RD.RegisterName()}, {i.RT.RegisterName()}, {i.Shift}");
         }
 
         private Operation SLLV(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Sllv, instruction, file);
+            return new Operation(EOperationCode.Sllv, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RD.RegisterName()}, {i.RT.RegisterName()}, {i.RS.RegisterName()}");
         }
 
         private Operation SLT(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Slt, instruction, file);
+            return new Operation(EOperationCode.Slt, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RD.RegisterName()}, {i.RS.RegisterName()}, {i.RT.RegisterName()}");
         }
 
         private Operation SLTI(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Slti, instruction, file);
+            return new Operation(EOperationCode.Slti, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RT.RegisterName()}, {i.RS.RegisterName()}, 0x{i.IMMSigned:X} /* 0x{i.IMMSigned:X} = {i.IMMSigned} */");
         }
 
         private Operation SLTIU(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Sltiu, instruction, file);
+            return new Operation(EOperationCode.Sltiu, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RT.RegisterName()}, {i.RS.RegisterName()}, 0x{i.IMMSigned:X} /* 0x{i.IMMSigned:X} = {i.IMMSigned} */");
         }
 
         private Operation SLTU(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Sltu, instruction, file);
+            return new Operation(EOperationCode.Slti, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RD.RegisterName()}, {i.RS.RegisterName()}, {i.RT.RegisterName()}");
         }
 
         private Operation SQRT_D(in Instruction instruction, DataFile file)
@@ -1244,27 +1394,32 @@ namespace Foundry.Media.Nintendo64.Rom.Disassembly
 
         private Operation SRA(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Sra, instruction, file);
+            return new Operation(EOperationCode.Sra, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RD.RegisterName()}, {i.RT.RegisterName()}, {i.Shift}");
         }
 
         private Operation SRAV(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Srav, instruction, file);
+            return new Operation(EOperationCode.Sra, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RD.RegisterName()}, {i.RT.RegisterName()}, {i.RS.RegisterName()}");
         }
 
         private Operation SRL(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Srl, instruction, file);
+            return new Operation(EOperationCode.Srl, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RD.RegisterName()}, {i.RT.RegisterName()}, {i.Shift}");
         }
 
         private Operation SRLV(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Srlv, instruction, file);
+            return new Operation(EOperationCode.Srlv, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RD.RegisterName()}, {i.RT.RegisterName()}, {i.RS.RegisterName()}");
         }
 
         private Operation SUB(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Sub, instruction, file);
+            return new Operation(EOperationCode.Sub, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RD.RegisterName()}, {i.RS.RegisterName()}, {i.RT.RegisterName()}");
         }
 
         private Operation SUB_D(in Instruction instruction, DataFile file)
@@ -1279,73 +1434,86 @@ namespace Foundry.Media.Nintendo64.Rom.Disassembly
 
         private Operation SUBU(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Subu, instruction, file);
+            return new Operation(EOperationCode.Subu, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RD.RegisterName()}, {i.RS.RegisterName()}, {i.RT.RegisterName()}");
         }
 
         private Operation SW(in Instruction instruction, DataFile file)
         {
-            return new Operation(EOperationCode.Sw, instruction, file, static (string name, in Instruction i) =>
-                $"{name}\t{i.RT.RegisterName()}, 0x{i.IMMSigned:X}({i.RS.RegisterName()})");
+            return new Operation(EOperationCode.Sw, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RT.RegisterName()}, 0x{i.IMMSigned:X}({i.RS.RegisterName()})");
         }
 
         private Operation SWC1(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Swc1, instruction, file);
+            return new Operation(EOperationCode.Swc1, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RT.RegisterName()}, 0x{i.IMMSigned:X}({i.RS.RegisterName()})");
         }
 
         private Operation SWC2(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Swc2, instruction, file);
+            return new Operation(EOperationCode.Swc2, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RT.RegisterName()}, 0x{i.IMMSigned:X}({i.RS.RegisterName()})");
         }
 
         private Operation SWL(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Swl, instruction, file);
+            return new Operation(EOperationCode.Swl, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RT.RegisterName()}, 0x{i.IMMSigned:X}({i.RS.RegisterName()})");
         }
 
         private Operation SWR(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Swr, instruction, file);
+            return new Operation(EOperationCode.Swr, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RT.RegisterName()}, 0x{i.IMMSigned:X}({i.RS.RegisterName()})");
         }
 
         private Operation SYNC(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Sync, instruction, file);
+            return new Operation(EOperationCode.Sync, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t0x{i.Shamd:X} /* {i.Shamd} */");
         }
 
         private Operation SYSCALL(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Syscall, instruction, file);
+            return new Operation(EOperationCode.Syscall, instruction, file, static (string name, in Instruction i)
+                => $"{name} /* Syscall Code = 0x{i.SyscallCode:X}");
         }
 
         private Operation TEQ(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Teq, instruction, file);
+            return new Operation(EOperationCode.Teq, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RS.RegisterName()}, {i.RT.RegisterName()} /* Trap code = 0x{i.CompareTrapCode:X} */");
         }
 
         private Operation TEQI(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Teqi, instruction, file);
+            return new Operation(EOperationCode.Teqi, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RS.RegisterName()}, 0x{i.IMMSigned:X} /* 0x{i.IMMSigned} = {i.IMMSigned}");
         }
 
         private Operation TGE(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Tge, instruction, file);
+            return new Operation(EOperationCode.Tge, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RS.RegisterName()}, {i.RT.RegisterName()} /* Trap code = 0x{i.CompareTrapCode:X} */");
         }
 
         private Operation TGEI(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Tgei, instruction, file);
+            return new Operation(EOperationCode.Tgei, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RS.RegisterName()}, 0x{i.IMMSigned:X} /* 0x{i.IMMSigned} = {i.IMMSigned}");
         }
 
         private Operation TGEIU(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Tgeiu, instruction, file);
+            return new Operation(EOperationCode.Tgeiu, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RS.RegisterName()}, 0x{i.IMM:X} /* 0x{i.IMM} = {i.IMM}");
         }
 
         private Operation TGEU(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Tgeu, instruction, file);
+            return new Operation(EOperationCode.Tgeu, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RS.RegisterName()}, {i.RT.RegisterName()} /* Trap code = 0x{i.CompareTrapCode:X} */");
         }
 
         private Operation TLBP(in Instruction instruction, DataFile file)
@@ -1370,32 +1538,38 @@ namespace Foundry.Media.Nintendo64.Rom.Disassembly
 
         private Operation TLT(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Tlt, instruction, file);
+            return new Operation(EOperationCode.Tlt, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RS.RegisterName()}, {i.RT.RegisterName()} /* Trap code = 0x{i.CompareTrapCode:X} */");
         }
 
         private Operation TLTI(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Tlti, instruction, file);
+            return new Operation(EOperationCode.Tlti, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RS.RegisterName()}, 0x{i.IMMSigned:X} /* 0x{i.IMMSigned} = {i.IMMSigned}");
         }
 
         private Operation TLTIU(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Tltiu, instruction, file);
+            return new Operation(EOperationCode.Tlti, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RS.RegisterName()}, 0x{i.IMM:X} /* 0x{i.IMM} = {i.IMM}");
         }
 
         private Operation TLTU(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Tltu, instruction, file);
+            return new Operation(EOperationCode.Tltu, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RS.RegisterName()}, {i.RT.RegisterName()} /* Trap code = 0x{i.CompareTrapCode:X} */");
         }
 
         private Operation TNE(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Tne, instruction, file);
+            return new Operation(EOperationCode.Tne, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RS.RegisterName()}, {i.RT.RegisterName()} /* Trap code = 0x{i.CompareTrapCode:X} */");
         }
 
         private Operation TNEI(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Tnei, instruction, file);
+            return new Operation(EOperationCode.Tlti, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RS.RegisterName()}, 0x{i.IMMSigned:X} /* 0x{i.IMMSigned} = {i.IMMSigned}");
         }
 
         private Operation TRUNC_L_D(in Instruction instruction, DataFile file)
@@ -1420,13 +1594,14 @@ namespace Foundry.Media.Nintendo64.Rom.Disassembly
 
         private Operation XOR(in Instruction instruction, DataFile file)
         {
-            return Operation.NotImplemented(EOperationCode.Xor, instruction, file);
+            return new Operation(EOperationCode.Xor, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RD.RegisterName()}, {i.RS.RegisterName()}, {i.RT.RegisterName()}");
         }
 
         private Operation XORI(in Instruction instruction, DataFile file)
         {
-            return new Operation(EOperationCode.Xori, instruction, file, static (string name, in Instruction i) =>
-                $"{name}\t{i.RT.RegisterName()}, {i.RS.RegisterName()}, 0x{i.IMM}");
+            return new Operation(EOperationCode.Xori, instruction, file, static (string name, in Instruction i)
+                => $"{name}\t{i.RT.RegisterName()}, {i.RS.RegisterName()}, 0x{i.IMM} /* 0x{i.IMM:X} = {Convert.ToString(i.IMM, 2)} */");
         }
     }
 }
